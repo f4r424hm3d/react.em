@@ -1,0 +1,842 @@
+@import "tailwindcss";
+
+/* Global Scrollbar Styling */
+body {
+  padding-top: 60px;
+  /* 56px navbar + 14px buffer */
+  scrollbar-color: #1d4ed8 #f1f1f1;
+  scrollbar-width: thin;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  /* vertical scrollbar */
+  height: 6px;
+  /* horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* Light background for track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1d4ed8;
+  /* Blue color thumb */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #145da5;
+  /* Darker blue on hover */
+}
+
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Hide scrollbar for mobile horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
+/* ============================================ */
+/* SWIPER SLIDER - BRIGHT WHITE NAVIGATION ARROWS */
+/* ============================================ */
+
+.swiper-button-prev,
+.swiper-button-next {
+  background: #ffffff !important;
+  /* Pure solid white */
+  width: 55px !important;
+  height: 55px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
+  /* Stronger shadow */
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+  /* Force full opacity */
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
+  /* White border */
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background: #3b82f6 !important;
+  transform: scale(1.15) !important;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.6) !important;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  /* Extra bold */
+  color: #000000 !important;
+  /* Pure black arrows */
+}
+
+.swiper-button-prev:hover::after,
+.swiper-button-next:hover::after {
+  color: #ffffff !important;
+  /* White on hover */
+}
+
+/* Pagination Dots Styling */
+.swiper-pagination {
+  bottom: 30px !important;
+  z-index: 30 !important;
+}
+
+.swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  background: #ffffff !important;
+  opacity: 0.7 !important;
+  transition: all 0.3s ease !important;
+}
+
+.swiper-pagination-bullet:hover {
+  opacity: 0.9 !important;
+  transform: scale(1.2) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #60a5fa !important;
+  opacity: 1 !important;
+  transform: scale(1.3) !important;
+}
+
+/* ============================================ */
+/* HIDE SCROLLBAR - Filter Panel */
+/* ============================================ */
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* Force table header styling */
+.prose thead {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+}
+
+.prose th {
+  color: white !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  padding: 1rem 1.5rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background-color: #1e40af !important;
+}
+
+.prose td {
+  color: #111827 !important;
+  padding: 1rem 1.5rem !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.prose tbody tr:hover {
+  background-color: #eff6ff !important;
+}
+
+.prose td:first-child {
+  font-weight: 600;
+  background-color: #f1f5f9;
+}
+
+/* ============================================ */
+/* FIX: Only "Overview" as Heading */
+/* ============================================ */
+
+/* Target first paragraph in prose (which is Overview) */
+.prose>h2:first-of-type {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+  display: block !important;
+}
+
+/* ========================================
+   University Info Table - Left Column Black
+   ======================================== */
+
+/* Target ONLY the university info table */
+.university-info-table tbody tr td:first-child {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+/* Make sure other columns stay gray */
+.university-info-table tbody tr td:not(:first-child) {
+  color: #1f2937;
+  font-weight: normal;
+}
+
+/* Optional: Add hover effect on rows */
+.university-info-table tbody tr:hover {
+  background-color: #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+/* ============================================
+   LOCATION TEXT FIX - FULL DISPLAY
+   ============================================ */
+
+/* Location Container - No Wrapping */
+.location-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  overflow: visible !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  min-width: fit-content !important;
+}
+
+/* Location Text - No Truncation */
+.location-text {
+  color: #2563eb !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: none !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+}
+
+/* Parent Flex Container Fix */
+.flex-1>div {
+  overflow: visible !important;
+}
+
+/* Ensure parent doesn't restrict width */
+.flex-1 {
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==================== TABLE STYLING - FINAL FIX ==================== */
+/* ==================== TABLE STYLING - SOLID BLUE HEADER ==================== */
+
+/* Table - Clean structure */
+.prose table,
+table {
+  background: transparent !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+  margin: 1.5rem 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 17px !important;
+  overflow: hidden !important;
+}
+
+/* Remove ALL extra space above table */
+.prose table::before,
+.prose table::after,
+.prose thead::before,
+.prose thead::after,
+table::before,
+table::after,
+thead::before,
+thead::after {
+  content: none !important;
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ✅ SOLID BLUE HEADER - No gradient! */
+.prose thead,
+table thead {
+  background-color: #1E40AF !important;
+  background: #1E40AF !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  line-height: 0 !important;
+  border-radius: 17px 17px 0 0 !important;
+}
+
+.prose thead tr,
+table thead tr {
+  background-color: #1E40AF !important;
+  background: #1E40AF !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  line-height: normal !important;
+}
+
+.prose thead tr:first-child,
+table thead tr:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+/* ✅ Table Header Cells - SOLID Blue Background with WHITE text */
+.prose th,
+table th {
+  background-color: #1E40AF !important;
+  background: #1E40AF !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 1rem !important;
+  text-align: left !important;
+  border: none !important;
+  margin: 0 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  vertical-align: middle !important;
+}
+
+.prose th:last-child,
+table th:last-child {
+  border-right: none !important;
+}
+
+/* First and last header cells rounded */
+.prose thead tr th:first-child,
+table thead tr th:first-child,
+table thead tr:first-child th:first-child {
+  border-top-left-radius: 17px !important;
+}
+
+.prose thead tr th:last-child,
+table thead tr th:last-child,
+table thead tr:first-child th:last-child {
+  border-top-right-radius: 17px !important;
+}
+
+.prose thead tr:first-child th,
+table thead tr:first-child th {
+  padding-top: 0.75rem !important;
+  margin-top: 0 !important;
+  border-top: none !important;
+}
+
+/* Table Body - White Background */
+.prose tbody,
+table tbody {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.prose tbody tr,
+table tbody tr {
+  background-color: white !important;
+  border-bottom: 1px solid #E5E7EB !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Table Body Cells */
+.prose tbody td,
+table tbody td {
+  background-color: white !important;
+  padding: 0.75rem 1rem !important;
+  border-right: 1px solid #E5E7EB !important;
+  color: #374151 !important;
+  vertical-align: middle !important;
+}
+
+.prose tbody td:last-child,
+table tbody td:last-child {
+  border-right: none !important;
+}
+
+/* Hover Effect */
+.prose tbody tr:hover,
+table tbody tr:hover {
+  background-color: #F9FAFB !important;
+}
+
+.prose tbody tr:hover td,
+table tbody tr:hover td {
+  background-color: #F9FAFB !important;
+}
+
+/* First column bold */
+.prose tbody td:first-child,
+table tbody td:first-child {
+  font-weight: 600 !important;
+}
+
+/* Remove any container backgrounds */
+.prose div table,
+.prose section table {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 1.5rem 0 !important;
+}
+
+/* Better scrollbar for tables */
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #e5e7eb;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+/* Table wrapper ko rounded karo with overflow hidden */
+table {
+  border-radius: 17px !important;
+  overflow: hidden !important;
+}
+
+table thead {
+  border-radius: 17px 17px 0 0 !important;
+}
+
+table thead tr th:first-child {
+  border-top-left-radius: 17px !important;
+}
+
+table thead tr th:last-child {
+  border-top-right-radius: 17px !important;
+}
+
+/* Categories scrollable container */
+.categories-scrollable {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 25px;
+}
+
+/* Custom Scrollbar Styling */
+.categories-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.categories-scrollable::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.categories-scrollable::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 10px;
+}
+
+.categories-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ========================================
+   COMPARE BAR FIX - Overlap Solution
+   ======================================== */
+
+/* Compare bar ko fixed position do */
+.compare-bar-fixed {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 50 !important;
+  background: white !important;
+}
+
+/* Course content ko padding do */
+.courses-content-wrapper {
+  padding-bottom: 50px;
+}
+
+/* Course grid ko margin do */
+.courses-grid-wrapper {
+  margin-bottom: 50px;
+}
+
+/* Jab compare bar active ho to extra space do */
+.courses-grid-wrapper.with-compare {
+  margin-bottom: 220px !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .courses-grid-wrapper.with-compare {
+    margin-bottom: 280px !important;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/*
+   🎯 STICKY TABS - ZERO GAP FIX
+    */
+.new-scoll-links.scroll-sticky {
+  position: sticky;
+  top: 56px;
+  /* ✅ Navbar ki exact height */
+  z-index: 9998;
+  /* ✅ Navbar (9999) se thoda kam */
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  margin: 0 !important;
+  /* ✅ Extra gap remove */
+  padding-top: 0 !important;
+  /* ✅ Top padding remove */
+}
+
+.scroll-sticky.scrolled {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Links Container */
+.links.scrollTo {
+  display: flex;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.links.scrollTo::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tab Items */
+.links.scrollTo li {
+  flex-shrink: 0;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.links.scrollTo li a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+/* Active Tab */
+.links.scrollTo li.active {
+  border-bottom-color: #2563eb;
+}
+
+.links.scrollTo li.active a {
+  color: #2563eb;
+}
+
+/* Hover Effect */
+.links.scrollTo li:hover a {
+  color: #1e40af;
+  background: rgba(37, 99, 235, 0.05);
+}
+
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+/* Horizontal scroll */
+.vertically-scrollbar {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+
+/* Vertically Scrollbar (horizontal scroll) */
+.vertically-scrollbar {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Specialization HTML Content Styling */
+.content-html h1,
+.content-html h2,
+.content-html h3 {
+  font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.content-html h1 {
+  font-size: 1.5rem;
+}
+
+.content-html h2 {
+  font-size: 1.25rem;
+}
+
+.content-html h3 {
+  font-size: 1.125rem;
+}
+
+.content-html ul,
+.content-html ol {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.content-html ul {
+  list-style-type: disc;
+}
+
+.content-html ol {
+  list-style-type: decimal;
+}
+
+.content-html li {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+
+.content-html p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+
+.content-html strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+
+
+/* Remove gap between Course Information and Sticky Tabs */
+.bg-gradient-to-br.from-blue-50.to-cyan-50 {
+  margin-bottom: 0 !important;
+  /* ✅ Bottom margin remove */
+  padding-bottom: 1.5rem !important;
+  /* Keep internal padding */
+}
+
+/* Remove top margin from sticky tabs */
+.new-scoll-links.scroll-sticky {
+  margin-top: 0 !important;
+  top: 56px;
+}
+
+/* Remove gap from parent white container */
+.bg-white.rounded-2xl.shadow-xl {
+  margin-bottom: 0 !important;
+}
+
+/* Specific fix: Course Info to Tabs transition */
+.border-b.border-blue-100 {
+  border-bottom: none !important;
+  /* Remove border that creates visual gap */
+}
+
+/* Ensure tabs stick right below Course Info */
+div.max-w-7xl>.new-scoll-links {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* ============================================
+   HEADING VISIBILITY FIX - Force Display
+   ============================================ */
+
+/* Force all headings to display properly */
+.prose h2,
+.prose h3,
+.prose h4,
+h2,
+h3,
+h4 {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  overflow: visible !important;
+  line-height: normal !important;
+}
+
+/* Main Section Headings (h2) */
+.prose h2,
+h2:not(.text-white) {
+  font-size: 1.875rem !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  padding: 0 !important;
+}
+
+/* Allow white text on h2 when explicitly set */
+h2.text-white,
+.text-white h2 {
+  color: white !important;
+}
+
+/* Sub Section Headings (h3) */
+.prose h3,
+h3:not(.text-white) {
+  font-size: 1.125rem !important;
+  /* Normal size (18px) */
+  font-weight: 600 !important;
+  /* Weight bhi kam karo */
+  color: #111827 !important;
+  margin-top: 1rem !important;
+  /* Spacing bhi kam */
+  margin-bottom: 0.75rem !important;
+  padding: 0 !important;
+}
+
+/* Allow white text on h3 when explicitly set */
+h3.text-white,
+.text-white h3 {
+  color: white !important;
+}
+
+/* Minor Section Headings (h4) */
+.prose h4,
+h4:not(.text-white) {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: #1f2937 !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Allow white text on h4 when explicitly set */
+h4.text-white,
+.text-white h4 {
+  color: white !important;
+}
+
+/* Remove any conflicting rules */
+.prose>h2:first-of-type {
+  display: block !important;
+  font-size: 1.875rem !important;
+}
+
+/* Ensure content is visible */
+.prose div,
+.content-html {
+  overflow: visible !important;
+}
+
+/* Fix for dangerouslySetInnerHTML content */
+[dangerouslysetinnerhtml] h2,
+[dangerouslysetinnerhtml] h3,
+[dangerouslysetinnerhtml] h4 {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* ============================================
+   SIGNUP FORM ANIMATIONS
+   ============================================ */
+
+/* Shake animation for error messages */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Pulse animation for delay */
+@keyframes pulse-delay {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.delay-1000 {
+  animation-delay: 1s;
+}
+
+/* Glassmorphism backdrop blur support */
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ============================================
+   TOASTIFY Z-INDEX FIX
+   ============================================ */
+.Toastify__toast-container {
+  z-index: 999999 !important; /* Ensure it's above the navbar (z-9999) */
+}

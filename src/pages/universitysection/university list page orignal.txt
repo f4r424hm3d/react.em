@@ -1,0 +1,649 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { FiChevronDown } from 'react-icons/fi';
+import { Home, Layers } from "lucide-react";
+import api from '../../api'; // Adjust the import based on your project structure
+import { FaStar } from 'react-icons/fa';
+import {Helmet} from "react-helmet";
+import { API_URL } from "../../config";
+// Constants
+const filters = {
+  'Institute Type': ['Public  Institution ', 'Private  Institution ', 'Foreign  Institution ','International Schools'],
+  'State': ['Kuala Lumpur','Selangor','Johor','Kedah','Sarawak','Sabah','Perak','Negeri Sembilan','Terengganu','Melaka','Pahang','Perlis','Kelantan','Penang','Kuantan']
+};
+
+// First add a constant to map institute types to their IDs
+const INSTITUTE_TYPE_MAP = {
+  'Public  Institution ': 1,
+  'Private  Institution ': 2,
+  'Foreign  Institution ': 3,
+  'International Schools': 4
+};
+const infoText = `or Arts, our platform offers detailed insights to guide your choices. 
+From undergraduate to postgraduate levels, we provide expert advice and up-to-date information on course requirements, eligibility, and university rankings. 
+Our mission is to simplify your study abroad planning and help you make confident academic decisions.Education Malaysia helps students identify the right specialization for their future career. 
+Whether you're interested in  Business, or Arts, our platform offers detailed insights to guide your choices. 
+From undergraduate to postgraduate levels, we provide expert advice and up-to-date information on course requirements, eligibility, and university rankings. 
+Our mission is to simplify your study abroad planning and help you make confident academic decisions.`;
+
+const UniversitiesList = () => {
+  const { type } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // State management
+  const [title, setTitle] = useState('');
+  const [universities, setUniversities] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [openFilters, setOpenFilters] = useState(
+    Object.keys(filters).reduce((acc, key) => {
+      acc[key] = true; // Initially all filters are open
+      return acc;
+    }, {})
+  );
+  const [selectedFilters, setSelectedFilters] = useState({
+    instituteType: '',
+    state: '',
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 20,
+    total: 0,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalUniversities, setTotalUniversities] = useState(0);
+   const [showMore, setShowMore] = useState(false);
+   const [seo, setSeo] = useState({});
+   const [filter, setFilter] = useState(false);
+
+  // URL formatting helper
+  const formatUrl = (instituteType, state) => {
+    const typeSlug = instituteType?.toLowerCase().replace(/\s+/g, '-').replace(/--/g, '-') || '';
+    const stateSlug = state?.toLowerCase().replace(/\s+/g, '-') || '';
+
+    if (typeSlug && stateSlug) return `/universities/${typeSlug}-in-${stateSlug}`;
+    if (typeSlug) return `/universities/${typeSlug}-in-malaysia`;
+    if (stateSlug) return `/universities/universities-in-${stateSlug}`;
+    return '/universities/universities-in-malaysia';
+  };
+
+  // Filter handlers
+  const handleFilterChange = (key, value) => {
+    const updatedFilters = {
+      ...selectedFilters,
+      [key]: selectedFilters[key] === value ? '' : value,
+    };
+    
+    const newUrl = formatUrl(updatedFilters.instituteType, updatedFilters.state);
+    navigate(newUrl);
+  };
+
+  const toggleFilter = (key) => {
+    setOpenFilters(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleReset = () => {
+    setSearch('');
+    setOpenFilters(
+      Object.keys(filters).reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {})
+    );
+    setSelectedFilters({ instituteType: '', state: '' });
+    navigate('/universities/universities-in-malaysia');
+  };
+
+  // Sync selectedFilters from URL
+  useEffect(() => {
+    const newFilters = { instituteType: '', state: '' };
+    if (type) {
+        const parts = type.split('-in-');
+        const typeSlug = parts[0];
+        const stateSlug = parts.length > 1 ? parts[1] : null;
+
+        if (stateSlug && stateSlug !== 'malaysia') {
+            const state = filters['State'].find(s => s.toLowerCase().replace(/\s+/g, '-') === stateSlug);
+            if (state) {
+                newFilters.state = state;
+            }
+        }
+
+        if (typeSlug !== 'universities') {
+            const instituteType = filters['Institute Type'].find(it => it.toLowerCase().replace(/\s+/g, '-').replace(/--/g, '-') === typeSlug);
+            if (instituteType) {
+                newFilters.instituteType = instituteType;
+            }
+        }
+    }
+    setSelectedFilters(newFilters);
+  }, [type]);
+
+  // Get search param from URL on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchQuery = params.get('search');
+    if (searchQuery) {
+      setSearch(decodeURIComponent(searchQuery));
+    }
+  }, [location.search]);
+
+  // Data fetching effect
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadUniversityData = async (page = 1) => {
+      setIsLoading(true);
+      try {
+        let endpoint = `/universities/universities-in-malaysia`;
+        const params = new URLSearchParams();
+      
+        // Add institute_type and state if selected
+        if (selectedFilters.instituteType) {
+          const typeId = INSTITUTE_TYPE_MAP[selectedFilters.instituteType];
+          if (typeId) {
+            params.append('institute_type', typeId);
+          }
+        }
+        
+        if (selectedFilters.state) {
+          params.append('state', selectedFilters.state.toLowerCase());
+        }
+
+        // Add search parameter if exists
+        if (search) {
+          params.append('search', search);
+        }
+
+        // Add page parameter
+        params.append('page', page);
+
+        // Add parameters to endpoint
+        endpoint = `${endpoint}?${params.toString()}`;
+
+        const response = await api.get(endpoint);
+        const { data } = response.data;
+      console.log(response);
+        setTotalUniversities(data.universities?.total || []);
+        // console.log(data.universities);
+        setFilter(data.filters || {});
+        console.log(data.filters || {});
+
+        setSeo(data.seo || {});
+        // console.log(data.seo);
+        
+
+        if (data) {
+          setTitle(data.seo?.meta_title || "Universities in Malaysia");
+          setUniversities(data.universities?.data || []);
+          setPagination({
+            current_page: data.universities?.current_page || 1,
+            last_page: data.universities?.last_page || 1,
+            per_page: data.universities?.per_page || 20,
+            total: data.universities?.total || 0,
+            next_page_url: data.universities?.next_page_url,
+            prev_page_url: data.universities?.prev_page_url
+          });
+          
+        }
+      } catch (error) {
+        console.error('Error fetching universities:', error);
+        setUniversities([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUniversityData(currentPage);
+    return () => controller.abort();
+  }, [selectedFilters, currentPage, search]);
+
+  // Filter universities based on search
+  const filteredUniversities = universities.filter(uni => 
+    uni.name?.toLowerCase().includes(search.toLowerCase())  // Changed from uni.university to uni.name
+  );
+
+  // Update the search handler
+  const handleSearch = (value) => {
+    setSearch(value);
+    const params = new URLSearchParams(location.search);
+    
+    if (value) {
+      params.set('search', value);
+    } else {
+      params.delete('search');
+    }
+
+    // Update URL with search parameter
+    navigate({
+      pathname: '/universities/universities-in-malaysia',
+      search: params.toString()
+    });
+  };
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > pagination.last_page) return;
+    
+    setCurrentPage(newPage);
+    loadUniversityData(newPage);
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+ const toggleShowMore = () => setShowMore(!showMore);
+  return (
+    <>
+   <Helmet>
+      {/* 🔹 Basic SEO */}
+      <title>{seo?.meta_title}</title>
+      <meta name="title" content={seo?.meta_title} />
+      <meta name="description" content={seo?.meta_description} />
+      <meta name="keywords" content={seo?.meta_keyword} />
+
+      {/* 🔹 Robots */}
+      <meta name="robots" content={seo?.robots || "index, follow"} />
+
+      {/* 🔹 Canonical */}
+      {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
+
+      {/* 🔹 Open Graph (Facebook, LinkedIn, etc.) */}
+      <meta property="og:title" content={seo?.meta_title} />
+      <meta property="og:description" content={seo?.meta_description} />
+      <meta property="og:image" content={seo?.og_image_path} />
+      <meta property="og:url" content={seo?.page_url} />
+      <meta property="og:site_name" content={seo?.site_name || "Study in Malaysia"} />
+      <meta property="og:type" content={seo?.og_type || "website"} />
+      <meta property="og:locale" content={seo?.og_locale || "en_US"} />
+ {/* 🔹 SEO Rating (as meta) */}
+      {seo?.seo_rating && <meta name="seo:rating" content={seo?.seo_rating} />}
+
+      {/* 🔹 JSON-LD Schema (Structured Data) */}
+      {seo?.seo_rating_schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(seo.seo_rating_schema)}
+        </script>
+      )}
+     
+    </Helmet>
+
+      {/* Breadcrumb Navigation */}
+      <nav className="w-full bg-blue-50 shadow-sm">
+        <div className="max-w-screen-xl mx-auto px-4 py-3">
+          <div className="flex items-center space-x-3 text-sm text-gray-600">
+            <Link to="/" className="flex items-center gap-1 hover:underline hover:text-blue-500">
+              <Home size={18} /> Home
+            </Link>
+            <span>/</span>
+            <Link to="/universities" className="flex items-center gap-1 hover:underline hover:text-blue-500">
+              <Layers size={18} /> Universities
+            </Link>
+            {type && (
+              <>
+                <span>/</span>
+                <span className="capitalize">{type.replace(/-/g, ' ')}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="flex flex-col md:flex-row bg-gradient-to-br from-blue-50 to-white p-4 gap-6 min-h-screen">
+      
+      {/* Mobile Filter Button */}
+      <div className="md:hidden flex justify-end">
+        <button
+          className="bg-blue-700 text-white px-4 py-2 rounded-xl shadow-md"
+          onClick={() => setShowMobileFilter(true)}
+        >
+          🎯 Filters
+        </button>
+      </div>
+
+      {/* Desktop Filter Panel */}
+      <div className="hidden md:block w-[280px] bg-white border border-gray-200 p-5 rounded-xl shadow-md space-y-6 text-base">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+          <button
+            onClick={handleReset}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Reset All Filters
+          </button>
+        </div>
+
+        {Object.entries(filters).map(([key, items]) => (
+          <div key={key} className="space-y-2">
+            <div
+              className="flex justify-between items-center cursor-pointer text-gray-800 font-semibold text-[16px]"
+              onClick={() => toggleF0ilter(key)}
+            >
+              <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+              <FiChevronDown
+                className={`text-xl transform transition-transform duration-300 ${
+                  openFilters[key] ? 'rotate-180' : ''
+                }`}
+              />
+            </div>
+
+            {openFilters[key] && (
+              <div className="mt-3 pl-1 space-y-3 max-h-56 overflow-y-auto">
+                {items.map((label) => (
+                  <label
+                    key={label}
+                    className="flex items-center gap-3 text-[15px] text-gray-700"
+                  >
+                    <input type="checkbox"
+                      checked={
+                        selectedFilters[key === 'Institute Type' ? 'instituteType' : 'state'] === label
+                      }
+                      onChange={() => handleFilterChange(
+                        key === 'Institute Type' ? 'instituteType' : 'state',
+                        label
+                      )}
+                      className="w-4 h-4 accent-blue-600" />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Mobile Filter Drawer */}
+      {showMobileFilter && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex">
+          <div className="w-4/5 max-w-xs bg-white p-5 rounded-r-xl shadow-xl h-full overflow-y-auto animate-slide-in-left space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+              <button
+                className="text-2xl font-bold text-gray-600"
+                onClick={() => setShowMobileFilter(false)}
+              >
+                ×
+              </button>
+            </div>
+            <button
+              onClick={() => {
+                handleReset();
+                setShowMobileFilter(false);
+              }}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Reset All Filters
+            </button>
+
+            {Object.entries(filters).map(([key, items]) => (
+              <div key={key}>
+                <div
+                  className="flex justify-between items-center cursor-pointer font-semibold text-gray-800 text-[16px]"
+                  onClick={() => toggleFilter(key)}
+                >
+                  <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                  <FiChevronDown
+                    className={`text-xl transform transition-transform duration-300 ${
+                      openFilters[key] ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                {openFilters[key] && (
+                  <div className="mt-3 pl-1 space-y-3 max-h-56 overflow-y-auto">
+                    {items.map((label) => (
+                      <label
+                        key={label}
+                        className="flex items-center gap-3 text-[15px] text-gray-700"
+                      >
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 accent-blue-600"
+                          checked={
+                            selectedFilters[
+                              key === 'Institute Type' ? 'instituteType' : 'state'
+                            ] === label
+                          }
+                          onChange={() => {
+                            handleFilterChange(
+                              key === 'Institute Type' ? 'instituteType' : 'state',
+                              label
+                            );
+                            setShowMobileFilter(false);
+                          }}
+                        />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex-1" onClick={() => setShowMobileFilter(false)}></div>
+        </div>
+      )}
+
+      {/* Course List Section */}
+      <div className="flex-1 space-y-6">
+        {/* Top Search Box */}
+        <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-md">
+          <p className="text-lg font-semibold text-gray-700">
+            🎓 Found <span className="text-blue-700 font-bold">{totalUniversities}</span> Universities
+          </p>
+          <p className="text-gray-600 mt-1">
+            {title}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <input
+              type="text"
+              placeholder="Search Universities"
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="flex-grow p-2 border rounded-lg outline-blue-700 w-xl"
+            />
+            <button 
+              onClick={() => loadUniversityData(1)}
+              className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg shadow-md"
+            >
+              Search
+            </button>
+            <button
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg shadow-md"
+              onClick={handleReset}
+            >
+              Reset
+            </button>
+          </div>
+
+          {/* Expandable Info Box */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-1 max-w-6xl mx-auto shadow-sm mt-4">
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+              {showMore ? infoText : infoText.slice(0, 180) + "..."}
+            </p>
+            <button
+              onClick={toggleShowMore}
+              className="mt-3 text-blue-600 text-sm font-semibold hover:underline focus:outline-none"
+            >
+              {showMore ? "Show Less" : "Show More"}
+            </button>
+          </div>
+
+        </div>
+
+        {/* Active Filters Bar */}
+        {Object.values(selectedFilters).some((filter) => filter !== "") && (
+            <div className="bg-transparent border border-gray-200 rounded-xl p-2 mb-2 -mt-3 shadow-sm">
+            <div className="flex items-center justify-between">
+                <div className="flex flex-wrap gap-2">
+                {Object.entries(selectedFilters).map(([key, value]) => {
+                    if (value) {
+                        return (
+                            <div
+                                key={key}
+                                className="flex items-center gap-2 px-3 py-1 bg-gray-100 border border-gray-300 rounded-full text-sm text-gray-700"
+                            >
+                                <span>{value}</span>
+                                <button
+                                onClick={() => handleFilterChange(key, value)}
+                                className="text-gray-500 hover:text-gray-700 font-bold text-lg leading-none"
+                                >
+                                ×
+                                </button>
+                            </div>
+                        );
+                    }
+                    return null;
+                })}
+                </div>
+                <button
+                onClick={handleReset}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                Clear All
+                </button>
+            </div>
+            </div>
+        )}
+
+
+        {/* course card */}
+      {filteredUniversities.map((university) => (
+  <div
+    key={university.id}
+    className="bg-white rounded-2xl border border-gray-200 shadow-md hover:shadow-blue-100 transition-all duration-300 flex flex-col md:flex-row overflow-hidden mt-6"
+  >
+    {/* Left Section */}
+    <div className="p-6 flex-1">
+      <div className="flex gap-5">
+        {/* Logo */}
+        <div className="w-24 h-24 rounded-md bg-white flex items-center justify-center shadow-sm">
+          <img
+            src={`${API_URL}${university.logo_path || "/default-logo.jpg"}`}
+            alt={university.name}
+            className="w-14 h-14 object-contain"
+          />
+        </div>
+
+        {/* University Info */}
+        <div className="flex-1">
+          <Link to={`/university/${university.uname}`}>
+          <h3 className="text-xl font-semibold text-gray-800 cursor-pointer hover:text-blue-700">
+            {university.name}
+          </h3>
+          </Link>
+
+          <p className="text-sm text-blue-700 mt-1">
+            📍 {university.city}, {university.state}
+          </p>
+
+          <div className="flex flex-wrap gap-2 text-sm text-gray-700 mt-3">
+            <span className="px-3 py-1 bg-gray-100 rounded-full border">
+              Type: {university.type || "Private Institution"}
+            </span>
+            <span className="px-3 py-1 bg-gray-100 rounded-full border">
+              Courses: {university.total_courses || "N/A"}
+            </span>
+            <span className="px-3 py-1 bg-gray-100 rounded-full border">
+              Ranking: {university.ranking || "N/A"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Course Info */}
+      <div className="border-t border-slate-100 mt-6 pt-5">
+        <h4 className="text-blue-700 text-lg font-semibold mb-4">
+          {university.course_title || "Available Programs"}
+        </h4>
+
+        <div className="flex flex-wrap md:flex-nowrap justify-start divide-x divide-slate-300 text-sm text-slate-700">
+          <div className="flex-1 px-2 mb-3 md:mb-0">
+            <p className="text-xs text-slate-400">Study Mode</p>
+            <p className="font-medium">{university.study_mode || "Full Time"}</p>
+          </div>
+          <div className="flex-1 px-2 mb-3 md:mb-0">
+            <p className="text-xs text-slate-400">Approved By</p>
+            <p className="font-medium">{university.approved_by || "Ministry of Education"}</p>
+          </div>
+          <div className="flex-1 px-2 mb-3 md:mb-0">
+            <p className="text-xs text-slate-400">Established Year</p>
+            <p className="font-medium">{university.established_year || "N/A"}</p>
+          </div>
+          <div className="flex-1 px-2">
+            <p className="text-xs text-slate-400">Total No. of International Students</p>
+            <p className="font-medium">{university.fee_range || "Contact Us"}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Right Panel */}
+    <div className="bg-slate-50 w-full md:max-w-[220px] border-l border-slate-100 px-6 py-6 flex flex-col justify-between">
+      <div className="space-y-4">
+        {/* Rating */}
+        <div className="text-xl font-bold text-black flex items-center justify-center">
+          {university.rating || "5.0"}
+          <span className="ml-1 text-yellow-400">★</span>
+        </div>
+
+        {/* SETARA */}
+        <div className="flex items-center justify-center gap-1 text-gray-600 text-sm">
+          <span className="font-medium">SETARA Ranking:</span>
+          {[1, 2, 3].map((i) => (
+            <FaStar key={i} className="text-yellow-400" />
+          ))}
+          {[4, 5].map((i) => (
+            <FaStar key={i} className="text-black" />
+          ))}
+        </div>
+      </div>
+
+      {/* Button */}
+      <Link to={`/university/${university.uname}`} className="w-full mt-6">
+        <button className="w-full border border-slate-300 px-4 py-2 rounded-lg shadow-sm  bg-blue-700 text-white font-medium hover:bg-blue-800 transition">
+          View Details
+        </button>
+      </Link>
+    </div>
+  </div>
+))}
+
+
+        {/* Pagination */}
+        <div className="flex justify-between items-center text-sm text-gray-700 mt-4">
+          <button
+            onClick={() => handlePageChange(pagination.current_page - 1)}
+            disabled={pagination.current_page === 1}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 shadow-sm hover:bg-gray-50 transition-all duration-300 disabled:opacity-50"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Previous
+          </button>
+          
+          <span className="text-gray-500">
+            Page {pagination.current_page} of {pagination.last_page}
+          </span>
+          
+          <button
+            onClick={() => handlePageChange(pagination.current_page + 1)}
+            disabled={pagination.current_page === pagination.last_page}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 shadow-sm hover:bg-gray-50 transition-all duration-300 disabled:opacity-50"
+          >
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+      </div>
+    </>
+  );
+};
+
+export default UniversitiesList;
