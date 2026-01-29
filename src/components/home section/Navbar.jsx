@@ -107,8 +107,7 @@ const Navbar = () => {
                       <li><Link to="/resources/services/discover-malaysia" className="hover:underline">Discover Malaysia</Link></li>
                       <li><Link to="/resources/services/admission-guidance" className="hover:underline">Admission Guidance</Link></li>
                       <li><Link to="/resources/services/visa-guidance" className="hover:underline">Visa Guidance</Link></li>
-                      <li><Link to="/resources/services/pre-departure-support" className="hover:underline">Pre Departure Support</Link></li>
-                    </ul>
+                                          </ul>
                   </div>
 
 
@@ -118,7 +117,7 @@ const Navbar = () => {
                     <ul className="space-y-2 text-sm">
                       <li><Link to="/resources/Guidelines/graduate-pass" className="hover:underline">Graduate Pass</Link></li>
                       <li><Link to="/resources/Guidelines/MQA" className="hover:underline">MQA</Link></li>
-                      <li><Link to="/resources/Guidelines/team-education-malaysia" className="hover:underline">Team Education Malaysia</Link></li>
+                      <li><Link to="/resources/Guidelines/team-education-malaysia" className="hover:underline">Study Malaysia</Link></li>
                     </ul>
                   </div>
 
@@ -130,8 +129,7 @@ const Navbar = () => {
                     <ul className="space-y-2 text-sm">
                       <li><Link to="/who-we-are" className="hover:underline">Who we are</Link></li>
                       <li><Link to="/students-say" className="hover:underline">What Students Say</Link></li>
-                      <li><Link to="/study-malaysia" className="hover:underline">Study Malaysia</Link></li>
-                      <li><Link to="/why-study" className="hover:underline">Why Study In Malaysia?</Link></li>
+                                            <li><Link to="/why-study" className="hover:underline">Why Study In Malaysia?</Link></li>
                       <li><Link to="/view-our-partners" className="hover:underline">View Our Partners</Link></li>
                     </ul>
                   </div>
@@ -202,8 +200,7 @@ const Navbar = () => {
                   <Link to="/resources/services/discover-malaysia" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Discover Malaysia</Link>
                   <Link to="/resources/services/admission-guidance" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Admission Guidance</Link>
                   <Link to="/resources/services/visa-guidance" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Visa Guidance</Link>
-                  <Link to="/resources/services/pre-departure-support" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Pre Departure Support</Link>
-                </div>
+                                  </div>
 
                 {/* Guidelines - Mobile Section */}
                 <div>
@@ -219,8 +216,7 @@ const Navbar = () => {
                   <p className="text-black font-semibold">About Us</p>
                   <Link to="/who-we-are" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Who we are</Link>
                   <Link to="/students-say" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">What Students Say</Link>
-                  <Link to="/study-malaysia" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Study Malaysia</Link>
-                  <Link to="/why-study" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Why Study In Malaysia?</Link>
+                                    <Link to="/why-study" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">Why Study In Malaysia?</Link>
                   <Link to="/view-our-partners" onClick={closeAllMenus} className="block text-left w-full pl-2 hover:text-blue-700">View Our Partners</Link>
                 </div>
               </div>

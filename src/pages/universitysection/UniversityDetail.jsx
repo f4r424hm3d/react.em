@@ -15,6 +15,7 @@ import SEO from "../../components/SEO";
 import { Home, Layers, Loader2 } from "lucide-react";
 import { API_URL } from "../../config";
 import PopupForm from "./PopupForm";
+import ReviewModal from "./ReviewModal";
 import { BsCalendar3 } from "react-icons/bs";
 import FeaturedUniversities from "../../components/FeaturedUniversities";
 
@@ -154,6 +155,7 @@ const UniversityDetailPage = () => {
   const [featuredPhotos, setFeaturedPhotos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isCounsellingOpen, setIsCounsellingOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [hasReviews, setHasReviews] = useState(true);
 
   const getFilteredTabs = () => {
@@ -875,11 +877,12 @@ const UniversityDetailPage = () => {
               <FaFileAlt /> Download Fees Structure
             </button>
 
-            <Link to="/write-a-review" className="w-full">
-              <button className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium">
-                <FaEdit /> Write a review
-              </button>
-            </Link>
+            <button 
+              onClick={() => setIsReviewModalOpen(true)}
+              className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+            >
+              <FaEdit /> Write a review
+            </button>
           </div>
 
           <PopupForm
@@ -1286,12 +1289,13 @@ const UniversityDetailPage = () => {
                     Book Direct University Counciling
                   </button>
 
-                  <Link to="/write-a-review" className="w-full">
-                    <button className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-5 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium">
-                      <FaEdit className="text-base" />
-                      Write a review
-                    </button>
-                  </Link>
+                  <button 
+                    onClick={() => setIsReviewModalOpen(true)}
+                    className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-5 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                  >
+                    <FaEdit className="text-base" />
+                    Write a review
+                  </button>
 
                   {/* ✅ YAHAN YE DO POPUP FORMS ADD KARO */}
                   <PopupForm
@@ -1464,6 +1468,13 @@ const UniversityDetailPage = () => {
           )}
         </div>
       )}
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        universityData={universityData}
+      />
     </>
   );
 };

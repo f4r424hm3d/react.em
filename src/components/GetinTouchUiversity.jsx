@@ -6,6 +6,7 @@ import {
   FaPhone,
   FaVoicemail,
   FaBook,
+  FaFlag,
   FaPaperPlane,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -102,6 +103,37 @@ const GetInTouchForm = () => {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
+  // ✅ Smart Country Code Handler - Auto-sync Nationality
+  const handleCountryCodeChange = (e) => {
+    const code = e.target.value;
+    let newFormData = { ...formData, country_code: code };
+
+    // Sync Nationality from Country Code
+    const numericCode = code.replace(/^\+/, '');
+    if (numericCode) {
+      const matchedCountry = countriesData.find(c => c.phonecode == numericCode);
+      if (matchedCountry) {
+        newFormData.nationality = matchedCountry.name;
+      }
+    }
+
+    setFormData(newFormData);
+  };
+
+  // ✅ Smart Nationality Handler - Auto-sync Country Code
+  const handleNationalityChange = (e) => {
+    const selectedCountryName = e.target.value;
+    let newFormData = { ...formData, nationality: selectedCountryName };
+
+    // Find the country object to get the phone code
+    const matchedCountry = countriesData.find(c => c.name === selectedCountryName);
+    if (matchedCountry && matchedCountry.phonecode) {
+      newFormData.country_code = `+${matchedCountry.phonecode}`;
+    }
+
+    setFormData(newFormData);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const expectedAnswer = captcha.num1 - captcha.num2;
@@ -121,6 +153,7 @@ const GetInTouchForm = () => {
         email: formData.email,
         country_code: formData.country_code.replace("+", ""),
         mobile: formData.phone,
+        nationality: formData.nationality,
         university_id: 49, // static for now, replace dynamically if needed
         source: "Education Malaysia - University Profile Page",
         source_path: window.location.href,
@@ -210,7 +243,7 @@ const GetInTouchForm = () => {
               <select
                 name="country_code"
                 value={formData.country_code}
-                onChange={handleChange}
+                onChange={handleCountryCodeChange}
                 className="w-1/5 appearance-none border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50"
               >
                 <option value="+91">+91</option>
@@ -234,6 +267,27 @@ const GetInTouchForm = () => {
 
               <InputWithIcon type="hidden" name="source" value={formData.source} />
               <InputWithIcon type="hidden" name="source_path" value={formData.source_path} />
+            </div>
+
+            {/* Nationality */}
+            <div className="relative mt-0 pt-0">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                <FaFlag />
+              </div>
+              <select
+                name="nationality"
+                value={formData.nationality}
+                onChange={handleNationalityChange}
+                required
+                className={`${inputClass} pl-10 bg-white appearance-none`}
+              >
+                <option value="">Select Nationality</option>
+                {countriesData.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Program */}
@@ -260,8 +314,8 @@ const GetInTouchForm = () => {
             </div>
 
             {/* Captcha */}
-            <div className="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row items-center gap-4 mt-0 pt-0">
-              <span className="text-sm font-medium text-gray-700 flex-shrink-0 font-semibold">
+            <div className="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row items-center gap-4 mt-4">
+              <span className="text-sm text-gray-700 flex-shrink-0 font-semibold">
                 Captcha: {captcha.num1} - {captcha.num2} = ?
               </span>
 

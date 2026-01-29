@@ -56,7 +56,6 @@ import TeamEducationMalaysia from "./pages/TeamEducationMalaysia";
 //about us pages
 import WhoWeAre from "./pages/about-us/WhoWeAre";
 import WhatStudentSay from "./pages/about-us/WhatStudentSay";
-import StudyMalaysia from "./pages/about-us/StudyMalaysia";
 import WhyStudyInM from "./pages/about-us/WhyStudyInM";
 import Partners from "./pages/OurPartners/Partners";
 // university pages
@@ -131,7 +130,9 @@ function App() {
 
         {/* ✅ YE NAYA LINE ADD KARO - Extra 's' wale URL ko redirect karega */}
         <Route path="/courses-in-malaysias" element={<Navigate to="/courses-in-malaysia" replace />} />
-
+        
+        {/* ✅ Redirect old study-malaysia route to home */}
+        <Route path="/study-malaysia" element={<Navigate to="/" replace />} />
 
 
         {/* ✅ All Filter Routes - Dynamic Catch-All */}
@@ -166,8 +167,7 @@ function App() {
 
         <Route path="/who-we-are" element={<WhoWeAre />} />
         <Route path="/students-say" element={<WhatStudentSay />} />
-        <Route path="/study-malaysia" element={<StudyMalaysia />} />
-        <Route path="/why-study" element={<WhyStudyInM />} />
+                <Route path="/why-study" element={<WhyStudyInM />} />
         <Route path="/view-our-partners" element={<Partners />} />
         <Route path="/courses/:slug" element={<QualifiedLevelDetail />} />
 

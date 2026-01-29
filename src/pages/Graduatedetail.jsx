@@ -197,46 +197,43 @@ const MqaPage = () => {
       {/* -------------------- HERO SECTION -------------------- */}
       <section
         id="home"
-        className="relative bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/40 overflow-hidden"
+        className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 text-white overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzEwYjk4MSIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-40"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center space-x-2 bg-blue-100/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-200 mb-5 shadow-sm">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-slate-700">
+            <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 mb-4 shadow-sm">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-white">
                 Statutory Quality Assurance Body
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 leading-tight">
-              Malaysian Qualifications
-              <span className="block bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mt-2">
-                Agency
-              </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+              MQA - Malaysian Qualifications Agency
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-blue-100 mb-6 max-w-3xl mx-auto leading-relaxed">
               Ensuring quality and standards in higher education across Malaysia since 2007
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 mb-10">
+            <div className="flex flex-wrap justify-center gap-4 mb-8">
               <a
                 href="#about"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 Learn More
               </a>
               <a
                 href="#check"
-                className="inline-flex items-center px-8 py-4 bg-white text-blue-700 font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-2 border-blue-200"
+                className="inline-flex items-center px-8 py-4 bg-transparent text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-2 border-white"
               >
                 Verify Accreditation
               </a>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
               {[
                 {
                   icon: Shield,
@@ -256,13 +253,13 @@ const MqaPage = () => {
               ].map((card, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <div className="bg-gradient-to-br from-emerald-100 to-teal-100 w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                    <card.icon className="w-7 h-7 text-emerald-700" />
+                  <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto">
+                    <card.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">{card.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{card.desc}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
+                  <p className="text-blue-100 text-sm leading-relaxed">{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -274,40 +271,40 @@ const MqaPage = () => {
       
 
       {/* -------------------- MQA INFO SECTION -------------------- */}
-      <section id="about" className="py-12 bg-white">
+      <section id="about" className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">What is MQA?</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-4"></div>
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">What is MQA?</h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
             <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
               The Malaysian Qualifications Agency is the statutory body responsible for overseeing
               accreditation and quality assurance of higher education programmes and qualifications in Malaysia.
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-slate-50 to-emerald-50/30 rounded-2xl p-6 sm:p-8 mb-8 border border-slate-200 shadow-lg">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 sm:p-6 mb-6 border border-blue-200 shadow-lg">
+            <div className="grid md:grid-cols-2 gap-6 items-center">
               <div>
-                <div className="inline-block bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                <div className="inline-block bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-3">
                   Established 2007
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                <h3 className="text-2xl font-bold text-slate-800 mb-3">
                   Founded Under the Malaysian Qualifications Agency Act 2007
                 </h3>
-                <p className="text-slate-600 leading-relaxed mb-6">
+                <p className="text-slate-600 leading-relaxed mb-4">
                   MQA began operations on 1 November 2007, with a mandate covering both public and
                   private higher education institutions across Malaysia.
                 </p>
 
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   <li className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                     <p className="text-slate-700 leading-relaxed">
                       <strong>Coverage:</strong> All public and private higher education institutions
                     </p>
                   </li>
                   <li className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                     <p className="text-slate-700 leading-relaxed">
                       <strong>Legal Framework:</strong> Malaysian Qualifications Agency Act 2007
                     </p>
@@ -315,16 +312,16 @@ const MqaPage = () => {
                 </ul>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {[{ icon: Eye, title: 'Vision', desc: 'To be a global authority in quality assurance of higher education' },
                   { icon: Target, title: 'Mission', desc: 'To put in place a system of quality assurance for higher education recognised internationally and aligned with national development needs' },
                 ].map((item, i) => (
-                  <div key={i} className="bg-white rounded-2xl p-6 shadow-md border border-slate-200">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="bg-gradient-to-br from-emerald-600 to-teal-600 p-2 rounded-lg">
+                  <div key={i} className="bg-white rounded-2xl p-4 shadow-md border border-blue-200">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-2 rounded-lg">
                         <item.icon className="w-5 h-5 text-white" />
                       </div>
-                      <h4 className="font-bold text-slate-900">{item.title}</h4>
+                      <h4 className="font-bold text-slate-800">{item.title}</h4>
                     </div>
                     <p className="text-slate-600 leading-relaxed">{item.desc}</p>
                   </div>
@@ -334,17 +331,20 @@ const MqaPage = () => {
           </div>
 
           {/* Key Roles */}
-          <h3 className="text-2xl font-bold text-slate-900 text-center mb-6">Key Roles</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {roles.map((role, index) => (
+          <div className="text-center mb-6">
+            <h3 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">Key Roles</h3>
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto"></div>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Anmol.map((role, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="bg-white rounded-2xl p-4 border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-14 h-14 rounded-xl flex items-center justify-center mb-4">
-                  <role.icon className="w-7 h-7 text-blue-700" />
+                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-12 h-12 rounded-xl flex items-center justify-center mb-3">
+                  <role.icon className="w-6 h-6 text-blue-700" />
                 </div>
-                <h4 className="font-bold text-slate-900 mb-3">{role.title}</h4>
+                <h4 className="font-bold text-slate-800 mb-2">{role.title}</h4>
                 <p className="text-slate-600 text-sm">{role.description}</p>
               </div>
             ))}
@@ -354,63 +354,63 @@ const MqaPage = () => {
 {/* 
       whya matters */}
 
-       <section id="why" className="py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+       <section id="why" className="py-8 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500 rounded-full filter blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full filter blur-3xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-2">
             Why MQA Accreditation Matters
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-teal-400 mx-auto mb-4"></div>
-          <p className="text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
+          <div className="w-20 h-1 bg-gradient-to-r from-blue-400 to-blue-300 mx-auto mb-3"></div>
+          <p className="text-base text-blue-100 max-w-3xl mx-auto leading-relaxed">
             For students, institutions, employers and external stakeholders, MQA accreditation provides
             critical assurance and recognition
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6">
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="group bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-white/30 transition-all duration-300 hover:-translate-y-1"
             >
-              <div className={`bg-gradient-to-br ${benefit.color} w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                <benefit.icon className="w-8 h-8 text-white" strokeWidth={2} />
+              <div className="bg-gradient-to-br from-blue-600 to-blue-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <benefit.icon className="w-6 h-6 text-white" strokeWidth={2} />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">{benefit.title}</h3>
-              <p className="text-slate-300 leading-relaxed text-lg">{benefit.description}</p>
+              <h3 className="text-xl font-bold mb-3 text-white">{benefit.title}</h3>
+              <p className="text-blue-100 leading-relaxed">{benefit.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-10 bg-gradient-to-br from-emerald-600/20 to-teal-600/20 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-emerald-400/20 shadow-xl">
-          <h3 className="text-2xl font-bold text-white mb-6 text-center">Critical for Success</h3>
-          <div className="grid sm:grid-cols-3 gap-6">
+        <div className="mt-6 bg-gradient-to-br from-blue-600/20 to-blue-400/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 shadow-xl">
+          <h3 className="text-2xl font-bold text-white mb-4 text-center">Critical for Success</h3>
+          <div className="grid sm:grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-2">
+              <div className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-200 bg-clip-text text-transparent mb-2">
                 Students
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-blue-100 leading-relaxed text-sm">
                 Ensures qualification recognition and eligibility for loans
               </p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+              <div className="text-3xl font-bold bg-gradient-to-r from-blue-200 to-blue-100 bg-clip-text text-transparent mb-2">
                 Institutions
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-blue-100 leading-relaxed text-sm">
                 Maintains standards and drives continuous improvement
               </p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
+              <div className="text-3xl font-bold bg-gradient-to-r from-blue-100 to-white bg-clip-text text-transparent mb-2">
                 Employers
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-blue-100 leading-relaxed text-sm">
                 Provides quality assurance for recruitment decisions
               </p>
             </div>
@@ -420,37 +420,37 @@ const MqaPage = () => {
     </section>
 
       {/* process */}
-        <section id="process" className="py-12 bg-gradient-to-br from-slate-50 via-white to-emerald-50/20">
+        <section id="process" className="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-50/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
             Accreditation Process
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-4"></div>
+          <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
           <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Understanding how programmes achieve and maintain MQA accreditation
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {Anmol.map((step, index) => (
             <div key={index} className="relative group">
-              <div className="bg-white rounded-2xl p-6 border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full">
-                <div className="absolute -top-4 left-6 bg-gradient-to-br from-blue-600 to-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+              <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full">
+                <div className="absolute -top-4 left-4 bg-gradient-to-br from-blue-600 to-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
                   {index + 1}
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-16 h-16 rounded-xl flex items-center justify-center mb-4 mt-2 group-hover:scale-110 transition-transform duration-300">
-                  <step.icon className="w-8 h-8 text-blue-700" />
+                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-2 group-hover:scale-110 transition-transform duration-300">
+                  <step.icon className="w-6 h-6 text-blue-700" />
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{step.title}</h3>
-                <p className="text-slate-600 mb-4 leading-relaxed">{step.description}</p>
+                <h3 className="text-lg font-bold text-slate-800 mb-2">{step.title}</h3>
+                <p className="text-slate-600 mb-3 leading-relaxed text-sm">{step.description}</p>
 
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                   {step.details.map((detail, idx) => (
-                    <li key={idx} className="flex items-start space-x-2 text-sm text-slate-600">
-                      <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                    <li key={idx} className="flex items-start space-x-2 text-xs text-slate-600">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></span>
                       <span>{detail}</span>
                     </li>
                   ))}
@@ -459,45 +459,45 @@ const MqaPage = () => {
 
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                  <div className="w-6 h-0.5 bg-gradient-to-r from-emerald-600 to-teal-600"></div>
+                  <div className="w-6 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400"></div>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-8 text-white shadow-xl">
-            <h3 className="text-2xl font-bold mb-4 flex items-center">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white shadow-xl">
+            <h3 className="text-xl font-bold mb-3 flex items-center">
               <span className="bg-white/20 p-2 rounded-lg mr-3">
-                <FileCheck className="w-6 h-6" />
+                <FileCheck className="w-5 h-5" />
               </span>
               MQF - Malaysian Qualifications Framework
             </h3>
-            <p className="text-emerald-50 leading-relaxed mb-4">
+            <p className="text-blue-100 leading-relaxed mb-3 text-sm">
               A unified system that classifies all post-secondary qualifications in Malaysia from
               certificate to doctoral level, covering both higher education and TVET sectors.
             </p>
-            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-sm text-emerald-50">
+            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <p className="text-xs text-blue-100">
                 The MQF ensures consistency, transparency, and international comparability of Malaysian qualifications.
               </p>
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 text-white shadow-xl">
-            <h3 className="text-2xl font-bold mb-4 flex items-center">
+          <div className="bg-gradient-to-br from-blue-800 to-blue-900 rounded-2xl p-6 text-white shadow-xl">
+            <h3 className="text-xl font-bold mb-3 flex items-center">
               <span className="bg-white/20 p-2 rounded-lg mr-3">
-                <Award className="w-6 h-6" />
+                <Award className="w-5 h-5" />
               </span>
               MQR - Malaysian Qualifications Register
             </h3>
-            <p className="text-slate-300 leading-relaxed mb-4">
+            <p className="text-blue-100 leading-relaxed mb-3 text-sm">
               The official register of accredited programmes and qualifications maintained by MQA,
               showing details like qualification level, credits, validity period, and institution name.
             </p>
-            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-sm text-slate-300">
+            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <p className="text-xs text-blue-100">
                 The MQR is your trusted source for verifying the accreditation status of any programme.
               </p>
             </div>
@@ -507,41 +507,41 @@ const MqaPage = () => {
     </section>
 
       {/* -------------------- FOR YOU SECTION -------------------- */}
-      <section id="for-you" className="py-12 bg-white">
+      <section id="for-you" className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">What This Means For You</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-4"></div>
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">What This Means For You</h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
             <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Understanding the importance of MQA accreditation for different stakeholders
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6">
             {audiences.map((audience, index) => (
               <div
                 key={index}
-                className="group bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                className="group bg-white rounded-2xl border-2 border-blue-200 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
               >
-                <div className={`bg-gradient-to-br ${audience.bgColor} p-8 border-b-2 border-slate-200`}>
+                <div className={`bg-gradient-to-br ${audience.bgColor} p-6 border-b-2 border-blue-200`}>
                   <div
-                    className={`bg-gradient-to-br ${audience.color} w-16 h-16 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    className={`bg-gradient-to-br ${audience.color} w-14 h-14 rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}
                   >
-                    <audience.icon className="w-8 h-8 text-white" />
+                    <audience.icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">{audience.title}</h3>
+                  <h3 className="text-xl font-bold text-slate-800">{audience.title}</h3>
                 </div>
 
-                <div className="p-8">
-                  <ul className="space-y-4">
+                <div className="p-6">
+                  <ul className="space-y-3">
                     {audience.points.map((point, idx) => (
                       <li key={idx} className="flex items-start space-x-3 group/item">
                         <div className="flex-shrink-0 mt-1">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
-                            <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                           </div>
                         </div>
-                        <p className="text-slate-700 leading-relaxed group-hover/item:text-slate-900 transition-colors">
+                        <p className="text-slate-700 leading-relaxed text-sm group-hover/item:text-slate-900 transition-colors">
                           {point}
                         </p>
                       </li>
@@ -553,11 +553,11 @@ const MqaPage = () => {
           </div>
 
 
-          <div className="mt-10 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full filter blur-3xl"></div>
+          <div className="mt-6 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full filter blur-3xl"></div>
             <div className="relative z-10">
-              <h3 className="text-3xl font-bold mb-6 text-center">Key Takeaway</h3>
-              <p className="text-xl text-slate-300 text-center max-w-4xl mx-auto leading-relaxed">
+              <h3 className="text-2xl font-bold mb-4 text-center">Key Takeaway</h3>
+              <p className="text-lg text-blue-100 text-center max-w-4xl mx-auto leading-relaxed">
                 MQA accreditation is not just a formality — it's a critical assurance of quality,
                 recognition, and standards that impacts students' futures, institutional credibility,
                 and employer confidence in the Malaysian higher education system.
@@ -566,49 +566,49 @@ const MqaPage = () => {
           </div>
         </div>
       </section>
-       <section id="check" className="py-12 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40">
+       <section id="check" className="py-8 bg-gradient-to-br from-blue-50 via-blue-50/30 to-blue-50/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
             How to Verify Accreditation
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-4"></div>
+          <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
           <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Follow these simple steps to check if a programme is MQA-accredited
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {steps.map((item, index) => (
             <div key={index} className="relative">
-              <div className="bg-white rounded-2xl p-6 border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
-                <div className="bg-gradient-to-br from-emerald-600 to-teal-600 text-white w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl mb-4 shadow-lg">
+              <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
+                <div className="bg-gradient-to-br from-blue-600 to-blue-400 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-3 shadow-lg">
                   {item.step}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">{item.title}</h3>
-                <p className="text-slate-600 mb-4 leading-relaxed">{item.description}</p>
-                <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
-                  <p className="text-sm font-medium text-emerald-700">{item.action}</p>
+                <h3 className="text-lg font-bold text-slate-800 mb-2">{item.title}</h3>
+                <p className="text-slate-600 mb-3 leading-relaxed text-sm">{item.description}</p>
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <p className="text-sm font-medium text-blue-700">{item.action}</p>
                 </div>
               </div>
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                  <div className="w-6 h-0.5 bg-gradient-to-r from-emerald-600 to-teal-600"></div>
+                  <div className="w-6 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400"></div>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-2xl p-8 border-2 border-emerald-200 shadow-lg">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="bg-gradient-to-br from-emerald-600 to-teal-600 p-3 rounded-xl">
-                <CheckCircle2 className="w-6 h-6 text-white" />
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-3 rounded-xl">
+                <CheckCircle2 className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900">Why Verify?</h3>
+              <h3 className="text-xl font-bold text-slate-800">Why Verify?</h3>
             </div>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               {[
                 'Ensure your investment in education is recognized',
                 'Avoid non-accredited programmes that may not be recognized',
@@ -617,21 +617,21 @@ const MqaPage = () => {
                 'Ensure smooth transfer or progression to further studies'
               ].map((item, idx) => (
                 <li key={idx} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-slate-700 leading-relaxed">{item}</span>
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <span className="text-slate-700 leading-relaxed text-sm">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 border-2 border-blue-200 shadow-lg">
-            <div className="flex items-center space-x-3 mb-6">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
+            <div className="flex items-center space-x-3 mb-4">
               <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-3 rounded-xl">
-                <AlertCircle className="w-6 h-6 text-white" />
+                <AlertCircle className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900">Important Notes</h3>
+              <h3 className="text-xl font-bold text-slate-800">Important Notes</h3>
             </div>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               {[
                 'Some institutions may have only certain programmes accredited',
                 'Always verify the specific programme you intend to study',
@@ -641,26 +641,26 @@ const MqaPage = () => {
               ].map((item, idx) => (
                 <li key={idx} className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-slate-700 leading-relaxed">{item}</span>
+                  <span className="text-slate-700 leading-relaxed text-sm">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-2xl p-8 sm:p-12 text-white shadow-2xl text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6 backdrop-blur-sm">
-            <Search className="w-10 h-10 text-white" strokeWidth={2} />
+        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 text-white shadow-2xl text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4 backdrop-blur-sm">
+            <Search className="w-8 h-8 text-white" strokeWidth={2} />
           </div>
-          <h3 className="text-3xl font-bold mb-4">Ready to Verify?</h3>
-          <p className="text-xl text-emerald-50 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <h3 className="text-2xl font-bold mb-3">Ready to Verify?</h3>
+          <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto leading-relaxed">
             Visit the Malaysian Qualifications Register to check the accreditation status of any programme
           </p>
           <a
             href="https://www.mqa.gov.my/mqr/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center space-x-2 bg-white text-blue-700 px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            className="inline-flex items-center space-x-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
           >
             <span>Visit MQR Portal</span>
             <ExternalLink className="w-5 h-5" />

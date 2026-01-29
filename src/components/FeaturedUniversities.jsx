@@ -42,7 +42,6 @@ const FeaturedUniversities = () => {
     
     // 🎯 RESOURCE PAGES - Direct featured universities endpoint
     if (path.includes("/why-study") || 
-        path.includes("/study-malaysia") || 
         path.includes("/who-we-are") || 
         path.includes("/students-say")) {
       return `/featured-universities`;
