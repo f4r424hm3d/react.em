@@ -124,7 +124,7 @@ export default function UniversityCardsSlider() {
   };
 
   return (
-    <div className="relative px-6 py-4 bg-gradient-to-b from-blue-50 to-white">
+    <div className="relative px-2 sm:px-6 py-4 bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-center text-black mb-8">
           🎓 Top Trending Universities{" "}
@@ -137,10 +137,10 @@ export default function UniversityCardsSlider() {
             <p className="text-gray-600">Loading universities...</p>
           </div>
         ) : (
-          <div className="relative group/slider px-4">
+          <div className="relative group/slider px-0 sm:px-4">
             <Swiper
               modules={[Navigation, Autoplay]}
-              spaceBetween={20}
+              spaceBetween={10}
               slidesPerView={1}
               navigation={true}
               loop={true}
@@ -152,12 +152,14 @@ export default function UniversityCardsSlider() {
               breakpoints={{
                 640: {
                   slidesPerView: 2,
+                  spaceBetween: 20,
                 },
                 1024: {
                   slidesPerView: 3,
+                  spaceBetween: 20,
                 },
               }}
-              className="!pb-6 [&_.swiper-button-next]:text-blue-600 [&_.swiper-button-prev]:text-blue-600 [&_.swiper-button-next]:after:text-lg [&_.swiper-button-prev]:after:text-lg [&_.swiper-button-next]:w-10 [&_.swiper-button-next]:h-10 [&_.swiper-button-next]:bg-white [&_.swiper-button-next]:rounded-full [&_.swiper-button-next]:shadow-md [&_.swiper-button-prev]:w-10 [&_.swiper-button-prev]:h-10 [&_.swiper-button-prev]:bg-white [&_.swiper-button-prev]:rounded-full [&_.swiper-button-prev]:shadow-md"
+              className="!pb-6 [&_.swiper-button-next]:!hidden md:[&_.swiper-button-next]:!flex [&_.swiper-button-prev]:!hidden md:[&_.swiper-button-prev]:!flex [&_.swiper-button-next]:text-blue-600 [&_.swiper-button-prev]:text-blue-600 [&_.swiper-button-next]:after:text-lg [&_.swiper-button-prev]:after:text-lg [&_.swiper-button-next]:w-10 [&_.swiper-button-next]:h-10 [&_.swiper-button-next]:bg-white [&_.swiper-button-next]:rounded-full [&_.swiper-button-next]:shadow-md [&_.swiper-button-prev]:w-10 [&_.swiper-button-prev]:h-10 [&_.swiper-button-prev]:bg-white [&_.swiper-button-prev]:rounded-full [&_.swiper-button-prev]:shadow-md"
             >
               {universities.map((uni, idx) => {
                 const uniId = uni.id || uni._id || idx;
@@ -218,12 +220,12 @@ export default function UniversityCardsSlider() {
                       <div className="p-4 flex flex-col flex-grow">
                         <h3
                           onClick={() => navigate(`/university/${uni.uname}`)}
-                          className="font-bold text-gray-800 text-xl group-hover:text-blue-600 mb-3 line-clamp-2 min-h-[3.5rem] cursor-pointer transition-all"
+                          className="font-bold text-gray-800 text-xl group-hover:text-blue-600 mb-1 line-clamp-2 min-h-[3.5rem] cursor-pointer transition-all"
                         >
                           {uni.name}
                         </h3>
 
-                        <div className="flex items-center text-gray-600 mb-2">
+                        <div className="flex items-center text-gray-600 mb-1.5">
                           <MapPin className="w-4 h-4 mr-2 text-blue-500" />
                           <span className="text-sm font-medium">
                             {uni.location || "Malaysia"}
