@@ -126,7 +126,7 @@ export default function UniversityCardsSlider() {
   return (
     <div className="relative px-2 sm:px-6 py-4 bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-black mb-8">
+        <h2 className="text-3xl font-bold text-center text-black mt-6">
           🎓 Top Trending Universities{" "}
           <span className="text-blue-600">in Malaysia</span>
         </h2>
@@ -332,7 +332,7 @@ export default function UniversityCardsSlider() {
         )}
 
         {/* Browse All Button */}
-        <div className="text-center mt-12">
+        <div className="text-center ">
           <button
             onClick={() => navigate("/universities/universities-in-malaysia")}
             className="cursor-pointer inline-flex items-center border-2 border-blue-800 text-blue-800 font-semibold px-8 py-3 rounded-full transition hover:bg-blue-800 hover:text-white"
