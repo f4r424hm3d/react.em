@@ -5,7 +5,7 @@ const WhatsAppButton = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="fixed bottom-60 right-1 z-50 ">
+    <div className="fixed bottom-60 right-1 z-50 pointer-events-none">
       {/* Animated background rings */}
       <div className="absolute inset-0 animate-ping">
         <div className="w-12 h-12 bg-green-400 rounded-full opacity-20"></div>
@@ -17,7 +17,7 @@ const WhatsAppButton = () => {
       {/* Main button */}
       <a
         href="https://wa.me/60176472057?text=Hello!%20I%20need%20assistance%20regarding%20Education%20Malaysia"
-        className="relative block w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 hover:rotate-12 group"
+        className="relative block w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 hover:rotate-12 group pointer-events-auto"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"

@@ -270,7 +270,7 @@ function Partners() {
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
-            <section className="relative bg-[#00143a] text-white py-20 overflow-hidden">
+            <section className="relative bg-blue-800 text-white py-20 overflow-hidden">
                 <div className="absolute inset-0 bg-blue/30"></div>
                 <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center opacity-10"></div>
 
@@ -646,7 +646,7 @@ function Partners() {
             </section>
 
             {/* Call to Action */}
-            <section className="py-20 bg-[#00143a]">
+            <section className="py-20 bg-blue-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center text-white">
                         <Users className="w-16 h-16 mx-auto mb-8 text-blue-200" />

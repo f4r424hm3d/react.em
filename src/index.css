@@ -28,8 +28,18 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #145da5;
+  background-color: #1e40af;
   /* Darker blue on hover */
+}
+
+/* Hide scrollbar utility class */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
 }
 
 .transition-all {

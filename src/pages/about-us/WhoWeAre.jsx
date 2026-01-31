@@ -6,7 +6,8 @@ import {
   FaHandshake,
   FaCogs,
   FaGlobeAsia,
-  FaUsers
+  FaUsers,
+  FaEye
 } from "react-icons/fa";
 import { GraduationCap, FileText, Shield, DollarSign, Globe, Plane, Check, ArrowRight } from 'lucide-react';
 
@@ -99,92 +100,112 @@ const WhoWeAre = () => {
 
 
     {/* ABOUT SECTION */}
-<div className="mb-14">
+    <div className="mb-20">
 
-  {/* Center Heading */}
-  <div className="text-center mb-12">
-    <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-      About <span className="text-blue-600">Us</span>
-    </h3>
-    <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full mx-auto mt-4"></div>
-  </div>
+      {/* Center Heading */}
+      <div className="text-center mb-8">
+        <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+          About <span className="text-blue-600">Us</span>
+        </h3>
+        <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full mx-auto mt-4"></div>
+      </div>
 
-  <div className="grid lg:grid-cols-2 gap-12 items-stretch">
+      <div className="grid lg:grid-cols-12 gap-10 items-start">
 
-    {/* LEFT SIDE - MAIN BOX */}
-    <div className="relative bg-white p-10 rounded-3xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 opacity-60 pointer-events-none"></div>
+        {/* LEFT SIDE - MAIN BOX (7 Columns) */}
+        <div className="lg:col-span-7 bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-xl shadow-blue-50 relative overflow-hidden">
+          {/* Subtle decoration */}
+          <div className="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
+          
+          <div className="mb-8 p-6 bg-blue-50 rounded-xl border-l-4 border-blue-500">
+            <p className="text-lg md:text-xl font-bold text-blue-800 italic leading-relaxed">
+              "The Achievement of Perfection is our goal but Excellence is Guarantee!"
+            </p>
+          </div>
 
-      <p className="relative text-lg font-semibold text-blue-700 mb-5 italic">
-        “The Achievement of Perfection is our goal but Excellence is Guarantee!”
-      </p>
+          <div className="space-y-6 text-gray-700 leading-relaxed text-base md:text-[17px]">
+            <p>
+              <strong>Britannica Overseas</strong> is the cutting edge of higher education’s Recruitment, Marketing and student enrollment. We have been a well founded solutions specialist to our partner institutions since 2015.
+            </p>
 
-      <p className="relative text-gray-700 mb-5 leading-relaxed text-base">
-        <strong>Britannica Overseas</strong> is the cutting edge of higher education recruitment, marketing, and student enrollment. Since 2015, we have delivered innovative solutions to partner institutions worldwide.
-      </p>
+            <p>
+              Britannica Overseas has been providing services for higher education marketing to over <span className="font-semibold text-blue-600">100 partner schools</span> across the globe. We have also launched multiple websites for different overseas study destinations like Malaysia, Germany, Canada, Australia and UK; hence, we receive millions of visitors every month. Prospective candidates, who are looking to get admission in any university and course program of their liking, can find information through our multiple portals dedicated for overseas education.
+            </p>
 
-      <p className="relative text-gray-700 mb-5 leading-relaxed text-base">
-        We serve over <span className="font-semibold text-blue-600">100+ institutions worldwide</span>, operating multiple portals for countries like Malaysia, Germany, Canada, Australia, and the UK.
-      </p>
+            <p>
+              With more to come in the near future, we are currently representing multiple individual education brands which cover everything under one roof from <span className="font-semibold text-gray-900">Admission to Marketing</span> and every section of an education system. This evolution of ours has helped connect potential candidates from around the globe to our partner Universities/Institutions/Colleges and is now recognized to an international team in Malaysia and India. Britannica Overseas, has stepped into an era within the education industry by introducing software and marketing solutions.
+            </p>
+          </div>
+        </div>
 
-      <p className="relative text-gray-700 leading-relaxed text-base">
-        We connect global students to universities through branding, marketing, recruitment, and software-driven innovations.
-      </p>
+        {/* RIGHT SIDE - 4 BOXES (5 Columns) */}
+        <div className="lg:col-span-5 grid gap-6 content-start">
+
+          {/* Vision */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                 <span className="text-lg">👁️</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Vision</h3>
+            </div>
+            <p className="text-gray-600 text-sm leading-relaxed pl-1">
+              Our vision is to make a transformative impact on the Study Abroad Service Sector through continual innovation in student services by connecting institutions, recruiters, and students across the globe.
+            </p>
+          </div>
+
+          {/* Mission */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                 <span className="text-lg">🚀</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Mission</h3>
+            </div>
+            <ul className="space-y-2 text-sm text-gray-600 pl-1">
+              <li className="flex gap-2">
+                <span className="text-blue-500 font-bold">•</span>
+                <span>To simplify the Overseas Education Admission Process & provide World’s Best Education Solutions</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-blue-500 font-bold">•</span>
+                <span>To render scrupulous services and build robust business relationships</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-blue-500 font-bold">•</span>
+                <span>To strive to be the world’s most reliable service brand</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+            {/* Core Values */}
+            <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300">
+               <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl">💎</span>
+                <h3 className="text-lg font-bold text-gray-900">Core Values</h3>
+              </div>
+              <p className="text-gray-700 text-sm font-medium leading-relaxed">
+                Integrity, Honesty, Commitment, Transparency, Excellence and Value Addition.
+              </p>
+            </div>
+
+            {/* Objectives */}
+            <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300">
+               <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl">🎯</span>
+                <h3 className="text-lg font-bold text-gray-900">Objectives</h3>
+              </div>
+              <p className="text-gray-700 text-sm font-medium">
+                To Expand the Academic Horizons.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
     </div>
-
-    {/* RIGHT SIDE - 4 BOXES */}
-    <div className="grid sm:grid-cols-2 gap-6 h-full">
-
-      {/* Vision */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-        <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-3">
-          <span className="text-xl">👁️</span>
-          Vision
-        </h3>
-        <p className="text-gray-700 text-sm leading-relaxed">
-          To make a transformative impact on Study Abroad Services through innovation.
-        </p>
-      </div>
-
-      {/* Mission */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-        <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-3">
-          <span className="text-xl">🚀</span>
-          Mission
-        </h3>
-        <ul className="space-y-2 text-sm text-gray-700">
-          <li>• Simplify admission & provide best education solutions</li>
-          <li>• Build strong business relationships</li>
-          <li>• Become the world's most reliable brand</li>
-        </ul>
-      </div>
-
-      {/* Core Values */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-        <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-3">
-          <span className="text-xl">💎</span>
-          Core Values
-        </h3>
-        <p className="text-gray-700 text-sm leading-relaxed">
-          Integrity, Honesty, Commitment, Transparency, Excellence and Value Addition.
-        </p>
-      </div>
-
-      {/* Objective */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-        <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-3">
-          <span className="text-xl">🎯</span>
-          Objective
-        </h3>
-        <p className="text-gray-700 text-sm font-medium">
-          To Expand the Academic Horizons.
-        </p>
-      </div>
-
-    </div>
-
-  </div>
-</div>
 
 
       {/* TABS */}

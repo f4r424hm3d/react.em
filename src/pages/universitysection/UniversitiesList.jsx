@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { FiChevronDown, FiSearch, FiX } from "react-icons/fi";
@@ -7,7 +5,11 @@ import { FaStar } from "react-icons/fa6";
 import { Clock, MapPin, DollarSign, Users, Eye, Book } from "lucide-react";
 import { Helmet } from "react-helmet";
 import api from "../../api";
-import { FeeStructureForm, BrochureForm, CompareUniversitiesForm } from "../../pages/universitysection/universitypopform";
+import {
+  FeeStructureForm,
+  BrochureForm,
+  CompareUniversitiesForm,
+} from "../../pages/universitysection/universitypopform";
 import { API_URL } from "../../config";
 
 /* ---------------------------
@@ -28,7 +30,13 @@ const useOutsideAlerter = (ref, callback) => {
   }, [ref, callback]);
 };
 
-const Dropdown = ({ title, options, selectedValue, onSelect, showAllOption = false }) => {
+const Dropdown = ({
+  title,
+  options,
+  selectedValue,
+  onSelect,
+  showAllOption = false,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   useOutsideAlerter(dropdownRef, () => {
@@ -42,7 +50,9 @@ const Dropdown = ({ title, options, selectedValue, onSelect, showAllOption = fal
         className="w-full md:w-auto flex items-center justify-between px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
       >
         {selectedValue || title}
-        <FiChevronDown className={`-mr-1 ml-2 h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <FiChevronDown
+          className={`-mr-1 ml-2 h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
@@ -80,16 +90,14 @@ const Dropdown = ({ title, options, selectedValue, onSelect, showAllOption = fal
   );
 };
 
-
 /* ---------------------------
   HTML Entity Decoder Helper
 ----------------------------*/
 const decodeHTMLEntities = (text) => {
-  const textarea = document.createElement('textarea');
+  const textarea = document.createElement("textarea");
   textarea.innerHTML = text;
   return textarea.value;
 };
-
 
 /* ---------------------------
   Main Component
@@ -107,14 +115,25 @@ const UniversitiesList = () => {
   const [title, setTitle] = useState("");
   const [universities, setUniversities] = useState([]);
   const [search, setSearch] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState({ instituteType: "", state: "" });
+  const [selectedFilters, setSelectedFilters] = useState({
+    instituteType: "",
+    state: "",
+  });
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, per_page: 20, total: 0 });
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 20,
+    total: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [totalUniversities, setTotalUniversities] = useState(0);
   const [seo, setSeo] = useState({});
   const [showMore, setShowMore] = useState(false);
-  const [dynamicFilters, setDynamicFilters] = useState({ institute_types: [], states: [] });
+  const [dynamicFilters, setDynamicFilters] = useState({
+    institute_types: [],
+    states: [],
+  });
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
   const [pageContent, setPageContent] = useState("");
@@ -135,18 +154,24 @@ const UniversitiesList = () => {
 
   // Format URL helper
   const formatUrl = (instituteTypeName, stateName) => {
-    const instituteType = dynamicFilters.institute_types.find((it) => it.name === instituteTypeName);
+    const instituteType = dynamicFilters.institute_types.find(
+      (it) => it.name === instituteTypeName,
+    );
     const state = dynamicFilters.states.find((s) => s.name === stateName);
     const typeSlug = instituteType?.slug || "";
     const stateSlug = state?.slug || "";
-    if (typeSlug && stateSlug) return `/universities/${typeSlug}-in-${stateSlug}`;
+    if (typeSlug && stateSlug)
+      return `/universities/${typeSlug}-in-${stateSlug}`;
     if (typeSlug) return `/universities/${typeSlug}-in-malaysia`;
     if (stateSlug) return `/universities/universities-in-${stateSlug}`;
     return "/universities/universities-in-malaysia";
   };
 
   const handleFilterChange = (key, value) => {
-    const updatedFilters = { ...selectedFilters, [key]: selectedFilters[key] === value ? "" : value };
+    const updatedFilters = {
+      ...selectedFilters,
+      [key]: selectedFilters[key] === value ? "" : value,
+    };
     if (key === "instituteType") updatedFilters.state = "";
     navigate(formatUrl(updatedFilters.instituteType, updatedFilters.state));
   };
@@ -161,12 +186,19 @@ const UniversitiesList = () => {
     const controller = new AbortController();
     const fetchInitialFilters = async () => {
       try {
-        const response = await api.get(`/universities/universities-in-malaysia`, { signal: controller.signal });
+        const response = await api.get(
+          `/universities/universities-in-malaysia`,
+          { signal: controller.signal },
+        );
         const { data } = response.data;
         setDynamicFilters(data.filters || { institute_types: [], states: [] });
         setFiltersLoaded(true);
       } catch (error) {
-        if (error.name !== "AbortError" && error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
+        if (
+          error.name !== "AbortError" &&
+          error.name !== "CanceledError" &&
+          error.code !== "ERR_CANCELED"
+        ) {
           console.error("Error fetching initial filters:", error);
         }
       }
@@ -188,11 +220,16 @@ const UniversitiesList = () => {
           if (state) newFilters.state = state.name;
         }
         if (typeSlug !== "universities") {
-          const instituteType = dynamicFilters.institute_types.find((it) => it.slug === typeSlug);
+          const instituteType = dynamicFilters.institute_types.find(
+            (it) => it.slug === typeSlug,
+          );
           if (instituteType) newFilters.instituteType = instituteType.name;
         }
       }
-      if (newFilters.instituteType !== selectedFilters.instituteType || newFilters.state !== selectedFilters.state) {
+      if (
+        newFilters.instituteType !== selectedFilters.instituteType ||
+        newFilters.state !== selectedFilters.state
+      ) {
         setSelectedFilters(newFilters);
       }
     }
@@ -216,19 +253,23 @@ const UniversitiesList = () => {
         const params = new URLSearchParams();
 
         if (selectedFilters.instituteType) {
-          const instituteType = dynamicFilters.institute_types.find((it) => it.name === selectedFilters.instituteType);
+          const instituteType = dynamicFilters.institute_types.find(
+            (it) => it.name === selectedFilters.instituteType,
+          );
           if (instituteType) params.append("institute_type", instituteType.id);
         }
         if (selectedFilters.state) {
-          const state = dynamicFilters.states.find((s) => s.name === selectedFilters.state);
+          const state = dynamicFilters.states.find(
+            (s) => s.name === selectedFilters.state,
+          );
           if (state) params.append("state", state.name.toLowerCase());
         }
         // if (search) params.append("search", search);
         // // params.append("page", page);
-        // params.append("per_page", 21);  
+        // params.append("per_page", 21);
         // endpoint = `${endpoint}?${params.toString()}`;
         if (search) params.append("search", search);
-        params.append("per_page", 21);  // YE ADD KARO
+        params.append("per_page", 21); // YE ADD KARO
         params.append("page", page);
         endpoint = `${endpoint}?${params.toString()}`;
 
@@ -236,8 +277,13 @@ const UniversitiesList = () => {
         const { data } = response.data;
         setTotalUniversities(data.universities?.total || 0);
 
-        const newDynamicFilters = data.filters || { institute_types: [], states: [] };
-        if (JSON.stringify(newDynamicFilters) !== JSON.stringify(dynamicFilters)) {
+        const newDynamicFilters = data.filters || {
+          institute_types: [],
+          states: [],
+        };
+        if (
+          JSON.stringify(newDynamicFilters) !== JSON.stringify(dynamicFilters)
+        ) {
           setDynamicFilters(newDynamicFilters);
         }
 
@@ -246,15 +292,15 @@ const UniversitiesList = () => {
         setSeo(data.seo || {});
 
         // ✅ DYNAMIC YEAR KE SAATH CUSTOM TITLE LOGIC
-        const yearRange = getCurrentYearRange();  // ✅ YE LINE ADD KARO
+        const yearRange = getCurrentYearRange(); // ✅ YE LINE ADD KARO
 
         let pageTitle = `All Universities in Malaysia ${yearRange}`;
         if (selectedFilters.instituteType && selectedFilters.state) {
-          pageTitle = `Top ${data.universities?.total || ''} ${selectedFilters.instituteType} Universities in ${selectedFilters.state} ${yearRange}`;
+          pageTitle = `Top ${data.universities?.total || ""} ${selectedFilters.instituteType} Universities in ${selectedFilters.state} ${yearRange}`;
         } else if (selectedFilters.instituteType) {
-          pageTitle = `Top ${data.universities?.total || ''} ${selectedFilters.instituteType} Universities in Malaysia ${yearRange}`;
+          pageTitle = `Top ${data.universities?.total || ""} ${selectedFilters.instituteType} Universities in Malaysia ${yearRange}`;
         } else if (selectedFilters.state) {
-          pageTitle = `Top ${data.universities?.total || ''} Universities in ${selectedFilters.state} ${yearRange}`;
+          pageTitle = `Top ${data.universities?.total || ""} Universities in ${selectedFilters.state} ${yearRange}`;
         }
 
         setTitle(pageTitle);
@@ -268,12 +314,16 @@ const UniversitiesList = () => {
         // ✅ FORCE 21 PER PAGE
         setPagination({
           current_page: data.universities?.current_page || 1,
-          last_page: Math.ceil((data.universities?.total || 0) / 21),  // ✅ FORCE 21
-          per_page: 21,  // ✅ HARDCODE 21
+          last_page: Math.ceil((data.universities?.total || 0) / 21), // ✅ FORCE 21
+          per_page: 21, // ✅ HARDCODE 21
           total: data.universities?.total || 0,
         });
       } catch (error) {
-        if (error.name !== "AbortError" && error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
+        if (
+          error.name !== "AbortError" &&
+          error.name !== "CanceledError" &&
+          error.code !== "ERR_CANCELED"
+        ) {
           console.error("Error fetching universities:", error);
           setUniversities([]);
         }
@@ -293,7 +343,10 @@ const UniversitiesList = () => {
     if (newSearch) params.set("search", newSearch);
     else params.delete("search");
     params.delete("page");
-    navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+    navigate(
+      { pathname: location.pathname, search: params.toString() },
+      { replace: true },
+    );
   };
 
   const handlePageChange = (newPage) => {
@@ -305,9 +358,9 @@ const UniversitiesList = () => {
 
   const toggleShowMore = () => setShowMore(!showMore);
   const toggleCardDescription = (uniId) => {
-    setExpandedCards(prev => ({
+    setExpandedCards((prev) => ({
       ...prev,
-      [uniId]: !prev[uniId]
+      [uniId]: !prev[uniId],
     }));
   };
 
@@ -323,19 +376,23 @@ const UniversitiesList = () => {
   //  c
   const fetchPageContent = async (instituteType) => {
     try {
-      let endpoint = '/page-contents/universities-in-malaysia'; // Default
-      let staticFallback = "Malaysia is home to a diverse range of universities, offering a variety of programs and courses to cater to the educational needs of both local and international students.";
+      let endpoint = "/page-contents/universities-in-malaysia"; // Default
+      let staticFallback =
+        "Malaysia is home to a diverse range of universities, offering a variety of programs and courses to cater to the educational needs of both local and international students.";
 
       // ✅ CORRECT ENDPOINTS with "-in-malaysia"
       if (instituteType === "Private Institution") {
-        endpoint = '/page-contents/private-institution-in-malaysia';  // ✅ SAHI
-        staticFallback = "Private universities in Malaysia offer world-class education with modern facilities and industry-relevant programs. These institutions provide flexible learning options and strong industry connections for career advancement.";
+        endpoint = "/page-contents/private-institution-in-malaysia"; // ✅ SAHI
+        staticFallback =
+          "Private universities in Malaysia offer world-class education with modern facilities and industry-relevant programs. These institutions provide flexible learning options and strong industry connections for career advancement.";
       } else if (instituteType === "Public Institution") {
-        endpoint = '/page-contents/public-institution-in-malaysia';  // ✅ SAHI
-        staticFallback = "Public universities in Malaysia are known for their affordable education, research excellence, and diverse academic programs. These government-funded institutions maintain high academic standards and offer comprehensive student support services.";
+        endpoint = "/page-contents/public-institution-in-malaysia"; // ✅ SAHI
+        staticFallback =
+          "Public universities in Malaysia are known for their affordable education, research excellence, and diverse academic programs. These government-funded institutions maintain high academic standards and offer comprehensive student support services.";
       } else if (instituteType === "Foreign University") {
-        endpoint = '/page-contents/foreign-universities-in-malaysia';  // ✅ SAHI
-        staticFallback = "Foreign universities in Malaysia bring international standards of education to the region. These branch campuses offer globally recognized degrees and provide students with world-class learning experiences without leaving Malaysia.";
+        endpoint = "/page-contents/foreign-universities-in-malaysia"; // ✅ SAHI
+        staticFallback =
+          "Foreign universities in Malaysia bring international standards of education to the region. These branch campuses offer globally recognized degrees and provide students with world-class learning experiences without leaving Malaysia.";
       }
 
       console.log("📡 Fetching from:", endpoint);
@@ -363,20 +420,23 @@ const UniversitiesList = () => {
       console.error("❌ Error fetching content, using static fallback:", error);
 
       // Determine which static content to show based on filter
-      let staticFallback = "Malaysia is home to a diverse range of universities, offering a variety of programs and courses to cater to the educational needs of both local and international students.";
+      let staticFallback =
+        "Malaysia is home to a diverse range of universities, offering a variety of programs and courses to cater to the educational needs of both local and international students.";
 
       if (instituteType === "Private Institution") {
-        staticFallback = "Private universities in Malaysia offer world-class education with modern facilities and industry-relevant programs. These institutions provide flexible learning options and strong industry connections for career advancement.";
+        staticFallback =
+          "Private universities in Malaysia offer world-class education with modern facilities and industry-relevant programs. These institutions provide flexible learning options and strong industry connections for career advancement.";
       } else if (instituteType === "Public Institution") {
-        staticFallback = "Public universities in Malaysia are known for their affordable education, research excellence, and diverse academic programs. These government-funded institutions maintain high academic standards and offer comprehensive student support services.";
+        staticFallback =
+          "Public universities in Malaysia are known for their affordable education, research excellence, and diverse academic programs. These government-funded institutions maintain high academic standards and offer comprehensive student support services.";
       } else if (instituteType === "Foreign University") {
-        staticFallback = "Foreign universities in Malaysia bring international standards of education to the region. These branch campuses offer globally recognized degrees and provide students with world-class learning experiences without leaving Malaysia.";
+        staticFallback =
+          "Foreign universities in Malaysia bring international standards of education to the region. These branch campuses offer globally recognized degrees and provide students with world-class learning experiences without leaving Malaysia.";
       }
 
       setPageContent(staticFallback);
     }
   };
-
 
   return (
     <>
@@ -388,16 +448,22 @@ const UniversitiesList = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm text-gray-500">
-          <Link to="/" className="hover:text-blue-600">Home</Link>
+          <Link to="/" className="hover:text-blue-600">
+            Home
+          </Link>
           <span className="mx-2">/</span>
           <span>Universities</span>
         </nav>
 
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">{title}</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+            {title}
+          </h1>
           <p className="mt-2 text-lg text-gray-600">
-            Found <span className="font-bold text-blue-600">{totalUniversities}</span> universities matching your criteria.
+            Found{" "}
+            <span className="font-bold text-blue-600">{totalUniversities}</span>{" "}
+            universities matching your criteria.
           </p>
           {pageContent && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 w-full shadow-sm mt-4 relative">
@@ -411,7 +477,9 @@ const UniversitiesList = () => {
                   <FiX size={24} />
                 </button>
               )}
-              <div className={`${showMore ? 'max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100 pr-6' : ''}`}>
+              <div
+                className={`${showMore ? "max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100 pr-6" : ""}`}
+              >
                 {showMore ? (
                   <div
                     className="text-gray-700 text-sm leading-relaxed
@@ -432,14 +500,20 @@ const UniversitiesList = () => {
                   <div className="text-gray-700 text-sm leading-relaxed">
                     {/* ✅ IMPROVED HEADING EXTRACTION */}
                     {(() => {
-                      const h1Match = pageContent.match(/<h1[^>]*>(.*?)<\/h1>/i);
-                      const h2Match = pageContent.match(/<h2[^>]*>(.*?)<\/h2>/i);
-                      const h3Match = pageContent.match(/<h3[^>]*>(.*?)<\/h3>/i);
+                      const h1Match =
+                        pageContent.match(/<h1[^>]*>(.*?)<\/h1>/i);
+                      const h2Match =
+                        pageContent.match(/<h2[^>]*>(.*?)<\/h2>/i);
+                      const h3Match =
+                        pageContent.match(/<h3[^>]*>(.*?)<\/h3>/i);
                       const headingMatch = h1Match || h2Match || h3Match;
 
-                      let headingText = 'Top Private Universities in Malaysia — Rankings, Fees (MYR), Intakes & Global Pathways';
+                      let headingText =
+                        "Top Private Universities in Malaysia — Rankings, Fees (MYR), Intakes & Global Pathways";
                       if (headingMatch) {
-                        headingText = headingMatch[1].replace(/<[^>]+>/g, '').trim();
+                        headingText = headingMatch[1]
+                          .replace(/<[^>]+>/g, "")
+                          .trim();
                       }
 
                       return (
@@ -452,24 +526,39 @@ const UniversitiesList = () => {
                     {/* Show truncated text */}
                     <div className="line-clamp-3">
                       {(() => {
-                        const textWithoutHeadings = pageContent.replace(/<h[1-3][^>]*>.*?<\/h[1-3]>/gi, '');
-                        const cleanText = decodeHTMLEntities(textWithoutHeadings.replace(/<[^>]+>/g, '')).trim();
-                        return cleanText.slice(0, 450) + (cleanText.length > 450 ? '...' : '');
+                        const textWithoutHeadings = pageContent.replace(
+                          /<h[1-3][^>]*>.*?<\/h[1-3]>/gi,
+                          "",
+                        );
+                        const cleanText = decodeHTMLEntities(
+                          textWithoutHeadings.replace(/<[^>]+>/g, ""),
+                        ).trim();
+                        return (
+                          cleanText.slice(0, 450) +
+                          (cleanText.length > 450 ? "..." : "")
+                        );
                       })()}
                     </div>
                   </div>
                 )}
               </div>
 
-              {decodeHTMLEntities(pageContent.replace(/<[^>]+>/g, '')).length > 200 && (
+              {decodeHTMLEntities(pageContent.replace(/<[^>]+>/g, "")).length >
+                200 && (
                 <button
                   onClick={toggleShowMore}
                   className="mt-3 text-blue-600 text-sm font-semibold hover:underline flex items-center gap-1 transition-all"
                 >
                   {showMore ? (
-                    <>Show Less <FiChevronDown className="rotate-180 transition-transform" /></>
+                    <>
+                      Show Less{" "}
+                      <FiChevronDown className="rotate-180 transition-transform" />
+                    </>
                   ) : (
-                    <>Show More <FiChevronDown className="transition-transform" /></>
+                    <>
+                      Show More{" "}
+                      <FiChevronDown className="transition-transform" />
+                    </>
                   )}
                 </button>
               )}
@@ -504,7 +593,10 @@ const UniversitiesList = () => {
               selectedValue={selectedFilters.state}
               onSelect={(value) => handleFilterChange("state", value)}
             />
-            <button onClick={handleReset} className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-medium">
+            <button
+              onClick={handleReset}
+              className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-medium"
+            >
               Reset
             </button>
           </div>
@@ -515,7 +607,10 @@ const UniversitiesList = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse"
+                >
                   <div className="w-full h-40 bg-gray-200" />
                   <div className="p-5">
                     <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
@@ -534,7 +629,11 @@ const UniversitiesList = () => {
                   {/* Image Section - UPDATED */}
                   <div className="relative w-full h-48 overflow-hidden bg-gray-100">
                     <img
-                      src={uni.banner_path ? `${API_URL}${uni.banner_path}` : "/placeholder.png"}
+                      src={
+                        uni.banner_path
+                          ? `${API_URL}${uni.banner_path}`
+                          : "/placeholder.png"
+                      }
                       alt={uni.name}
                       className="w-full h-full object-cover"
                     />
@@ -543,7 +642,7 @@ const UniversitiesList = () => {
                     <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-md">
                       <FaStar className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                       <span className="text-sm font-bold text-gray-800">
-                        {uni.rating ? parseFloat(uni.rating).toFixed(1) : '0.0'}
+                        {uni.rating ? parseFloat(uni.rating).toFixed(1) : "0.0"}
                       </span>
                     </div>
                   </div>
@@ -562,8 +661,6 @@ const UniversitiesList = () => {
                       </div>
                     </div>
 
-
-
                     <Link
                       to={`/university/${uni.uname || uni.slug}`}
                       className="font-bold text-gray-800 text-xl group-hover:text-blue-600 mb-3 line-clamp-2 min-h-[3.5rem]"
@@ -571,16 +668,17 @@ const UniversitiesList = () => {
                       {uni.name}
                     </Link>
 
-
-
                     {/* 
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
                       {uni.description || ""}
                     </p> */}
                     {/* ✅ NEW TRUNCATED DESCRIPTION - Line ~455 */}
                     <div className="mb-4">
-                      <p className={`text-gray-600 text-sm leading-relaxed transition-all duration-300 ${expandedCards[uni.id] ? '' : 'line-clamp-2'
-                        }`}>
+                      <p
+                        className={`text-gray-600 text-sm leading-relaxed transition-all duration-300 ${
+                          expandedCards[uni.id] ? "" : "line-clamp-2"
+                        }`}
+                      >
                         {uni.shortnote || "No description available"}
                       </p>
 
@@ -591,9 +689,15 @@ const UniversitiesList = () => {
                           className="text-blue-600 text-xs font-semibold hover:underline mt-1.5 flex items-center gap-1"
                         >
                           {expandedCards[uni.id] ? (
-                            <>Show Less <FiChevronDown className="rotate-180 transition-transform" /></>
+                            <>
+                              Show Less{" "}
+                              <FiChevronDown className="rotate-180 transition-transform" />
+                            </>
                           ) : (
-                            <>Show More <FiChevronDown className="transition-transform" /></>
+                            <>
+                              Show More{" "}
+                              <FiChevronDown className="transition-transform" />
+                            </>
                           )}
                         </button>
                       )}
@@ -603,24 +707,29 @@ const UniversitiesList = () => {
                     <div className="grid grid-cols-3 gap-4 mb-5">
                       <div className="text-center p-3 bg-blue-50 rounded-xl">
                         <Book className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                        <p className="text-lg font-bold text-blue-600">{uni.active_programs_count || 0}</p>
+                        <p className="text-lg font-bold text-blue-600">
+                          {uni.active_programs_count || 0}
+                        </p>
                         <p className="text-xs text-gray-600">Programs</p>
                       </div>
                       <div className="text-center p-3 bg-green-50 rounded-xl">
                         <Eye className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                        <p className="text-lg font-bold text-green-600">{uni.click || 0}</p>
+                        <p className="text-lg font-bold text-green-600">
+                          {uni.click || 0}
+                        </p>
                         <p className="text-xs text-gray-600">Views</p>
                       </div>
                       <div className="text-center p-3 bg-yellow-50 rounded-xl">
                         <FaStar className="w-5 h-5 text-yellow-600 mx-auto mb-1 fill-current" />
                         <p className="text-lg font-bold text-yellow-600">
-                          {uni.rating ? parseFloat(uni.rating).toFixed(1) : '0.0'}
+                          {uni.rating
+                            ? parseFloat(uni.rating).toFixed(1)
+                            : "0.0"}
                         </p>
                         <p className="text-xs text-gray-600">Rating</p>
                       </div>
                     </div>
                     <div className="space-y-3">
-
                       <Link
                         to={`/university/${uni.uname || uni.slug}`}
                         className="cursor-pointer w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center group"
@@ -642,8 +751,6 @@ const UniversitiesList = () => {
                         >
                           Brochure
                         </button>
-
-
                       </div>
                     </div>
 
@@ -654,9 +761,7 @@ const UniversitiesList = () => {
                     >
                       Compare Universities
                     </button>
-                    <div>
-                    </div>
-
+                    <div></div>
                   </div>
                 </div>
               ))}
@@ -670,9 +775,22 @@ const UniversitiesList = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   {/* Page Info */}
                   <div className="text-sm sm:text-base text-gray-700 font-medium">
-                    Showing <span className="font-bold text-blue-600">{((currentPage - 1) * pagination.per_page) + 1}</span>-
-                    <span className="font-bold text-blue-600">{Math.min(currentPage * pagination.per_page, pagination.total)}</span> of{' '}
-                    <span className="font-bold text-blue-600">{pagination.total}</span> universities
+                    Showing{" "}
+                    <span className="font-bold text-blue-600">
+                      {(currentPage - 1) * pagination.per_page + 1}
+                    </span>
+                    -
+                    <span className="font-bold text-blue-600">
+                      {Math.min(
+                        currentPage * pagination.per_page,
+                        pagination.total,
+                      )}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-bold text-blue-600">
+                      {pagination.total}
+                    </span>{" "}
+                    universities
                   </div>
 
                   {/* Pagination Buttons */}
@@ -681,13 +799,24 @@ const UniversitiesList = () => {
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className={`flex items-center gap-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${currentPage === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transform hover:-translate-x-0.5'
-                        }`}
+                      className={`flex items-center gap-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                        currentPage === 1
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transform hover:-translate-x-0.5"
+                      }`}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
                       </svg>
                       <span className="hidden sm:inline">Previous</span>
                     </button>
@@ -700,23 +829,31 @@ const UniversitiesList = () => {
                         if (
                           pageNum === 1 ||
                           pageNum === pagination.last_page ||
-                          (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                          (pageNum >= currentPage - 1 &&
+                            pageNum <= currentPage + 1)
                         ) {
                           return (
                             <button
                               key={pageNum}
                               onClick={() => handlePageChange(pageNum)}
-                              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-bold text-sm sm:text-base transition-all duration-200 ${currentPage === pageNum
-                                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-110 ring-2 ring-blue-300'
-                                : 'bg-gray-50 text-gray-700 border-2 border-gray-200 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 hover:shadow-md'
-                                }`}
+                              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-bold text-sm sm:text-base transition-all duration-200 ${
+                                currentPage === pageNum
+                                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-110 ring-2 ring-blue-300"
+                                  : "bg-gray-50 text-gray-700 border-2 border-gray-200 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 hover:shadow-md"
+                              }`}
                             >
                               {pageNum}
                             </button>
                           );
-                        } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                        } else if (
+                          pageNum === currentPage - 2 ||
+                          pageNum === currentPage + 2
+                        ) {
                           return (
-                            <span key={pageNum} className="px-1 text-gray-400 font-bold">
+                            <span
+                              key={pageNum}
+                              className="px-1 text-gray-400 font-bold"
+                            >
                               •••
                             </span>
                           );
@@ -729,14 +866,25 @@ const UniversitiesList = () => {
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === pagination.last_page}
-                      className={`flex items-center gap-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${currentPage === pagination.last_page
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transform hover:translate-x-0.5'
-                        }`}
+                      className={`flex items-center gap-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                        currentPage === pagination.last_page
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transform hover:translate-x-0.5"
+                      }`}
                     >
                       <span className="hidden sm:inline">Next</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -750,6 +898,13 @@ const UniversitiesList = () => {
       {/* Fee Structure Modal */}
       <FeeStructureForm
         universityName={selectedUniversity?.name}
+        universityLogo={
+          selectedUniversity?.logo_path
+            ? `${API_URL}${selectedUniversity.logo_path}`
+            : selectedUniversity?.banner_path
+              ? `${API_URL}${selectedUniversity.banner_path}`
+              : null
+        }
         isOpen={feeModalOpen}
         onClose={() => setFeeModalOpen(false)}
         onSuccess={showSuccess}
@@ -758,6 +913,13 @@ const UniversitiesList = () => {
       {/* Brochure Modal */}
       <BrochureForm
         universityName={selectedUniversity?.name}
+        universityLogo={
+          selectedUniversity?.logo_path
+            ? `${API_URL}${selectedUniversity.logo_path}`
+            : selectedUniversity?.banner_path
+              ? `${API_URL}${selectedUniversity.banner_path}`
+              : null
+        }
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
         onSuccess={showSuccess}
@@ -776,18 +938,27 @@ const UniversitiesList = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl p-6 text-center max-w-sm">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">{successMessage}</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {successMessage}
+            </h3>
             <p className="text-gray-600">We'll get back to you soon.</p>
           </div>
         </div>
       )}
-
-
-
     </>
   );
 };

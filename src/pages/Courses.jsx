@@ -1462,47 +1462,52 @@ const Courses = () => {
 
 
 
-                {/* ✅ Active Filters Display */}
+                {/* ✅ Active Filters Display - Stacked Version */}
                 {Object.values(selectedFilters).some((filter) => filter.length > 0) && (
-                  <div className="bg-white border border-gray-200 rounded-xl  mb-4 shadow-sm">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <Filter className="w-4 h-4 text-blue-600" />
-                        Active Filters
-                      </h3>
+                  <div className="bg-white border border-gray-200 rounded-xl mb-5 shadow-sm p-4">
+                    {/* Header Row */}
+                    <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                          <Filter className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="font-bold text-gray-800 text-sm">Active Filters</span>
+                      </div>
+                      
                       <button
                         onClick={handleReset}
-                        className="text-md text-red-600 hover:text-red-700 font-bold transition-all hover:underline cursor-pointer"
+                        className="text-xs font-semibold text-red-500 hover:text-red-700 hover:bg-red-50 px-2.5 py-1 rounded transition-colors flex items-center gap-1"
                       >
-                        Clear All
+                        <X className="w-3 h-3" />
+                         Clear All
                       </button>
                     </div>
 
+                    {/* Tags Row */}
                     <div className="flex flex-wrap gap-2">
-                      {Object.entries(selectedFilters).map(([key, values]) => {
-                        if (!values || values.length === 0) return null; // ✅ Array check
+                        {Object.entries(selectedFilters).map(([key, values]) => {
+                          if (!values || values.length === 0) return null;
 
-                        return values.map((value) => { // ✅ Map over array
-                          const displayName = value.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                          const filterLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
-
-                          return (
-                            <div
-                              key={`${key}-${value}`} // ✅ Unique key
-                              className="flex items-center gap-2 bg-blue-50 border-2 border-blue-200 rounded-lg px-3 py-1.5 text-sm"
-                            >
-                              <span className="font-semibold text-gray-700">{filterLabel}:</span>
-                              <span className="text-blue-700">{displayName}</span>
-                              <button
-                                onClick={() => handleFilterChange(key, value)}
-                                className="text-gray-500 hover:text-red-600 transition-colors ml-1"
+                          return values.map((value) => {
+                            const displayName = value.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                            
+                            return (
+                              <div
+                                key={`${key}-${value}`}
+                                className="group flex items-center gap-1.5 bg-blue-50 border border-blue-100 rounded-lg pl-2.5 pr-1.5 py-1.5 text-xs transition-all hover:bg-white hover:border-blue-300 hover:shadow-sm"
                               >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          );
-                        });
-                      })}
+                                <span className="text-gray-500 font-medium uppercase tracking-wider text-[10px] mr-1">{key}:</span>
+                                <span className="font-semibold text-blue-900 leading-none">{displayName}</span>
+                                <button
+                                  onClick={() => handleFilterChange(key, value)}
+                                  className="w-4 h-4 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all ml-1"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            );
+                          });
+                        })}
                     </div>
                   </div>
                 )}

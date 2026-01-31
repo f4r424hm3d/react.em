@@ -3,7 +3,7 @@ import api from "../api";
 import {
   FaUser,
   FaEnvelope,
-  FaPhone,
+  FaPhoneAlt,
   FaVoicemail,
   FaBook,
   FaFlag,
@@ -255,7 +255,7 @@ const GetInTouchForm = () => {
               </select>
 
               <InputWithIcon
-                icon={<FaPhone />}
+                icon={<FaPhoneAlt />}
                 type="tel"
                 name="phone"
                 placeholder="Phone Number"

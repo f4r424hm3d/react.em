@@ -1,11 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
+
 import api from "../../api";
 
 /* Modal Wrapper Component */
+
 const ModalWrapper = ({ open, onClose, title, children, wide = false }) => {
   const modalContentRef = useRef(null);
   const scrollPositionRef = useRef(0);
   const isScrollingRef = useRef(false);
+
+  // ✅ Lock Body Scroll when Modal is Open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [open]);
 
   useEffect(() => {
     if (open && modalContentRef.current) {
@@ -19,6 +33,7 @@ const ModalWrapper = ({ open, onClose, title, children, wide = false }) => {
 
       const preventAutoScroll = (e) => {
         isScrollingRef.current = true;
+
         const savedScrollTop = scrollPositionRef.current;
 
         setTimeout(() => {
@@ -26,32 +41,42 @@ const ModalWrapper = ({ open, onClose, title, children, wide = false }) => {
             if (modalElement && modalElement.scrollTop !== savedScrollTop) {
               modalElement.scrollTop = savedScrollTop;
             }
+
             isScrollingRef.current = false;
           });
         }, 0);
       };
 
-      modalElement.addEventListener('scroll', handleScroll, { passive: true });
+      modalElement.addEventListener("scroll", handleScroll, { passive: true });
 
-      const inputs = modalElement.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        input.addEventListener('focus', preventAutoScroll);
-        input.addEventListener('click', preventAutoScroll);
+      const inputs = modalElement.querySelectorAll("input, select, textarea");
 
-        if (input.type === 'number') {
-          input.addEventListener('touchstart', preventAutoScroll, { passive: true });
-          input.addEventListener('mousedown', preventAutoScroll);
+      inputs.forEach((input) => {
+        input.addEventListener("focus", preventAutoScroll);
+
+        input.addEventListener("click", preventAutoScroll);
+
+        if (input.type === "number") {
+          input.addEventListener("touchstart", preventAutoScroll, {
+            passive: true,
+          });
+
+          input.addEventListener("mousedown", preventAutoScroll);
         }
       });
 
       return () => {
-        modalElement.removeEventListener('scroll', handleScroll);
-        inputs.forEach(input => {
-          input.removeEventListener('focus', preventAutoScroll);
-          input.removeEventListener('click', preventAutoScroll);
-          if (input.type === 'number') {
-            input.removeEventListener('touchstart', preventAutoScroll);
-            input.removeEventListener('mousedown', preventAutoScroll);
+        modalElement.removeEventListener("scroll", handleScroll);
+
+        inputs.forEach((input) => {
+          input.removeEventListener("focus", preventAutoScroll);
+
+          input.removeEventListener("click", preventAutoScroll);
+
+          if (input.type === "number") {
+            input.removeEventListener("touchstart", preventAutoScroll);
+
+            input.removeEventListener("mousedown", preventAutoScroll);
           }
         });
       };
@@ -62,35 +87,110 @@ const ModalWrapper = ({ open, onClose, title, children, wide = false }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70"
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-black/70 ios-scroll-lock"
       onClick={onClose}
     >
-      <div
-        ref={modalContentRef}
-        className={`relative z-10 bg-white rounded-2xl max-h-[90vh] overflow-y-auto shadow-2xl ${wide ? "w-full max-w-2xl" : "w-full max-w-md"}`}
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          scrollBehavior: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehavior: 'contain'
-        }}
-      >
-        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <button onClick={onClose} className="text-2xl px-2 py-1 text-gray-600 hover:text-gray-800">×</button>
+      <div className="flex min-h-full items-center justify-center p-4">
+        <div
+          ref={modalContentRef}
+          className={`relative z-10 bg-white rounded-2xl shadow-2xl ${wide ? "w-full max-w-2xl" : "w-full max-w-md"}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-50 p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="p-6 pt-5">{children}</div>
         </div>
-        <div className="p-4">{children}</div>
       </div>
     </div>
   );
 };
 
 /* FEE STRUCTURE FORM */
-export const FeeStructureForm = ({ universityName, isOpen, onClose, onSuccess }) => {
-  const [captchaQuestion, setCaptchaQuestion] = useState({ num1: 0, num2: 0, answer: 0 });
+
+export const FeeStructureForm = ({
+  universityName,
+  universityLogo,
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
+  const [captchaQuestion, setCaptchaQuestion] = useState({
+    num1: 0,
+    num2: 0,
+    answer: 0,
+  });
+
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Sync Logic
+  const [nationality, setNationality] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+
+  const countryCodes = {
+    Afghanistan: "+93",
+    Bangladesh: "+880",
+    Bhutan: "+975",
+    China: "+86",
+    India: "+91",
+    Indonesia: "+62",
+    Iran: "+98",
+    Iraq: "+964",
+    Japan: "+81",
+    Kazakhstan: "+7",
+    Kuwait: "+965",
+    Kyrgyzstan: "+996",
+    Maldives: "+960",
+    Myanmar: "+95",
+    Nepal: "+977",
+    Oman: "+968",
+    Pakistan: "+92",
+    Philippines: "+63",
+    Qatar: "+974",
+    "Saudi Arabia": "+966",
+    Singapore: "+65",
+    "South Korea": "+82",
+    "Sri Lanka": "+94",
+    Thailand: "+66",
+    Turkey: "+90",
+    "United Arab Emirates": "+971",
+    Uzbekistan: "+998",
+    Vietnam: "+84",
+    Yemen: "+967",
+    Other: "+",
+  };
+
+  const handleNationalityChange = (e) => {
+    const val = e.target.value;
+    setNationality(val);
+    if (countryCodes[val]) setCountryCode(countryCodes[val]);
+  };
+
+  const handleCountryCodeChange = (e) => {
+    const val = e.target.value;
+    setCountryCode(val);
+    const nation = Object.keys(countryCodes).find(
+      (key) => countryCodes[key] === val,
+    );
+    if (nation) setNationality(nation);
+  };
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
@@ -110,52 +210,77 @@ export const FeeStructureForm = ({ universityName, isOpen, onClose, onSuccess })
 
     if (parseInt(captchaInput) !== captchaQuestion.answer) {
       setCaptchaError(true);
+
       alert("❌ Wrong answer! Please solve the math problem correctly.");
+
       return;
     }
 
     const formData = new FormData(e.target);
+
     const data = {
-      name: formData.get('firstName'),
-      email: formData.get('email'),
-      c_code: formData.get('countryCode').replace('+', ''),
-      mobile: formData.get('phone'),
-      nationality: formData.get('nationality'),
-      highest_qualification: formData.get('level'),
-      interested_course_category: formData.get('course'),
-      university_id: universityName || 'Unknown',
-      requestfor: 'fee_structure',
-      source_path: window.location.href
+      name: formData.get("firstName"),
+
+      email: formData.get("email"),
+
+      c_code: formData.get("countryCode").replace("+", ""),
+
+      mobile: formData.get("phone"),
+
+      nationality: formData.get("nationality"),
+
+      highest_qualification: formData.get("level"),
+
+      interested_course_category: formData.get("course"),
+
+      university_id: universityName || "Unknown",
+
+      requestfor: "fee_structure",
+
+      source_path: window.location.href,
     };
 
     const queryString = new URLSearchParams(data).toString();
+
     const apiUrl = `https://www.educationmalaysia.in/api/inquiry/brochure-request?${queryString}`;
 
     setLoading(true);
 
     try {
       const response = await fetch(apiUrl, {
-        method: 'GET',
-        mode: 'no-cors', // ✅ CRITICAL FIX - CORS bypass
+        method: "GET",
+
+        mode: "no-cors", // ✅ CRITICAL FIX - CORS bypass
+
         headers: {
-          'X-API-key': 'vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE='
-        }
+          "X-API-key": "vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE=",
+        },
       });
 
       // ✅ With no-cors, we can't read response, but request is sent successfully
-      console.log("✅ Fee Structure request sent");
-      onClose();
-      if (onSuccess) onSuccess("Fee Structure request submitted successfully!");
-      e.target.reset();
-      setCaptchaInput("");
 
+      console.log("✅ Fee Structure request sent");
+
+      onClose();
+
+      if (onSuccess) onSuccess("Fee Structure request submitted successfully!");
+
+      e.target.reset();
+
+      setCaptchaInput("");
     } catch (err) {
       console.error("❌ Error:", err);
+
       // ✅ Even if error, request might have been sent successfully
+
       console.log("⚠️ Request sent, but cannot verify response due to CORS");
+
       onClose();
+
       if (onSuccess) onSuccess("Fee Structure request submitted!");
+
       e.target.reset();
+
       setCaptchaInput("");
     } finally {
       setLoading(false);
@@ -163,95 +288,97 @@ export const FeeStructureForm = ({ universityName, isOpen, onClose, onSuccess })
   };
 
   return (
-    <ModalWrapper open={isOpen} onClose={onClose} title={`Fee Structure - ${universityName || ""}`} wide={true}>
+    <ModalWrapper
+      open={isOpen}
+      onClose={onClose}
+      title={`Fee Structure - ${universityName || ""}`}
+      wide={true}
+    >
       <div className="w-full px-2">
-        <div className="text-center mb-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Fee Structure Request</h3>
-          <p className="text-gray-600">
-            Get detailed fee information for {universityName || "the selected university"}
-          </p>
+        <div className="mb-5 px-1 flex flex-row md:flex-col items-center justify-center gap-4 md:gap-3 text-left md:text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden p-2 flex-shrink-0">
+            {universityLogo ? (
+              <img
+                src={universityLogo}
+                alt={universityName}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <span className="text-3xl">📄</span>
+            )}
+          </div>
+          <h3 className="text-lg md:text-2xl font-bold text-gray-900 leading-snug">
+            Download <span className="text-blue-700">{universityName}</span> Fee
+            Structure
+          </h3>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <input type="hidden" name="university" value={universityName || ""} />
 
           {/* Full Name & Email */}
           <div className="grid md:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Full Name
+              </label>
               <input
                 type="text"
                 name="firstName"
                 required
                 placeholder="Enter your full name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">Email Address</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Email Address
+              </label>
               <input
                 type="email"
                 name="email"
                 required
                 placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
               />
             </div>
           </div>
 
           {/* Nationality & Course */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">Nationality</label>
+          <div className="grid md:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Nationality
+              </label>
               <select
                 name="nationality"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={nationality}
+                onChange={handleNationalityChange}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
-                <option value="">Select nationality</option>
-                <option>Afghanistan</option>
-                <option>Bangladesh</option>
-                <option>Bhutan</option>
-                <option>China</option>
-                <option>India</option>
-                <option>Indonesia</option>
-                <option>Iran</option>
-                <option>Iraq</option>
-                <option>Japan</option>
-                <option>Kazakhstan</option>
-                <option>Kuwait</option>
-                <option>Kyrgyzstan</option>
-                <option>Maldives</option>
-                <option>Myanmar</option>
-                <option>Nepal</option>
-                <option>Oman</option>
-                <option>Pakistan</option>
-                <option>Philippines</option>
-                <option>Qatar</option>
-                <option>Saudi Arabia</option>
-                <option>Singapore</option>
-                <option>South Korea</option>
-                <option>Sri Lanka</option>
-                <option>Thailand</option>
-                <option>Turkey</option>
-                <option>United Arab Emirates</option>
-                <option>Uzbekistan</option>
-                <option>Vietnam</option>
-                <option>Yemen</option>
-                <option>Other</option>
+                <option value="">Select Nationality</option>
+                {Object.keys(countryCodes).map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
               </select>
             </div>
-
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">Interested Course</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Interested Course
+              </label>
               <select
                 name="course"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
                 <option value="">Select a course</option>
                 <option value="computer-science">Computer Science</option>
-                <option value="business-administration">Business Administration</option>
+                <option value="business-administration">
+                  Business Administration
+                </option>
                 <option value="engineering">Engineering</option>
                 <option value="medicine">Medicine</option>
                 <option value="other">Other</option>
@@ -259,65 +386,47 @@ export const FeeStructureForm = ({ universityName, isOpen, onClose, onSuccess })
             </div>
           </div>
 
-          {/* Phone Number */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Phone Number</label>
+          {/* Phone Number with Code */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+              Phone Number
+            </label>
             <div className="flex gap-2">
               <select
                 name="countryCode"
                 required
-                className="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                value={countryCode}
+                onChange={handleCountryCodeChange}
+                className="w-28 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
                 <option value="">Code</option>
-                <option value="+93">+93 Afghanistan</option>
-                <option value="+880">+880 Bangladesh</option>
-                <option value="+975">+975 Bhutan</option>
-                <option value="+86">+86 China</option>
-                <option value="+91">+91 India</option>
-                <option value="+62">+62 Indonesia</option>
-                <option value="+98">+98 Iran</option>
-                <option value="+964">+964 Iraq</option>
-                <option value="+81">+81 Japan</option>
-                <option value="+7">+7 Kazakhstan</option>
-                <option value="+965">+965 Kuwait</option>
-                <option value="+996">+996 Kyrgyzstan</option>
-                <option value="+960">+960 Maldives</option>
-                <option value="+95">+95 Myanmar</option>
-                <option value="+977">+977 Nepal</option>
-                <option value="+968">+968 Oman</option>
-                <option value="+92">+92 Pakistan</option>
-                <option value="+63">+63 Philippines</option>
-                <option value="+974">+974 Qatar</option>
-                <option value="+966">+966 Saudi Arabia</option>
-                <option value="+65">+65 Singapore</option>
-                <option value="+82">+82 South Korea</option>
-                <option value="+94">+94 Sri Lanka</option>
-                <option value="+66">+66 Thailand</option>
-                <option value="+90">+90 Turkey</option>
-                <option value="+971">+971 UAE</option>
-                <option value="+998">+998 Uzbekistan</option>
-                <option value="+84">+84 Vietnam</option>
-                <option value="+967">+967 Yemen</option>
-                <option value="+">+ Other</option>
+                {Object.entries(countryCodes).map(([country, code]) => (
+                  <option key={country} value={code}>
+                    {code}
+                  </option>
+                ))}
               </select>
               <input
                 name="phone"
                 required
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter Your Phone number"
+                type="tel"
+                placeholder="Enter your mobile number"
+                className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
               />
             </div>
           </div>
 
-          {/* Highest Qualification */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Highest Qualification</label>
+          {/* Qualification */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+              Highest Qualification
+            </label>
             <select
               name="level"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
             >
-              <option value="">Highest Qualification</option>
+              <option value="">Select Qualification</option>
               <option value="diploma">Diploma</option>
               <option value="bachelor">Bachelor's Degree</option>
               <option value="master">Master's Degree</option>
@@ -326,52 +435,66 @@ export const FeeStructureForm = ({ universityName, isOpen, onClose, onSuccess })
           </div>
 
           {/* CAPTCHA */}
-          <div>
-            <p className="text-gray-800 font-semibold text-lg mb-3 text-left">
+          <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-blue-100 bg-blue-50/80 shadow-sm">
+            <p className="text-sm font-bold text-blue-900 whitespace-nowrap">
               What is {captchaQuestion.num1} + {captchaQuestion.num2}?
             </p>
-            <input
-              type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={captchaInput}
-              onChange={(e) => {
-                setCaptchaInput(e.target.value);
-                setCaptchaError(false);
-              }}
-              required
-              placeholder="Enter your answer"
-              className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 ${captchaError ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                }`}
-              style={{ fontSize: '16px' }}
-            />
-            {captchaError && (
-              <p className="text-red-600 text-sm mt-2 font-semibold">
-                ❌ Incorrect answer! Please try again.
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={generateCaptcha}
-              className="mt-2 text-blue-600 text-sm hover:underline font-semibold"
-            >
-              🔄 Refresh
-            </button>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={captchaInput}
+                onChange={(e) => {
+                  if (!/^\d*$/.test(e.target.value)) return;
+                  setCaptchaInput(e.target.value);
+                  setCaptchaError(false);
+                }}
+                required
+                placeholder="?"
+                className={`w-24 md:w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-center text-sm md:text-base shadow-sm transition-all ${captchaError ? "border-red-500 bg-red-50" : "border-blue-200 bg-white text-blue-900"}`}
+              />
+              <button
+                type="button"
+                onClick={generateCaptcha}
+                className="p-2 text-blue-500 hover:text-blue-700 transition-colors bg-white rounded-lg border border-blue-100 shadow-sm hover:shadow-md active:scale-95"
+                title="Refresh Captcha"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
+          {captchaError && (
+            <p className="text-red-600 text-[10px] font-bold text-center -mt-1">
+              ❌ Incorrect answer
+            </p>
+          )}
 
           {/* Buttons */}
-          <div className="flex gap-3 mt-2">
+          <div className="pt-1 flex gap-2">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 rounded-xl shadow-md transform active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
             >
-              {loading ? "Submitting..." : "Request Fee Structure"}
+              {loading ? "Applying..." : "Request Fee Structure"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+              className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 font-semibold text-sm transition-colors"
             >
               Cancel
             </button>
@@ -383,42 +506,77 @@ export const FeeStructureForm = ({ universityName, isOpen, onClose, onSuccess })
 };
 
 /* BROCHURE FORM - EXACT SAME PATTERN */
-export const BrochureForm = ({ universityName, isOpen, onClose, onSuccess }) => {
-  const [captchaQuestion, setCaptchaQuestion] = useState({ num1: 0, num2: 0, answer: 0 });
+
+export const BrochureForm = ({
+  universityName,
+  universityLogo,
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
+  const [captchaQuestion, setCaptchaQuestion] = useState({
+    num1: 0,
+    num2: 0,
+    answer: 0,
+  });
+
   const [captchaInput, setCaptchaInput] = useState("");
+
   const [captchaError, setCaptchaError] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   // ✅ New State for data & sync
+
   const [countriesData, setCountriesData] = useState([]);
+
   const [phonecodeData, setPhonecodeData] = useState([]);
+
   const [syncData, setSyncData] = useState({
     nationality: "",
-    countryCode: ""
+
+    countryCode: "",
   });
 
   // ✅ Fetch Data
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const phoneRes = await api.get("/phonecodes");
-        setPhonecodeData(Array.isArray(phoneRes.data) ? phoneRes.data : phoneRes.data.data || []);
+
+        setPhonecodeData(
+          Array.isArray(phoneRes.data)
+            ? phoneRes.data
+            : phoneRes.data.data || [],
+        );
 
         const countryRes = await api.get("/countries");
-        setCountriesData(Array.isArray(countryRes.data) ? countryRes.data : countryRes.data.data || []);
+
+        setCountriesData(
+          Array.isArray(countryRes.data)
+            ? countryRes.data
+            : countryRes.data.data || [],
+        );
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
     };
+
     if (isOpen) fetchData();
   }, [isOpen]);
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
+
     const num2 = Math.floor(Math.random() * 10) + 1;
+
     const answer = num1 + num2;
+
     setCaptchaQuestion({ num1, num2, answer });
+
     setCaptchaInput("");
+
     setCaptchaError(false);
   };
 
@@ -427,28 +585,38 @@ export const BrochureForm = ({ universityName, isOpen, onClose, onSuccess }) => 
   }, [isOpen]);
 
   // ✅ Sync Logic: Code -> Nationality
+
   const handleCountryCodeChange = (e) => {
     const code = e.target.value;
+
     let newSyncData = { ...syncData, countryCode: code };
 
     if (code) {
-      const matchedCountry = countriesData.find(c => c.phonecode == code.replace('+', ''));
+      const matchedCountry = countriesData.find(
+        (c) => c.phonecode == code.replace("+", ""),
+      );
+
       if (matchedCountry) {
         newSyncData.nationality = matchedCountry.name;
       }
     }
+
     setSyncData(newSyncData);
   };
 
   // ✅ Sync Logic: Nationality -> Code
+
   const handleNationalityChange = (e) => {
     const name = e.target.value;
+
     let newSyncData = { ...syncData, nationality: name };
 
-    const matchedCountry = countriesData.find(c => c.name === name);
+    const matchedCountry = countriesData.find((c) => c.name === name);
+
     if (matchedCountry && matchedCountry.phonecode) {
       newSyncData.countryCode = `+${matchedCountry.phonecode}`;
     }
+
     setSyncData(newSyncData);
   };
 
@@ -457,104 +625,151 @@ export const BrochureForm = ({ universityName, isOpen, onClose, onSuccess }) => 
 
     if (parseInt(captchaInput) !== captchaQuestion.answer) {
       setCaptchaError(true);
+
       alert("❌ Wrong answer! Please solve the math problem correctly.");
+
       return;
     }
 
     const formData = new FormData(e.target);
-    const programs = Array.from(formData.getAll('programs')).join(', ') || 'Not specified';
+
+    const programs =
+      Array.from(formData.getAll("programs")).join(", ") || "Not specified";
 
     const data = {
-      name: formData.get('firstName'),
-      email: formData.get('email'),
-      c_code: formData.get('countryCode').replace('+', ''),
-      mobile: formData.get('phone'),
-      nationality: formData.get('nationality'),
+      name: formData.get("firstName"),
+
+      email: formData.get("email"),
+
+      c_code: formData.get("countryCode").replace("+", ""),
+
+      mobile: formData.get("phone"),
+
+      nationality: formData.get("nationality"),
+
       highest_qualification: programs,
-      interested_course_category: 'General',
-      university_id: universityName || 'Unknown',
-      requestfor: 'brochure',
-      source_path: window.location.href
+
+      interested_course_category: "General",
+
+      university_id: universityName || "Unknown",
+
+      requestfor: "brochure",
+
+      source_path: window.location.href,
     };
 
     const queryString = new URLSearchParams(data).toString();
+
     const apiUrl = `https://www.educationmalaysia.in/api/inquiry/brochure-request?${queryString}`;
 
     setLoading(true);
 
     try {
       const response = await fetch(apiUrl, {
-        method: 'GET',
-        mode: 'no-cors', // ✅ CRITICAL FIX
+        method: "GET",
+
+        mode: "no-cors", // ✅ CRITICAL FIX
+
         headers: {
-          'X-API-key': 'vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE='
-        }
+          "X-API-key": "vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE=",
+        },
       });
 
       console.log("✅ Brochure request sent");
-      onClose();
-      if (onSuccess) onSuccess("Brochure request submitted successfully!");
-      e.target.reset();
-      setCaptchaInput("");
 
+      onClose();
+
+      if (onSuccess) onSuccess("Brochure request submitted successfully!");
+
+      e.target.reset();
+
+      setCaptchaInput("");
     } catch (err) {
       console.error("❌ Error:", err);
+
       console.log("⚠️ Request sent, but cannot verify response due to CORS");
+
       onClose();
+
       if (onSuccess) onSuccess("Brochure request submitted!");
+
       e.target.reset();
+
       setCaptchaInput("");
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <ModalWrapper open={isOpen} onClose={onClose} title={`Download Brochure - ${universityName || ""}`} wide={true}>
+    <ModalWrapper
+      open={isOpen}
+      onClose={onClose}
+      title={`Download Brochure - ${universityName || ""}`}
+      wide={true}
+    >
       <div className="w-full px-2">
-        <div className="text-center mb-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Download Brochure</h3>
-          <p className="text-gray-600">
-            Get the complete brochure for {universityName || "the selected university"}
-          </p>
+        <div className="mb-5 px-1 flex flex-row md:flex-col items-center justify-center gap-4 md:gap-3 text-left md:text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-xl shadow-sm border border-green-100 overflow-hidden p-2 flex-shrink-0">
+            {universityLogo ? (
+              <img
+                src={universityLogo}
+                alt={universityName}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <span className="text-3xl">📥</span>
+            )}
+          </div>
+          <h3 className="text-lg md:text-2xl font-bold text-gray-900 leading-snug">
+            Download <span className="text-green-700">{universityName}</span>{" "}
+            Brochure
+          </h3>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <input type="hidden" name="university" value={universityName || ""} />
 
           {/* Full Name & Email */}
           <div className="grid md:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-semibold mb-2">Full Name</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Full Name
+              </label>
               <input
                 name="firstName"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
                 placeholder="Enter your full name"
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Email Address</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Email Address
+              </label>
               <input
                 name="email"
                 type="email"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
                 placeholder="Enter your email"
               />
             </div>
           </div>
 
           {/* Nationality */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Nationality</label>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+              Nationality
+            </label>
             <select
               name="nationality"
               required
               value={syncData.nationality}
               onChange={handleNationalityChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
             >
-              <option value="">Select nationality</option>
+              <option value="">Select Nationality</option>
               {countriesData.map((country, idx) => (
                 <option key={idx} value={country.name}>
                   {country.name}
@@ -564,15 +779,17 @@ export const BrochureForm = ({ universityName, isOpen, onClose, onSuccess }) => 
           </div>
 
           {/* Phone Number */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Phone Number</label>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+              Phone Number
+            </label>
             <div className="flex gap-2">
               <select
                 name="countryCode"
                 required
                 value={syncData.countryCode}
                 onChange={handleCountryCodeChange}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[100px]"
+                className="px-2 py-2.5 md:px-3 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white w-24 md:w-32 text-sm md:text-base appearance-none"
               >
                 <option value="">Code</option>
                 {phonecodeData.map((code, idx) => (
@@ -584,82 +801,124 @@ export const BrochureForm = ({ universityName, isOpen, onClose, onSuccess }) => 
               <input
                 name="phone"
                 required
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your phone number"
+                className="flex-1 px-3 py-2.5 md:px-4 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm md:text-base"
+                placeholder="Enter your mobile number"
               />
             </div>
           </div>
 
           {/* Interested Education Level */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Interested Education Level</label>
-            <div className="grid grid-cols-2 gap-2">
-              <label className="flex items-center">
-                <input type="checkbox" name="programs" value="undergraduate" className="mr-2" />
-                Undergraduate
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+              Interested Education Level
+            </label>
+            <div className="grid grid-cols-2 gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="programs"
+                  value="undergraduate"
+                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
+                />
+                <span className="text-sm text-gray-700 font-medium">
+                  Undergraduate
+                </span>
               </label>
-              <label className="flex items-center">
-                <input type="checkbox" name="programs" value="postgraduate" className="mr-2" />
-                Postgraduate
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="programs"
+                  value="postgraduate"
+                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
+                />
+                <span className="text-sm text-gray-700 font-medium">
+                  Postgraduate
+                </span>
               </label>
-              <label className="flex items-center">
-                <input type="checkbox" name="programs" value="diploma" className="mr-2" />
-                Diploma
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="programs"
+                  value="diploma"
+                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
+                />
+                <span className="text-sm text-gray-700 font-medium">
+                  Diploma
+                </span>
               </label>
-              <label className="flex items-center">
-                <input type="checkbox" name="programs" value="phd" className="mr-2" />
-                PhD
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="programs"
+                  value="phd"
+                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
+                />
+                <span className="text-sm text-gray-700 font-medium">PhD</span>
               </label>
             </div>
           </div>
 
           {/* CAPTCHA */}
-          <div>
-            <p className="text-gray-800 font-semibold text-lg mb-3 text-left">
+          <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-green-100 bg-green-50/80 shadow-sm">
+            <p className="text-sm font-bold text-green-900 whitespace-nowrap">
               What is {captchaQuestion.num1} + {captchaQuestion.num2}?
             </p>
-            <input
-              type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={captchaInput}
-              onChange={(e) => {
-                setCaptchaInput(e.target.value);
-                setCaptchaError(false);
-              }}
-              required
-              placeholder="Enter your answer"
-              className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 ${captchaError ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                }`}
-              style={{ fontSize: '16px' }}
-            />
-            {captchaError && (
-              <p className="text-red-600 text-sm mt-2 font-semibold">
-                ❌ Incorrect answer! Please try again.
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={generateCaptcha}
-              className="mt-2 text-blue-600 text-sm hover:underline font-semibold"
-            >
-              🔄 Refresh
-            </button>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={captchaInput}
+                onChange={(e) => {
+                  if (!/^\d*$/.test(e.target.value)) return;
+                  setCaptchaInput(e.target.value);
+                  setCaptchaError(false);
+                }}
+                required
+                placeholder="?"
+                className={`w-24 md:w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none font-bold text-center text-sm md:text-base shadow-sm transition-all ${captchaError ? "border-red-500 bg-red-50" : "border-green-200 bg-white text-green-900"}`}
+              />
+              <button
+                type="button"
+                onClick={generateCaptcha}
+                className="p-2 text-green-500 hover:text-green-700 transition-colors bg-white rounded-lg border border-green-100 shadow-sm hover:shadow-md active:scale-95"
+                title="Refresh Captcha"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
+          {captchaError && (
+            <p className="text-red-600 text-[10px] font-bold text-center -mt-1">
+              ❌ Incorrect answer
+            </p>
+          )}
 
           {/* Buttons */}
-          <div className="flex gap-3 mt-2">
+          <div className="pt-1 flex gap-2">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-2.5 rounded-xl shadow-md transform active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
             >
               {loading ? "Submitting..." : "Download Brochure"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+              className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 font-semibold text-sm transition-colors"
             >
               Cancel
             </button>
@@ -671,29 +930,92 @@ export const BrochureForm = ({ universityName, isOpen, onClose, onSuccess }) => 
 };
 
 /* ---------------------------
+
   ✅ COMPARE UNIVERSITIES FORM
+
 ----------------------------*/
-export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSuccess }) => {
-  const [captchaQuestion, setCaptchaQuestion] = useState({ num1: 0, num2: 0, answer: 0 });
+
+export const CompareUniversitiesForm = ({
+  universities,
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
+  const [captchaQuestion, setCaptchaQuestion] = useState({
+    num1: 0,
+    num2: 0,
+    answer: 0,
+  });
+
   const [captchaInput, setCaptchaInput] = useState("");
+
   const [captchaError, setCaptchaError] = useState(false);
-  const [compareSelection, setCompareSelection] = useState({ u1: "", u2: "", u3: "" });
+
+  const [compareSelection, setCompareSelection] = useState({
+    u1: "",
+    u2: "",
+    u3: "",
+  });
+
   const [comparisonResult, setComparisonResult] = useState(null);
+
+  // Sync Logic
+  const [nationality, setNationality] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+
+  const countryCodes = {
+    Afghanistan: "+93",
+    Bangladesh: "+880",
+    China: "+86",
+    India: "+91",
+    Indonesia: "+62",
+    Nepal: "+977",
+    Pakistan: "+92",
+    Philippines: "+63",
+    "Sri Lanka": "+94",
+    Thailand: "+66",
+    Vietnam: "+84",
+    Other: "",
+  };
+
+  const handleNationalityChange = (e) => {
+    const val = e.target.value;
+    setNationality(val);
+    if (countryCodes[val]) setCountryCode(countryCodes[val]);
+  };
+
+  const handleCountryCodeChange = (e) => {
+    const val = e.target.value;
+    setCountryCode(val);
+    const nation = Object.keys(countryCodes).find(
+      (key) => countryCodes[key] === val,
+    );
+    if (nation) setNationality(nation);
+  };
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
+
     const num2 = Math.floor(Math.random() * 10) + 1;
+
     const answer = num1 + num2;
+
     setCaptchaQuestion({ num1, num2, answer });
+
     setCaptchaInput("");
+
     setCaptchaError(false);
   };
 
   useEffect(() => {
     if (isOpen) {
       generateCaptcha();
+
       setCompareSelection({ u1: "", u2: "", u3: "" });
+
       setComparisonResult(null);
+      setNationality("");
+      setCountryCode("");
     }
   }, [isOpen]);
 
@@ -702,42 +1024,60 @@ export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSucce
 
     if (parseInt(captchaInput) !== captchaQuestion.answer) {
       setCaptchaError(true);
+
       alert("❌ Wrong answer! Please solve the math problem correctly.");
+
       return;
     }
 
-    const selected = [compareSelection.u1, compareSelection.u2, compareSelection.u3].filter(Boolean);
+    const selected = [
+      compareSelection.u1,
+      compareSelection.u2,
+      compareSelection.u3,
+    ].filter(Boolean);
+
     const comparisonData = selected.map((id) =>
-      universities.find((u) => (u.id || u._id || String(u.name)) === id)
+      universities.find((u) => String(u.id || u._id || u.name) === String(id)),
     );
+
     setComparisonResult(comparisonData);
   };
 
-
   return (
     <ModalWrapper
-      open={isOpen}  // ✅ CORRECT - props se use karo
-      onClose={onClose}  // ✅ CORRECT
+      open={isOpen}
+      onClose={onClose}
       title="Compare Universities"
       wide={true}
     >
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl p-8 space-y-6">
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">Compare Universities</h3>
-          <p className="text-gray-500">Select up to 3 universities to compare their features</p>
+      <div className="w-full px-2">
+        <div className="text-center mb-5">
+          <h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2">
+            Compare Universities
+          </h3>
+          <p className="text-gray-500 text-sm md:text-base">
+            Select up to 3 universities to compare their features
+          </p>
         </div>
 
         {!comparisonResult ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* University Selection */}
             <div className="grid md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Select First University</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                  Select First University
+                </label>
                 <select
                   required
                   value={compareSelection.u1}
-                  onChange={(e) => setCompareSelection({ ...compareSelection, u1: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) =>
+                    setCompareSelection({
+                      ...compareSelection,
+                      u1: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
                 >
                   <option value="">Choose University</option>
                   {universities?.map((u, i) => (
@@ -747,14 +1087,20 @@ export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSucce
                   ))}
                 </select>
               </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Select Second University</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                  Select Second University
+                </label>
                 <select
                   required
                   value={compareSelection.u2}
-                  onChange={(e) => setCompareSelection({ ...compareSelection, u2: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) =>
+                    setCompareSelection({
+                      ...compareSelection,
+                      u2: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
                 >
                   <option value="">Choose University</option>
                   {universities?.map((u, i) => (
@@ -768,12 +1114,19 @@ export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSucce
 
             {/* 3rd University + Nationality */}
             <div className="grid md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Select Third University (Optional)</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                  Select Third University (Optional)
+                </label>
                 <select
                   value={compareSelection.u3}
-                  onChange={(e) => setCompareSelection({ ...compareSelection, u3: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) =>
+                    setCompareSelection({
+                      ...compareSelection,
+                      u3: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
                 >
                   <option value="">Choose University</option>
                   {universities?.map((u, i) => (
@@ -783,150 +1136,158 @@ export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSucce
                   ))}
                 </select>
               </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Nationality</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                  Nationality
+                </label>
                 <select
                   name="nationality"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={nationality}
+                  onChange={handleNationalityChange}
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
                 >
-                  <option value="">Select your nationality</option>
-                  <option value="Afghanistan">Afghanistan</option>
-                  <option value="Bangladesh">Bangladesh</option>
-                  <option value="China">China</option>
-                  <option value="India">India</option>
-                  <option value="Indonesia">Indonesia</option>
-                  <option value="Nepal">Nepal</option>
-                  <option value="Pakistan">Pakistan</option>
-                  <option value="Philippines">Philippines</option>
-                  <option value="Sri Lanka">Sri Lanka</option>
-                  <option value="Thailand">Thailand</option>
-                  <option value="Vietnam">Vietnam</option>
-                  <option value="Other">Other</option>
+                  <option value="">Select Nationality</option>
+                  {Object.keys(countryCodes).map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
 
             {/* Email & Full Name */}
             <div className="grid md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   name="firstName"
                   required
                   placeholder="Enter your full name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
                 />
               </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Your Email</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                  Your Email
+                </label>
                 <input
                   type="email"
                   name="email"
                   required
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
                 />
               </div>
             </div>
 
             {/* Phone */}
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">Phone Number</label>
-              <div className="flex gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Phone Number
+              </label>
+              <div className="flex gap-2">
                 <select
                   name="countryCode"
                   required
-                  className="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                  value={countryCode}
+                  onChange={handleCountryCodeChange}
+                  className="px-2 py-2.5 md:px-3 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white w-24 md:w-32 text-sm md:text-base appearance-none"
                 >
                   <option value="">Code</option>
-                  <option value="+93">+93 Afghanistan</option>
-                  <option value="+880">+880 Bangladesh</option>
-                  <option value="+86">+86 China</option>
-                  <option value="+91">+91 India</option>
-                  <option value="+62">+62 Indonesia</option>
-                  <option value="+977">+977 Nepal</option>
-                  <option value="+92">+92 Pakistan</option>
-                  <option value="+63">+63 Philippines</option>
-                  <option value="+94">+94 Sri Lanka</option>
-                  <option value="+66">+66 Thailand</option>
-                  <option value="+84">+84 Vietnam</option>
+                  {Object.entries(countryCodes).map(([country, code]) => (
+                    <option key={country} value={code}>
+                      {code}
+                    </option>
+                  ))}
                 </select>
-
                 <input
                   type="tel"
                   name="phone"
                   required
-                  placeholder="Enter your phone number"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your mobile number"
+                  className="flex-1 px-3 py-2.5 md:px-4 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
               </div>
             </div>
+
             {/* Comparison Criteria (Optional) */}
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
                 Comparison Criteria (Optional)
               </label>
               <textarea
                 name="comparisonCriteria"
-                rows="4"
+                rows="3"
                 placeholder="What specific aspects would you like to compare? (e.g., fees, programs, facilities)"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium resize-none"
               />
             </div>
 
             {/* CAPTCHA */}
-            <div>
-              <p className="text-gray-800 font-semibold text-lg mb-3 text-left">
+            <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-blue-100 bg-blue-50/80 shadow-sm">
+              <p className="text-sm font-bold text-blue-900 whitespace-nowrap">
                 What is {captchaQuestion.num1} + {captchaQuestion.num2}?
               </p>
-
-              <input
-                type="number"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={captchaInput}
-                onChange={(e) => {
-                  setCaptchaInput(e.target.value);
-                  setCaptchaError(false);
-                }}
-                required
-                placeholder="Enter your answer"
-                className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 ${captchaError ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
-                style={{ fontSize: '16px' }}
-              />
-
-              {captchaError && (
-                <p className="text-red-600 text-sm mt-2 font-semibold">
-                  ❌ Incorrect answer! Please try again.
-                </p>
-              )}
-
-              <button
-                type="button"
-                onClick={generateCaptcha}
-                className="mt-2 text-blue-600 text-sm hover:underline font-semibold"
-              >
-                🔄 Refresh
-              </button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={captchaInput}
+                  onChange={(e) => {
+                    if (!/^\d*$/.test(e.target.value)) return;
+                    setCaptchaInput(e.target.value);
+                    setCaptchaError(false);
+                  }}
+                  required
+                  placeholder="?"
+                  className={`w-24 md:w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-center text-sm md:text-base shadow-sm transition-all ${captchaError ? "border-red-500 bg-red-50" : "border-blue-200 bg-white text-blue-900"}`}
+                />
+                <button
+                  type="button"
+                  onClick={generateCaptcha}
+                  className="p-2 text-blue-500 hover:text-blue-700 transition-colors bg-white rounded-lg border border-blue-100 shadow-sm hover:shadow-md active:scale-95"
+                  title="Refresh Captcha"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
+            {captchaError && (
+              <p className="text-red-600 text-[10px] font-bold text-center -mt-1">
+                ❌ Incorrect answer
+              </p>
+            )}
 
             {/* Buttons */}
-            <div className="flex gap-3 mt-2">
+            <div className="pt-1 flex gap-2">
               <button
                 type="submit"
-                className="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 rounded-xl shadow-md transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 text-sm"
               >
                 Compare Universities
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 font-semibold text-sm transition-colors"
               >
                 Cancel
               </button>
@@ -934,63 +1295,114 @@ export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSucce
           </form>
         ) : (
           <div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Comparison Result</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Comparison Result
+            </h3>
 
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm bg-white">
+              <table className="w-full border-collapse min-w-[600px] md:min-w-0">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Criteria</th>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="border-r border-gray-200 px-4 py-4 text-left font-bold text-gray-700 sticky left-0 bg-gray-50 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                      Criteria
+                    </th>
                     {comparisonResult.map((uni, i) => (
-                      <th key={i} className="border border-gray-300 px-4 py-3 text-center font-semibold">
-                        {uni?.name || 'N/A'}
+                      <th
+                        key={i}
+                        className="border-l border-gray-200 px-4 py-4 text-center font-bold text-gray-900 min-w-[150px]"
+                      >
+                        {uni?.name || "N/A"}
                       </th>
                     ))}
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody className="text-sm">
+                  <tr className="border-b border-gray-100">
+                    <td className="border-r border-gray-200 px-4 py-3 font-medium text-gray-600 sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                      Type
+                    </td>
+                    {comparisonResult.map((uni, i) => (
+                      <td
+                        key={i}
+                        className="border-l border-gray-100 px-4 py-3 text-center text-gray-800"
+                      >
+                        {(() => {
+                          let val = uni?.institute_type;
+                          if (val && typeof val === "object") val = val.name;
+                          if (!val) val = uni?.type;
+                          if (!val) return "N/A";
+                          return String(val)
+                            .replace(/-/g, " ")
+                            .replace(/\b\w/g, (l) => l.toUpperCase());
+                        })()}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    <td className="border-r border-gray-200 px-4 py-3 font-medium text-gray-600 sticky left-0 bg-gray-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                      Established
+                    </td>
+                    {comparisonResult.map((uni, i) => (
+                      <td
+                        key={i}
+                        className="border-l border-gray-200 px-4 py-3 text-center text-gray-800"
+                      >
+                        {uni?.established_year || uni?.year || "N/A"}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b border-gray-100">
+                    <td className="border-r border-gray-200 px-4 py-3 font-medium text-gray-600 sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                      Location
+                    </td>
+                    {comparisonResult.map((uni, i) => (
+                      <td
+                        key={i}
+                        className="border-l border-gray-100 px-4 py-3 text-center text-gray-800"
+                      >
+                        {[uni?.city, uni?.state].filter(Boolean).join(", ") ||
+                          uni?.location ||
+                          "N/A"}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    <td className="border-r border-gray-200 px-4 py-3 font-medium text-gray-600 sticky left-0 bg-gray-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                      Programs
+                    </td>
+                    {comparisonResult.map((uni, i) => (
+                      <td
+                        key={i}
+                        className="border-l border-gray-200 px-4 py-3 text-center text-gray-800"
+                      >
+                        {uni?.active_programs_count ||
+                          uni?.courses_count ||
+                          uni?.course_count ||
+                          "N/A"}
+                      </td>
+                    ))}
+                  </tr>
+
                   <tr>
-                    <td className="border border-gray-300 px-4 py-3 font-medium">Type</td>
+                    <td className="border-r border-gray-200 px-4 py-3 font-medium text-gray-600 sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                      Ranking
+                    </td>
                     {comparisonResult.map((uni, i) => (
-                      <td key={i} className="border border-gray-300 px-4 py-3 text-center">
-                        {uni?.type ? uni.type.charAt(0).toUpperCase() + uni.type.slice(1) : 'N/A'}
-                      </td>
-                    ))}
-                  </tr>
-
-                  <tr className="bg-gray-50">
-                    <td className="border border-gray-300 px-4 py-3 font-medium">Established</td>
-                    {comparisonResult.map((uni, i) => (
-                      <td key={i} className="border border-gray-300 px-4 py-3 text-center">
-                        {uni?.established || 'N/A'}
-                      </td>
-                    ))}
-                  </tr>
-
-                  <tr>
-                    <td className="border border-gray-300 px-4 py-3 font-medium">Location</td>
-                    {comparisonResult.map((uni, i) => (
-                      <td key={i} className="border border-gray-300 px-4 py-3 text-center">
-                        {uni?.location || 'N/A'}
-                      </td>
-                    ))}
-                  </tr>
-
-                  <tr className="bg-gray-50">
-                    <td className="border border-gray-300 px-4 py-3 font-medium">Programs</td>
-                    {comparisonResult.map((uni, i) => (
-                      <td key={i} className="border border-gray-300 px-4 py-3 text-center">
-                        {uni?.programs || uni?.programs_count || 'N/A'}
-                      </td>
-                    ))}
-                  </tr>
-
-                  <tr>
-                    <td className="border border-gray-300 px-4 py-3 font-medium">Ranking</td>
-                    {comparisonResult.map((uni, i) => (
-                      <td key={i} className="border border-gray-300 px-4 py-3 text-center">
-                        {uni?.ranking ? `#${uni.ranking}` : 'N/A'}
+                      <td
+                        key={i}
+                        className="border-l border-gray-100 px-4 py-3 text-center font-semibold text-blue-600"
+                      >
+                        {uni?.ranking
+                          ? `#${uni.ranking}`
+                          : uni?.qs_ranking
+                            ? `#${uni.qs_ranking}`
+                            : uni?.rating
+                              ? `⭐ ${Number(uni.rating).toFixed(1)}`
+                              : "N/A"}
                       </td>
                     ))}
                   </tr>
@@ -1003,15 +1415,17 @@ export const CompareUniversitiesForm = ({ universities, isOpen, onClose, onSucce
                 onClick={() => {
                   setComparisonResult(null);
                   setCompareSelection({ u1: "", u2: "", u3: "" });
+                  setNationality("");
+                  setCountryCode("");
                 }}
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 text-gray-700 font-semibold text-sm transition-colors"
               >
                 Compare Again
               </button>
 
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 shadow-md transition-all active:scale-95"
               >
                 Close
               </button>

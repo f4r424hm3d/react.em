@@ -5,7 +5,7 @@ import api from "../api";
 import {
   FaUser,
   FaEnvelope,
-  FaPhone,
+  FaPhoneAlt,
   FaFlag,
   FaPaperPlane,
 } from "react-icons/fa";
@@ -299,7 +299,7 @@ const GetInTouchForm = () => {
 
               <div className="relative w-2/3 md:w-3/4">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                  <FaPhone />
+                  <FaPhoneAlt />
                 </div>
                 <input
                   type="tel"

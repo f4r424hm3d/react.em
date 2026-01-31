@@ -124,20 +124,20 @@ const Login = () => {
 
   return (
     <div className="min-h-screen w-full flex bg-white font-sans">
-
+      
       {/* Left Side - Brand/Visual Section (Full Height) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-blue-600 relative overflow-hidden flex-col justify-between p-16 text-white text-left">
+      <div className="hidden lg:flex lg:w-1/2 bg-blue-600 sticky top-0 min-h-screen h-fit flex-col justify-between px-8 pb-8 pt-24 text-white text-left">
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-500 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 opacity-60"></div>
 
         {/* Content */}
         <div className="relative z-10 animate-fade-in-right">
-          <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+          <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
             <span className="text-xs font-semibold tracking-wide uppercase">Education Malaysia</span>
           </div>
-          <h1 className="text-6xl font-extrabold leading-tight mb-6 tracking-tight">
+          <h1 className="text-5xl font-extrabold leading-tight mb-4 tracking-tight">
             Unlock Your <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Global Future.</span>
           </h1>
           <p className="text-lg text-blue-100 max-w-lg leading-relaxed font-light">
@@ -146,7 +146,7 @@ const Login = () => {
         </div>
 
         {/* Footer/Testimonial */}
-        <div className="relative z-10 mt-auto pt-10 border-t border-white/10 grid grid-cols-2 gap-6">
+        <div className="relative z-10 mt-auto pt-8 border-t border-white/10 grid grid-cols-2 gap-6">
           <div>
             <h3 className="text-3xl font-bold">12+</h3>
             <p className="text-sm text-blue-200">Years of Experience</p>

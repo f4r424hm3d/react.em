@@ -17,7 +17,7 @@ function App() {
   return (
     <div >
       <main>
-        <section className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 text-white py-12 sm:py-12">
+        <section className="relative bg-gradient-to-br bg-blue-800 text-white py-12 sm:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -27,7 +27,7 @@ function App() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
                 Graduate Pass — Your Gateway to <span className="text-blue-100">12 Months</span> in Malaysia
               </h1>
-              <p className="text-lg sm:text-xl text-blue-100 mb-6 leading-relaxed">
+              <p className="text-lg sm:text-xl text-white mb-6 leading-relaxed">
                 Stay, work, and explore opportunities in Malaysia for up to one year after graduation — no employer sponsorship required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -199,7 +199,7 @@ function App() {
                   <div>
                     <h3 className="font-bold text-slate-800 mb-2">Special Note for India & China</h3>
                     <p className="text-slate-700 leading-relaxed">
-                      Eligibility extended until <strong>31 December 2026</strong> with case-by-case approvals. Applicants must submit a <strong>letter of good conduct</strong> from their institution or embassy.
+                      Eligibility extended until <strong>31 December 2024</strong> with case-by-case approvals. Applicants must submit a <strong>letter of good conduct</strong> from their institution or embassy.
                     </p>
                   </div>
                 </div>
@@ -208,20 +208,46 @@ function App() {
           </div>
         </section>
 
-        <section className="py-8 bg-blue-600 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-4">Eligible Nationalities</h2>
-              <p className="text-blue-100 mb-6">The Graduate Pass is available to nationals from numerous countries</p>
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
-                <p className="text-blue-50 leading-relaxed">
-                  Australia, New Zealand, Brunei, Cambodia, Myanmar, Philippines, Laos, Vietnam, Thailand, Indonesia, Singapore, South Korea, Japan, Germany, United Kingdom, France, Canada, Switzerland, Netherlands, Sweden, Norway, Denmark, Finland, United States, Saudi Arabia, Kuwait, UAE, Qatar, Oman, Bahrain, India*, China*, and more.
-                </p>
-                <p className="text-sm text-blue-200 mt-4">*Additional conditions apply</p>
-              </div>
-            </div>
+   <section className="py-8 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center max-w-3xl mx-auto mb-6-">
+      <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+        Eligible Nationalities
+      </h2>
+      <p className="mt-4 text-blue-100 text-lg">
+        The Graduate Pass is available for applicants from a wide range of countries worldwide.
+      </p>
+    </div>
+
+    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {[
+          "Australia", "New Zealand", "Brunei", "Cambodia", "Myanmar",
+          "Philippines", "Laos", "Vietnam", "Thailand", "Indonesia",
+          "Singapore", "South Korea", "Japan", "Germany",
+          "United Kingdom", "France", "Canada", "Switzerland",
+          "Netherlands", "Sweden", "Norway", "Denmark", "Finland",
+          "United States", "Saudi Arabia", "Kuwait", "UAE",
+          "Qatar", "Oman", "Bahrain", "India*", "China*"
+        ].map((country) => (
+          <div
+            key={country}
+            className="bg-white/20 hover:bg-white/30 transition rounded-lg px-4 py-2 text-center text-sm font-medium"
+          >
+            {country}
           </div>
-        </section>
+        ))}
+      </div>
+
+      <div className="mt-6 text-center">
+        <p className="text-sm text-blue-200">
+          *Additional conditions may apply for selected countries
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         <section id="documents" className="py-8 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -408,7 +434,7 @@ function App() {
                   <ArrowRight className="w-5 h-5 text-blue-600 transform group-open:rotate-90 transition-transform" />
                 </summary>
                 <p className="mt-4 text-slate-600 leading-relaxed">
-                  Eligibility for Indian and Chinese nationals is extended until 31 December 2026, with approvals considered case-by-case. Applicants must include a letter of good conduct from their institution or embassy.
+                  Eligibility for Indian and Chinese nationals is extended until 31 December 2024, with approvals considered case-by-case. Applicants must include a letter of good conduct from their institution or embassy.
                 </p>
               </details>
             </div>
@@ -420,7 +446,7 @@ function App() {
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to Apply?</h2>
               <p className="text-xl text-emerald-50 mb-10 leading-relaxed">
-                Your institution can submit the Graduate Pass application via the EMGS portal. For questions or help preparing documents, contact your university's international office or an EMGS-certified agent.
+                Your institution can submit the Graduate Pass application via the EMGS portal. For questions or help preparing documents, contact your university's international office.
               </p>
 
               <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl mb-8">
@@ -484,28 +510,6 @@ function App() {
             </div>
           </div>
         </section>
-
-        {/* <section className="py-12 bg-gray-900 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-3">
-                <GraduationCap className="w-8 h-8 text-emerald-400" />
-                <div>
-                  <div className="font-bold text-lg">Malaysia Graduate Pass</div>
-                  <div className="text-gray-400 text-sm">Live & Work in Malaysia</div>
-                </div>
-              </div>
-              <div className="text-center md:text-right">
-                <p className="text-gray-400 text-sm">
-                  Facilitated by Education Malaysia Global Services (EMGS)
-                </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  Processing times vary by nationality. Valid for 12 months from issuance.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section> */}
       </main>
     </div>
   );

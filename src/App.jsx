@@ -174,7 +174,7 @@ function App() {
 
         <Route path="/university/:slug" element={<UniversityDetail />} />
         <Route path="/university/:slug/:section" element={<UniversityDetail />} />
-        <Route path="/university/:slug/courses" element={<UniversityDetail />} />
+        {/* <Route path="/university/:slug/courses" element={<UniversityDetail />} /> */}
         <Route path="/university/:slug/courses/:courseSlug" element={<UniversityDetail />} />
 
         <Route path="/universities/:type" element={<UniversitiesList />} />

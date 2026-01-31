@@ -1,94 +1,81 @@
 import React, { useState, useEffect } from "react";
-import Slider from "react-slick";
-import { FaQuoteLeft, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  FaQuoteRight, 
+  FaUser, 
+  FaGlobeAmericas, 
+  FaBriefcase, 
+  FaPaperPlane, 
+  FaStar 
+} from "react-icons/fa";
 import api from "../../api";
 import { toast } from "react-toastify";
 
-const testimonials = [
+// Pre-filled testimonials
+const initialTestimonials = [
   {
     name: "HASEEB",
+    role: "Student",
     country: "PAKISTAN",
-    text:
-      "As a student I am really thankful that I got contacted with them. Their co-operation with students is really impressive and my overall experience is excellent with them.",
+    rating: 5,
+    text: "As a student I am really thankful that I got contacted with them. Their co-operation with students is really impressive and my overall experience is excellent with them.",
+    date: "2 months ago"
   },
   {
     name: "Neha",
+    role: "Student",
     country: "INDIA",
-    text:
-      "I am studying accountancy in Malaysia and got a very good help from their Gurgaon office regarding choosing the right course.",
+    rating: 5,
+    text: "I am studying accountancy in Malaysia and got a very good help from their Gurgaon office regarding choosing the right course.",
+    date: "1 month ago"
   },
   {
     name: "Aman",
+    role: "Student",
     country: "NEPAL",
-    text:
-      "They guided me at every step from selecting the university to the visa process. The team is really helpful.",
+    rating: 4,
+    text: "They guided me at every step from selecting the university to the visa process. The team is really helpful.",
+    date: "3 weeks ago"
   },
   {
     name: "Siti",
+    role: "Student",
     country: "MALAYSIA",
-    text:
-      "Very professional and responsive. Their assistance helped me a lot in getting into the course I dreamed of.",
+    rating: 5,
+    text: "Very professional and responsive. Their assistance helped me a lot in getting into the course I dreamed of.",
+    date: "1 week ago"
   },
 ];
 
-const CustomPrev = (props) => (
-  <button
-    {...props}
-    className="absolute -left-6 top-1/2 -translate-y-1/2 z-10 text-gray-500 hover:text-orange-600"
-  >
-    <FaChevronLeft size={22} />
-  </button>
-);
-
-const CustomNext = (props) => (
-  <button
-    {...props}
-    className="absolute -right-6 top-1/2 -translate-y-1/2 z-10 text-gray-500 hover:text-orange-600"
-  >
-    <FaChevronRight size={22} />
-  </button>
-);
-
 const WhatStudentsSay = () => {
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 700,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    nextArrow: <CustomNext />,
-    prevArrow: <CustomPrev />,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
-
+  const [reviews, setReviews] = useState(initialTestimonials);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    role: "",
+    role: "Student",
     country: "",
     review: "",
+    rating: 5
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleRating = (r) => {
+    setFormData({ ...formData, rating: r });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    if (!formData.name || !formData.email || !formData.phone || !formData.role || !formData.country || !formData.review) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.country || !formData.review) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -98,184 +85,302 @@ const WhatStudentsSay = () => {
       return;
     }
 
-    // Optimistic Update: Immediately show success to the user
-    // The backend might be slow (sending emails, etc.), so we don't wait for it.
+    setLoading(true);
 
+    // Create new review object
     const newReview = {
       name: formData.name,
+      role: formData.role,
       country: formData.country,
+      rating: formData.rating,
       text: formData.review,
+      date: "Just now" // Dynamic display
     };
 
-    // 1. Update UI immediately
-    toast.success("Review submitted successfully! Thank you for your feedback.");
-    setSubmittedReviews(prev => [newReview, ...prev]);
+    // Update UI immediately (Optimistic UI)
+    setReviews([newReview, ...reviews]);
+    toast.success("Review submitted successfully!");
 
-    // 2. Reset form immediately
+    // Reset form
+    const currentData = { ...formData }; // Keep for API call
     setFormData({
       name: "",
       email: "",
       phone: "",
-      role: "",
+      role: "Student",
       country: "",
       review: "",
+      rating: 5
     });
+    setLoading(false);
 
-    // 3. Send to API in background (Fire and Forget)
-    const params = new URLSearchParams();
-    params.append('name', formData.name);
-    params.append('email', formData.email);
-    params.append('mobile', formData.phone);
-    params.append('country_code', '91');
-    params.append('nationality', formData.country);
-    params.append('source', `Testimonial - Role: ${formData.role} | Review: ${formData.review}`);
-    params.append('source_path', window.location.href);
+    // Fire API call
+    try {
+      const params = new URLSearchParams();
+      params.append('name', currentData.name);
+      params.append('email', currentData.email);
+      params.append('mobile', currentData.phone);
+      params.append('country_code', '91'); // Defaulting, or could be dynamic
+      params.append('nationality', currentData.country);
+      params.append('source', `Testimonial - Role: ${currentData.role} | Rating: ${currentData.rating}/5 | Review: ${currentData.review}`);
+      params.append('source_path', window.location.href);
 
-    api.post("/inquiry/simple-form", params, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    })
-      .then(response => {
-        console.log("Review synced to backend:", response.data);
-      })
-      .catch(error => {
-        console.error("Background sync failed:", error);
-        // Optional: We could show an error toast here, but since we already showed success,
-        // it might be confusing. For a 'Contact/Review' form, optimistic success is usually preferred.
+      await api.post("/inquiry/simple-form", params, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
+      // Success is silent for API since we already showed it
+    } catch (error) {
+      console.error("Sync failed:", error);
+    }
   };
 
-  const [submittedReviews, setSubmittedReviews] = useState([]);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-
-
-
   return (
-    <section className="bg-gradient-to-b from-white via-blue-50 to-white py-16 px-4 md:px-10 lg:px-20">
-      {/* Heading */}
-      <div className="max-w-5xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-gray-800 mb-2">What People Are Saying <span className="text-blue-600">About Us</span></h2>
-        <p className="text-gray-600 text-lg">What Our Students Say?</p>
-      </div>
+    <div className="min-h-screen bg-gray-50/50 font-sans">
+      {/* Hero Header */}
+      <section className="relative py-20 px-4 overflow-hidden bg-gradient-to-br from-blue-900 to-blue-700 text-white">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+              What People Are Saying About Us
+            </h1>
+            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
+              Hear directly from our global community of students and parents about their journey with Education Malaysia.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
-      {/* Slider - showing both original testimonials + submitted reviews */}
-      <Slider {...settings} className="relative mb-20 max-w-6xl mx-auto">
-        {[...submittedReviews, ...testimonials].map((testimonial, index) => (
-          <div key={index} className="px-4">
-            <div className="bg-white/60 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6 md:p-8 flex flex-col items-center text-center space-y-4">
-              <div className="w-24 h-24 rounded-full bg-white shadow flex items-center justify-center">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-                  alt="avatar"
-                  className="w-16 h-16 object-contain"
-                />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 pb-20">
+        
+        {/* Reviews Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+          <AnimatePresence>
+            {reviews.map((review, index) => (
+              <motion.div
+                key={index}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+                className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 p-8 flex flex-col justify-between border border-gray-100"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
+                        {review.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900">{review.name}</h3>
+                        <p className="text-xs text-blue-600 font-semibold uppercase">{review.role}</p>
+                      </div>
+                    </div>
+                    <FaQuoteRight className="text-gray-200 text-4xl" />
+                  </div>
+
+                  <div className="flex text-yellow-400 mb-4 text-sm max-w-full overflow-hidden">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar key={i} className={i < (review.rating || 5) ? "fill-current" : "text-gray-300"} />
+                    ))}
+                  </div>
+
+                  <p className="text-gray-600 leading-relaxed italic mb-6">
+                    "{review.text}"
+                  </p>
+                </div>
+
+                <div className="border-t border-gray-100 pt-4 flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <FaGlobeAmericas className="text-blue-400" />
+                    <span className="font-medium">{review.country}</span>
+                  </div>
+                  <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">{review.date}</span>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Submission Form Section */}
+        <section className="bg-white rounded-3xl shadow-2xl overflow-hidden md:flex">
+          {/* Left Side: Context */}
+          <div className="hidden md:flex md:w-1/3 bg-blue-900 text-white p-12 flex-col justify-center relative">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+            <div className="relative z-10">
+              <h2 className="text-3xl font-bold mb-6">Share Your Story</h2>
+              <p className="text-blue-100 mb-8 leading-relaxed">
+                Your feedback helps us improve and inspires others to pursue their dreams in Malaysia. Let the world know about your experience!
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center">
+                    <FaBriefcase className="text-yellow-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Professional Support</h4>
+                    <p className="text-sm text-blue-200">Guidance at every step</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center">
+                    <FaGlobeAmericas className="text-yellow-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Global Community</h4>
+                    <p className="text-sm text-blue-200">Join students from everywhere</p>
+                  </div>
+                </div>
               </div>
-              <p className="text-gray-700 text-md leading-relaxed">
-                <FaQuoteLeft className="inline-block text-blue-600 mr-2" />
-                {testimonial.text}
-              </p>
-              <p className="font-semibold text-blue-600 text-sm">
-                {testimonial.name} <span className="text-gray-500">({testimonial.country})</span>
-              </p>
             </div>
           </div>
-        ))}
-      </Slider>
 
-      {/* Review Form */}
-      <div className="max-w-4xl mx-auto bg-white/60 backdrop-blur-lg rounded-2xl shadow-xl p-6 md:p-10 border border-gray-200">
-        <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">Write a Review</h3>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="px-4 py-3 w-full rounded-md border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email ID"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="px-4 py-3 w-full rounded-md border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          {/* Right Side: Form */}
+          <div className="p-8 md:p-12 md:w-2/3">
+            <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
+              Write a Review <span className="text-blue-600 text-sm font-normal bg-blue-50 px-3 py-1 rounded-full">It only takes a minute</span>
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Full Name</label>
+                  <div className="relative">
+                    <FaUser className="absolute left-4 top-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Your Role</label>
+                  <div className="relative">
+                    <FaBriefcase className="absolute left-4 top-3.5 text-gray-400" />
+                    <select
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white appearance-none"
+                    >
+                      <option value="Student">Student</option>
+                      <option value="Parent">Parent</option>
+                      <option value="Counselor">Counselor</option>
+                      <option value="Alumni">Alumni</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="john@example.com"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+91 98765 43210"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Country</label>
+                   <div className="relative">
+                    <FaGlobeAmericas className="absolute left-4 top-3.5 text-gray-400" />
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white appearance-none"
+                    >
+                      <option value="">Select Country</option>
+                      <option value="India">India</option>
+                      <option value="Pakistan">Pakistan</option>
+                      <option value="Bangladesh">Bangladesh</option>
+                      <option value="Nepal">Nepal</option>
+                      <option value="Sri Lanka">Sri Lanka</option>
+                      <option value="Malaysia">Malaysia</option>
+                      <option value="Nigeria">Nigeria</option>
+                      <option value="Middle East">Middle East</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Rating</label>
+                  <div className="flex gap-2 pt-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => handleRating(star)}
+                        className={`text-2xl transition-transform hover:scale-110 ${
+                          formData.rating >= star ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      >
+                        <FaStar />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 ml-1">Your Review</label>
+                <textarea
+                  name="review"
+                  rows="4"
+                  value={formData.review}
+                  onChange={handleChange}
+                  placeholder="Share your experience..."
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white resize-none"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  "Submitting..."
+                ) : (
+                  <>
+                    Submit Review <FaPaperPlane />
+                  </>
+                )}
+              </button>
+            </form>
           </div>
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Phone Number"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            className="px-4 py-3 w-full rounded-md border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              required
-              className="px-4 py-3 w-full rounded-md border border-gray-300 bg-white/80 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">What you are?</option>
-              <option value="Student">Student</option>
-              <option value="Parent">Parent</option>
-              <option value="Counselor">Counselor</option>
-            </select>
-            <select
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              required
-              className="px-4 py-3 w-full rounded-md border border-gray-300 bg-white/80 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Choose Country</option>
-              <option value="India">India</option>
-              <option value="Pakistan">Pakistan</option>
-              <option value="Malaysia">Malaysia</option>
-              <option value="Nepal">Nepal</option>
-            </select>
-          </div>
-          <textarea
-            name="review"
-            rows="5"
-            placeholder="Enter your review"
-            value={formData.review}
-            onChange={handleChange}
-            required
-            className="px-4 py-3 w-full rounded-md border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
-          <button
-            type="submit"
-            disabled={loading}
-            className={`inline-flex items-center justify-center border-2 border-blue-800 font-semibold px-6 py-2 rounded-full transition min-w-[160px] ${loading
-              ? "bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed"
-              : "text-blue-800 hover:bg-blue-800 hover:text-white"
-              }`}
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Submitting...
-              </>
-            ) : (
-              "Submit Review"
-            )}
-          </button>
-        </form>
+        </section>
       </div>
-    </section>
+    </div>
   );
 };
 

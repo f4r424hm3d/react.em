@@ -10,6 +10,8 @@ import {
   FaMapMarkerAlt,
   FaArrowRight,
 } from "react-icons/fa";
+import { MdPhone } from "react-icons/md";
+import { LuPhone } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import logo from "/logo (2).png";
 
@@ -78,7 +80,7 @@ const Footer = () => {
                   href="tel:+919818560331"
                   className="flex items-center gap-2 bg-[#003893] text-white px-4 py-2.5 rounded-lg font-medium text-sm hover:bg-[#002966] transition-all"
                 >
-                  <FaPhone /> Call Now
+                  <LuPhone /> Call Now
                 </a>
 
                 <a
@@ -107,7 +109,7 @@ const Footer = () => {
 
               <div className="space-y-2 text-sm">
                 <a href="tel:+919818560331" className="flex items-center gap-2 text-gray-600 hover:text-[#003893] transition-colors">
-                  <FaPhone className="text-xs" /> +91-98185-60331
+                  <MdPhone  className="text-xs" /> +91-98185-60331
                 </a>
                 <a href="mailto:info@educationmalaysia.in" className="flex items-center gap-2 text-gray-600 hover:text-[#003893] transition-colors">
                   <FaEnvelope className="text-xs" /> info@educationmalaysia.in
@@ -192,10 +194,10 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-[#00143a] py-5">
+      <div className="bg-blue-900 py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-white/60 text-xs sm:text-sm">
+            <p className="text-white text-xs sm:text-sm">
               © {currentYear} Education Malaysia. All rights reserved.
             </p>
 

@@ -195,19 +195,21 @@ function FieldOfStudyDashboard() {
 
           {/* Year Selection */}
           <div className={`transition-all duration-300 overflow-hidden ${showFilters ? 'max-h-96 mt-4' : 'max-h-0'}`}>
-            <div className="flex flex-wrap justify-center gap-2 p-3 sm:p-4 bg-white/60 backdrop-blur-sm rounded-lg shadow-md">
-              {years.map((year) => (
-                <button
-                  key={year}
-                  onClick={() => toggleYear(year)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${selectedYears.includes(year)
-                    ? 'bg-gradient-to-r from-[#003893] to-[#003893] text-white shadow-lg transform scale-105'
-                    : 'bg-white/80 text-gray-600 border border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                    }`}
-                >
-                  {year}
-                </button>
-              ))}
+            <div className="overflow-x-auto p-3 sm:p-4 bg-white/60 backdrop-blur-sm rounded-lg shadow-md scrollbar-hide">
+              <div className="flex justify-center gap-2 min-w-max">
+                {years.map((year) => (
+                  <button
+                    key={year}
+                    onClick={() => toggleYear(year)}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${selectedYears.includes(year)
+                      ? 'bg-gradient-to-r from-[#003893] to-[#003893] text-white shadow-lg transform scale-105'
+                      : 'bg-white/80 text-gray-600 border border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                      }`}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <p className="text-sm sm:text-base text-gray-600 max-w-4xl mx-auto px-4">

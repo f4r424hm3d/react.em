@@ -92,19 +92,6 @@ const MqaPage = () => {
         'Provides confidence in the competency and knowledge of graduates',
       ],
     },
-    {
-      icon: Briefcase,
-      title: 'For Employers',
-      color: 'from-cyan-600 to-blue-600',
-      bgColor: 'from-cyan-50 to-blue-50',
-      points: [
-        'Qualified holders from MQA-accredited programmes provide quality assurance',
-        'Non-accredited programmes may pose risks for employment recognition',
-        'Accreditation ensures graduates meet industry-relevant standards',
-        'Critical for public sector employment and professional registrations',
-        'Provides confidence in the competency and knowledge of graduates',
-      ],
-    },
   ];
 
   // How to check
@@ -197,7 +184,7 @@ const MqaPage = () => {
       {/* -------------------- HERO SECTION -------------------- */}
       <section
         id="home"
-        className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 text-white overflow-hidden"
+        className="relative bg-gradient-to-br bg-blue-800 text-white overflow-hidden"
       >
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"></div>
 
@@ -466,43 +453,58 @@ const MqaPage = () => {
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white shadow-xl">
-            <h3 className="text-xl font-bold mb-3 flex items-center">
-              <span className="bg-white/20 p-2 rounded-lg mr-3">
-                <FileCheck className="w-5 h-5" />
-              </span>
-              MQF - Malaysian Qualifications Framework
-            </h3>
-            <p className="text-blue-100 leading-relaxed mb-3 text-sm">
-              A unified system that classifies all post-secondary qualifications in Malaysia from
-              certificate to doctoral level, covering both higher education and TVET sectors.
-            </p>
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <p className="text-xs text-blue-100">
-                The MQF ensures consistency, transparency, and international comparability of Malaysian qualifications.
-              </p>
-            </div>
-          </div>
+       <div className="grid md:grid-cols-2 gap-8">
+  {/* MQF Card */}
+  <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 p-6 text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-blue-500/40">
+    
+    {/* Glow effect */}
+    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-          <div className="bg-gradient-to-br from-blue-800 to-blue-900 rounded-2xl p-6 text-white shadow-xl">
-            <h3 className="text-xl font-bold mb-3 flex items-center">
-              <span className="bg-white/20 p-2 rounded-lg mr-3">
-                <Award className="w-5 h-5" />
-              </span>
-              MQR - Malaysian Qualifications Register
-            </h3>
-            <p className="text-blue-100 leading-relaxed mb-3 text-sm">
-              The official register of accredited programmes and qualifications maintained by MQA,
-              showing details like qualification level, credits, validity period, and institution name.
-            </p>
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <p className="text-xs text-blue-100">
-                The MQR is your trusted source for verifying the accreditation status of any programme.
-              </p>
-            </div>
-          </div>
-        </div>
+    <h3 className="relative z-10 flex items-center text-xl font-semibold mb-4">
+      <span className="mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+        <FileCheck className="h-5 w-5" />
+      </span>
+      MQF – Malaysian Qualifications Framework
+    </h3>
+
+    <p className="relative z-10 text-sm text-blue-100 leading-relaxed mb-4">
+      A unified system that classifies all post-secondary qualifications in Malaysia from
+      certificate to doctoral level, covering both higher education and TVET sectors.
+    </p>
+
+    <div className="relative z-10 rounded-xl bg-white/15 p-4 backdrop-blur-md border border-white/10">
+      <p className="text-xs text-blue-100">
+        Ensures consistency, transparency, and international comparability of Malaysian qualifications.
+      </p>
+    </div>
+  </div>
+
+  {/* MQR Card */}
+  <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-blue-900 to-slate-900 p-6 text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-indigo-500/40">
+    
+    {/* Glow effect */}
+    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+    <h3 className="relative z-10 flex items-center text-xl font-semibold mb-4">
+      <span className="mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+        <Award className="h-5 w-5" />
+      </span>
+      MQR – Malaysian Qualifications Register
+    </h3>
+
+    <p className="relative z-10 text-sm text-blue-100 leading-relaxed mb-4">
+      The official register of accredited programmes and qualifications maintained by MQA,
+      showing qualification level, credits, validity period, and institution name.
+    </p>
+
+    <div className="relative z-10 rounded-xl bg-white/15 p-4 backdrop-blur-md border border-white/10">
+      <p className="text-xs text-blue-100">
+        Trusted source to verify the accreditation status of any programme.
+      </p>
+    </div>
+  </div>
+</div>
+
       </div>
     </section>
 
