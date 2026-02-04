@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -22,8 +20,8 @@ const Hero = () => {
     // Set initial value
     handleResize();
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const [banners, setBanners] = useState([]);
@@ -32,9 +30,10 @@ const Hero = () => {
   // ✅ Default content - immediately visible
   const defaultBanner = {
     title: "Explore Top Universities",
-    description: "Begin your study journey in Malaysia with expert guidance for admissions, course selection, and fast-track visa processing.",
+    description:
+      "Begin your study journey in Malaysia with expert guidance for admissions, course selection, and fast-track visa processing.",
     banner_path: "/default-banner.jpg",
-    alt_text: "Education Malaysia"
+    alt_text: "Education Malaysia",
   };
 
   useEffect(() => {
@@ -99,7 +98,7 @@ const Hero = () => {
             <SwiperSlide key={banner.id || i}>
               <img
                 src={
-                  banner.banner_path.startsWith('/')
+                  banner.banner_path.startsWith("/")
                     ? banner.banner_path
                     : `https://www.educationmalaysia.in/storage/${banner.banner_path}`
                 }
@@ -107,9 +106,9 @@ const Hero = () => {
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   // ✅ Fallback to placeholder gradient
-                  e.target.style.display = 'none';
+                  e.target.style.display = "none";
                   e.target.parentElement.style.background =
-                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
                 }}
               />
             </SwiperSlide>
@@ -149,7 +148,10 @@ const Hero = () => {
             {mainBanner.description}
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-wrap gap-4 pointer-events-auto">
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-wrap gap-4 pointer-events-auto"
+          >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link to="/who-we-are">
                 <button className="cursor-pointer bg-[#003893] hover:bg-[#002966] text-white font-bold px-8 py-3.5 rounded-full transition-all duration-300 shadow-lg shadow-blue-900/30 hover:shadow-blue-900/50 flex items-center gap-2">
@@ -170,7 +172,7 @@ const Hero = () => {
       </div>
 
       {/* Custom CSS for Swiper Controls */}
-      <style jsx>{`
+      <style>{`
         /* Desktop/Tablet - Show arrows with styling */
         @media (min-width: 768px) {
           :global(.swiper-button-prev),

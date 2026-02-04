@@ -26,7 +26,8 @@ const TestimonialSlider = () => {
       try {
         const res = await api.get("/home");
         const apiTestimonials =
-          res?.data?.data?.testimonials?.filter((t) => t.name && t.review) || [];
+          res?.data?.data?.testimonials?.filter((t) => t.name && t.review) ||
+          [];
 
         let updated = apiTestimonials.map((t, i) => ({
           ...t,
@@ -100,23 +101,30 @@ const TestimonialSlider = () => {
           className="pb-12 pt-8 px-6"
         >
           {testimonials.map((t, index) => (
-            <SwiperSlide key={t.id || index} className="h-full py-4 transition-all duration-500">
+            <SwiperSlide
+              key={`testimonial-${index}`}
+              className="h-full py-4 transition-all duration-500"
+            >
               {({ isActive }) => (
                 <div
                   className={`
                     flex flex-col rounded-2xl overflow-hidden transition-all duration-500 border w-full
-                    ${isActive
-                      ? "scale-105 shadow-xl border-white ring-4 ring-blue-50 z-20 opacity-100 grayscale-0"
-                      : "scale-90 shadow-none border-slate-100 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 hover:scale-100 z-10"}
+                    ${
+                      isActive
+                        ? "scale-105 shadow-xl border-white ring-4 ring-blue-50 z-20 opacity-100 grayscale-0"
+                        : "scale-90 shadow-none border-slate-100 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 hover:scale-100 z-10"
+                    }
                     bg-white
                   `}
-                  style={{ height: '300px' }}
+                  style={{ height: "300px" }}
                 >
                   {/* Header */}
-                  <div className={`
+                  <div
+                    className={`
                     p-4 flex items-center gap-3 transition-colors duration-500
                     ${isActive ? "bg-gradient-to-r from-[#003893] to-[#1b61ca]" : "bg-slate-100"}
-                  `}>
+                  `}
+                  >
                     <img
                       src={t.image}
                       alt={t.name}
@@ -125,23 +133,29 @@ const TestimonialSlider = () => {
                         ${isActive ? "border-white" : "border-slate-300"}
                       `}
                       onError={(e) => {
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=${isActive ? 'ffffff' : 'cbd5e1'}&color=${isActive ? '003893' : '64748b'}&bold=true`;
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=${isActive ? "ffffff" : "cbd5e1"}&color=${isActive ? "003893" : "64748b"}&bold=true`;
                       }}
                     />
                     <div>
-                      <h3 className={`
+                      <h3
+                        className={`
                         text-sm font-bold uppercase tracking-wide leading-tight
                         ${isActive ? "text-white" : "text-slate-600"}
-                      `}>
+                      `}
+                      >
                         {t.name}
                       </h3>
-                      <div className={`
+                      <div
+                        className={`
                         flex items-center gap-1.5 text-xs font-medium mt-1
                         ${isActive ? "text-blue-100" : "text-slate-500"}
-                      `}>
+                      `}
+                      >
                         {t.country && (
                           <span className="flex items-center gap-1">
-                            <MapPin className={`w-3.5 h-3.5 ${isActive ? "text-blue-200" : "text-slate-400"}`} />
+                            <MapPin
+                              className={`w-3.5 h-3.5 ${isActive ? "text-blue-200" : "text-slate-400"}`}
+                            />
                             {t.country}
                           </span>
                         )}
@@ -155,26 +169,36 @@ const TestimonialSlider = () => {
                       {/* Stars */}
                       <div className="flex gap-1 mb-2">
                         {[...Array(5)].map((_, i) => (
-                          <svg key={i} className={`w-3.5 h-3.5 ${isActive ? "text-yellow-400" : "text-slate-300"} fill-current`} viewBox="0 0 20 20">
+                          <svg
+                            key={i}
+                            className={`w-3.5 h-3.5 ${isActive ? "text-yellow-400" : "text-slate-300"} fill-current`}
+                            viewBox="0 0 20 20"
+                          >
                             <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                           </svg>
                         ))}
                       </div>
 
                       {/* Review */}
-                      <p className={`
+                      <p
+                        className={`
                         text-[15px] leading-snug italic line-clamp-4
                         ${isActive ? "text-slate-700" : "text-slate-500"}
-                        `}>
+                        `}
+                      >
                         "{t.review}"
                       </p>
                     </div>
 
                     {/* Footer Info */}
-                    <div className={`mt-3 pt-2 border-t ${isActive ? 'border-slate-50' : 'border-slate-100'}`}>
+                    <div
+                      className={`mt-3 pt-2 border-t ${isActive ? "border-slate-50" : "border-slate-100"}`}
+                    >
                       <div className="flex flex-col gap-0.5">
                         {t.program && (
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? "text-[#003893]" : "text-slate-400"}`}>
+                          <span
+                            className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? "text-[#003893]" : "text-slate-400"}`}
+                          >
                             {t.program}
                           </span>
                         )}
@@ -186,7 +210,6 @@ const TestimonialSlider = () => {
                       </div>
                     </div>
                   </div>
-
                 </div>
               )}
             </SwiperSlide>

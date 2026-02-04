@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Education Malaysia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #003893;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #002a6b;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #003893;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+        .loading { border-left-color: #ffc107; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Education Malaysia API Test</h1>
+    
+    <div class="test-box">
+        <h2>Test Individual Endpoints</h2>
+        <button onclick="testYears()">Test /get-years</button>
+        <button onclick="testCategories()">Test /get-categories</button>
+        <button onclick="testStats()">Test /stats/years</button>
+        <button onclick="testAll()">Test All (Parallel)</button>
+        <div id="result1" class="result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Console Logs</h2>
+        <button onclick="clearConsole()">Clear Console</button>
+        <div id="console" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://www.educationmalaysia.in/api';
+        const API_KEY = 'vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE=';
+        
+        function log(message, type = 'info') {
+            const consoleDiv = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            consoleDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearConsole() {
+            document.getElementById('console').innerHTML = '';
+            document.getElementById('result1').innerHTML = '';
+        }
+
+        async function apiCall(endpoint) {
+            const url = `${API_BASE}${endpoint}`;
+            log(`🔵 Requesting: ${url}`);
+            
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'x-api-key': API_KEY
+                    }
+                });
+                
+                log(`📥 Response status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log(`✅ Data received (${JSON.stringify(data).length} chars)`, 'success');
+                return data;
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function testYears() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '⏳ Testing /get-years...';
+            
+            try {
+                const data = await apiCall('/malaysia-application-stats/get-years');
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ SUCCESS!\n\nYears: ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ FAILED!\n\nError: ' + error.message;
+            }
+        }
+
+        async function testCategories() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '⏳ Testing /get-categories...';
+            
+            try {
+                const data = await apiCall('/malaysia-application-stats/get-categories');
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ SUCCESS!\n\nCategories: ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ FAILED!\n\nError: ' + error.message;
+            }
+        }
+
+        async function testStats() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '⏳ Testing /stats/years...';
+            
+            try {
+                const data = await apiCall('/malaysia-application-stats/stats/years');
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ SUCCESS!\n\nStats: ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ FAILED!\n\nError: ' + error.message;
+            }
+        }
+
+        async function testAll() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '⏳ Testing all endpoints in parallel...';
+            
+            try {
+                log('🚀 Starting parallel fetch of all 3 endpoints');
+                const startTime = Date.now();
+                
+                const [years, categories, stats] = await Promise.all([
+                    apiCall('/malaysia-application-stats/get-years'),
+                    apiCall('/malaysia-application-stats/get-categories'),
+                    apiCall('/malaysia-application-stats/stats/years')
+                ]);
+                
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                log(`✅ All requests completed in ${duration}ms`, 'success');
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ ALL TESTS PASSED! (${duration}ms)\n\n` +
+                    `Years (${years.length}): ${JSON.stringify(years)}\n\n` +
+                    `Categories (${categories.length}): ${JSON.stringify(categories.map(c => c.category || c.name))}\n\n` +
+                    `Stats Years: ${stats.years ? stats.years.length : 0}\n` +
+                    `Overall Total: ${stats.overall_total || 'N/A'}`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ SOME TESTS FAILED!\n\nError: ' + error.message;
+            }
+        }
+
+        // Auto-run test on page load
+        window.onload = () => {
+            log('🎯 API Test page loaded');
+            log('Click buttons above to test endpoints');
+        };
+    </script>
+</body>
+</html>
