@@ -140,7 +140,7 @@
 // //           {JSON.stringify(seo.seo_rating_schema)}
 // //         </script>
 // //       )}
-     
+
 // //     </Helmet>
 // //     <div className="bg-gray-100 min-h-screen py-10 px-4">
 // //       <div className="max-w-6xl mx-auto p-6 bg-white border border-gray-200 rounded-lg shadow-sm mb-10">
@@ -258,7 +258,6 @@
 // //   );
 // // }
 
-
 // import React, { useState, useEffect } from "react";
 // import { useParams, useNavigate, Link } from "react-router-dom";
 // import { CheckCircle, ChevronDown, ChevronUp, Loader2, Home, ChevronRight } from "lucide-react";
@@ -276,25 +275,25 @@
 //   decoded = decoded.replace(/<\/span>/gi, "");
 //   decoded = decoded.replace(/style="[^"]*"/gi, "");
 //   decoded = decoded.replace(/&nbsp;/gi, " ");
-  
+
 //   // Fix headings with colons
 //   decoded = decoded.replace(/<h([1-6])[^>]*>([^<]*?)\s*:\s*<\/h\1>/gi, (_m, level, title) => {
 //     return `<h${level} class="text-xl font-bold mb-3 mt-6 text-gray-900">${title.trim()}</h${level}>`;
 //   });
-  
+
 //   decoded = decoded.replace(/<p>\s*:\s*/gi, "<p>");
-  
+
 //   // Convert strong/b to proper h4 headings
 //   decoded = decoded.replace(/<strong>(.*?)<\/strong>/gi, `<h4 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$1</h4>`);
 //   decoded = decoded.replace(/<b>(.*?)<\/b>/gi, `<h4 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$1</h4>`);
-  
+
 //   // Style h2 headings
 //   decoded = decoded.replace(/<h2>/gi, '<h2 class="text-xl font-bold mb-3 mt-6 text-gray-900">');
 //   decoded = decoded.replace(/<h3>/gi, '<h3 class="text-lg font-semibold mb-2 mt-4 text-gray-800">');
-  
+
 //   // Style hyperlinks properly
 //   decoded = decoded.replace(/<a\s+href="([^"]*)"/gi, '<a href="$1" class="text-blue-600 hover:text-blue-800 underline font-medium"');
-  
+
 //   decoded = decoded.replace(/(?:\r\n|\r|\n)/g, "</p><p>");
 //   decoded = `<p>${decoded}</p>`;
 //   decoded = decoded.replace(/<p><\/p>/g, "");
@@ -547,9 +546,17 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { CheckCircle, ChevronDown, ChevronUp, Loader2, Home, ChevronRight } from "lucide-react";
+import {
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Home,
+  ChevronRight,
+} from "lucide-react";
 import api from "../../api";
-import { Helmet } from "react-helmet";
+import SEO from "../../components/SEO";
+import SeoService from "../../utils/SeoService";
 
 const formatHTML = (html) => {
   if (!html) return "";
@@ -562,25 +569,43 @@ const formatHTML = (html) => {
   decoded = decoded.replace(/<\/span>/gi, "");
   decoded = decoded.replace(/style="[^"]*"/gi, "");
   decoded = decoded.replace(/&nbsp;/gi, " ");
-  
+
   // Fix headings with colons
-  decoded = decoded.replace(/<h([1-6])[^>]*>([^<]*?)\s*:\s*<\/h\1>/gi, (_m, level, title) => {
-    return `<h${level} class="text-xl font-bold mb-3 mt-6 text-gray-900">${title.trim()}</h${level}>`;
-  });
-  
+  decoded = decoded.replace(
+    /<h([1-6])[^>]*>([^<]*?)\s*:\s*<\/h\1>/gi,
+    (_m, level, title) => {
+      return `<h${level} class="text-xl font-bold mb-3 mt-6 text-gray-900">${title.trim()}</h${level}>`;
+    },
+  );
+
   decoded = decoded.replace(/<p>\s*:\s*/gi, "<p>");
-  
+
   // Convert strong/b to proper h4 headings
-  decoded = decoded.replace(/<strong>(.*?)<\/strong>/gi, `<h4 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$1</h4>`);
-  decoded = decoded.replace(/<b>(.*?)<\/b>/gi, `<h4 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$1</h4>`);
-  
+  decoded = decoded.replace(
+    /<strong>(.*?)<\/strong>/gi,
+    `<h4 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$1</h4>`,
+  );
+  decoded = decoded.replace(
+    /<b>(.*?)<\/b>/gi,
+    `<h4 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$1</h4>`,
+  );
+
   // Style h2 headings
-  decoded = decoded.replace(/<h2>/gi, '<h2 class="text-xl font-bold mb-3 mt-6 text-gray-900">');
-  decoded = decoded.replace(/<h3>/gi, '<h3 class="text-lg font-semibold mb-2 mt-4 text-gray-800">');
-  
+  decoded = decoded.replace(
+    /<h2>/gi,
+    '<h2 class="text-xl font-bold mb-3 mt-6 text-gray-900">',
+  );
+  decoded = decoded.replace(
+    /<h3>/gi,
+    '<h3 class="text-lg font-semibold mb-2 mt-4 text-gray-800">',
+  );
+
   // Style hyperlinks properly
-  decoded = decoded.replace(/<a\s+href="([^"]*)"/gi, '<a href="$1" class="text-blue-600 hover:text-blue-800 underline font-medium"');
-  
+  decoded = decoded.replace(
+    /<a\s+href="([^"]*)"/gi,
+    '<a href="$1" class="text-blue-600 hover:text-blue-800 underline font-medium"',
+  );
+
   decoded = decoded.replace(/(?:\r\n|\r|\n)/g, "</p><p>");
   decoded = `<p>${decoded}</p>`;
   decoded = decoded.replace(/<p><\/p>/g, "");
@@ -588,30 +613,30 @@ const formatHTML = (html) => {
   // ✅ FIXED: Table styling with INLINE CSS for guaranteed visibility
   decoded = decoded.replace(
     /<table(.*?)>/g,
-    `<div class="overflow-auto rounded-xl shadow-sm border border-gray-200 my-6"><table class="w-full border-collapse" style="width: 100%;" $1>`
+    `<div class="overflow-auto rounded-xl shadow-sm border border-gray-200 my-6"><table class="w-full border-collapse" style="width: 100%;" $1>`,
   );
   decoded = decoded.replace(/<\/table>/g, "</table></div>");
-  
+
   // ✅ FIXED: Dark blue background with inline styles - ALWAYS VISIBLE!
   decoded = decoded.replace(
     /<thead>/g,
-    '<thead style="background: linear-gradient(to right, #1e40af, #1e3a8a); color: white;">'
+    '<thead style="background: linear-gradient(to right, #1e40af, #1e3a8a); color: white;">',
   );
-  
+
   // ✅ FIXED: White text on dark blue - crystal clear visibility!
   decoded = decoded.replace(
     /<th>/g,
-    '<th style="padding: 12px 16px; font-weight: 600; color: white; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); white-space: nowrap;">'
+    '<th style="padding: 12px 16px; font-weight: 600; color: white; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); white-space: nowrap;">',
   );
-  
+
   decoded = decoded.replace(
-    /<tr>/g, 
-    '<tr style="transition: background-color 0.2s;">'
+    /<tr>/g,
+    '<tr style="transition: background-color 0.2s;">',
   );
-  
+
   decoded = decoded.replace(
     /<td>(.*?)<\/td>/g,
-    '<td style="padding: 12px 16px; font-size: 14px; color: #1f2937; border-bottom: 1px solid #e5e7eb;">$1</td>'
+    '<td style="padding: 12px 16px; font-size: 14px; color: #1f2937; border-bottom: 1px solid #e5e7eb;">$1</td>',
   );
 
   // Add hover effect to table rows via style tag
@@ -624,10 +649,19 @@ const formatHTML = (html) => {
     }
   </style>`;
 
-  decoded = decoded.replace(/<input[^>]*type=["']checkbox["'][^>]*>/gi, `<span class="inline-block w-4 h-4 rounded border border-gray-400 mr-2 bg-white"></span>`);
+  decoded = decoded.replace(
+    /<input[^>]*type=["']checkbox["'][^>]*>/gi,
+    `<span class="inline-block w-4 h-4 rounded border border-gray-400 mr-2 bg-white"></span>`,
+  );
 
-  decoded = decoded.replace(/<ul>/g, '<ul class="list-disc pl-6 space-y-2 text-gray-800">');
-  decoded = decoded.replace(/<ol>/g, '<ol class="list-decimal pl-6 space-y-2 text-gray-800">');
+  decoded = decoded.replace(
+    /<ul>/g,
+    '<ul class="list-disc pl-6 space-y-2 text-gray-800">',
+  );
+  decoded = decoded.replace(
+    /<ol>/g,
+    '<ol class="list-decimal pl-6 space-y-2 text-gray-800">',
+  );
   decoded = decoded.replace(/<li>/g, '<li class="mb-1">');
 
   return tableStyleTag + decoded;
@@ -642,7 +676,7 @@ export default function QualifiedLevelDetail() {
   const [loading, setLoading] = useState(true);
   const [seo, setSeo] = useState({});
   const [error, setError] = useState(null);
-  
+
   // ✅ NEW: Mobile "Show More" functionality
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -656,11 +690,11 @@ export default function QualifiedLevelDetail() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -677,9 +711,10 @@ export default function QualifiedLevelDetail() {
         if (err.response?.status !== 404) {
           console.error("Failed to fetch course data:", err);
         }
-        setError(err.response?.status === 404 
-          ? "Course not found. This course may not exist or has been removed." 
-          : "Failed to load course data. Please try again later."
+        setError(
+          err.response?.status === 404
+            ? "Course not found. This course may not exist or has been removed."
+            : "Failed to load course data. Please try again later.",
         );
       } finally {
         setLoading(false);
@@ -714,14 +749,24 @@ export default function QualifiedLevelDetail() {
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="w-8 h-8 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
           <p className="text-gray-600 mb-6">{error}</p>
-          <Link 
-            to="/courses" 
+          <Link
+            to="/courses"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Back to Courses
@@ -734,35 +779,27 @@ export default function QualifiedLevelDetail() {
   const visibleCategories = getVisibleCategories();
   const hasMoreCategories = isMobile && categories.length > 4;
 
+  // ✅ Generate SEO data for course overview
+  const courseData = {
+    name: pageContent?.heading || slug,
+    slug: slug,
+    description: seo?.meta_description,
+    seo: seo,
+  };
+
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title}</title>
-        <meta name="title" content={seo?.meta_title} />
-        <meta name="description" content={seo?.meta_description} />
-        <meta name="keywords" content={seo?.meta_keyword} />
-        <meta name="robots" content={seo?.robots || "index, follow"} />
-        {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
-        <meta property="og:title" content={seo?.meta_title} />
-        <meta property="og:description" content={seo?.meta_description} />
-        <meta property="og:image" content={seo?.og_image_path} />
-        <meta property="og:url" content={seo?.page_url} />
-        <meta property="og:site_name" content={seo?.site_name || "Study in Malaysia"} />
-        <meta property="og:type" content={seo?.og_type || "website"} />
-        <meta property="og:locale" content={seo?.og_locale || "en_US"} />
-        {seo?.seo_rating && <meta name="seo:rating" content={seo?.seo_rating} />}
-        {seo?.seo_rating_schema && (
-          <script type="application/ld+json">
-            {JSON.stringify(seo.seo_rating_schema)}
-          </script>
-        )}
-      </Helmet>
+      {/* ✅ Enhanced SEO Component with SeoService */}
+      <SEO {...SeoService.generateCourseOverviewMeta(courseData)} />
 
       <div className="bg-gray-100 min-h-screen py-10 px-4">
         {/* Breadcrumb */}
         <div className="max-w-6xl mx-auto mb-4">
           <nav className="flex items-center space-x-2 text-sm text-gray-600">
-            <Link to="/" className="flex items-center hover:text-blue-600 transition">
+            <Link
+              to="/"
+              className="flex items-center hover:text-blue-600 transition"
+            >
               <Home className="w-4 h-4" />
             </Link>
             <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -899,8 +936,8 @@ export default function QualifiedLevelDetail() {
                     className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
                   >
                     <span>
-                      {showAllCategories 
-                        ? "Show Less" 
+                      {showAllCategories
+                        ? "Show Less"
                         : `Show More (${categories.length - 4} more)`}
                     </span>
                     {showAllCategories ? (

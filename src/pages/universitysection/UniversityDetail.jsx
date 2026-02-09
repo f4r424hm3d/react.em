@@ -30,6 +30,7 @@ import api from "../../api";
 import UniversityCoursesCard from "./UniversityCoursesCard";
 
 import SEO from "../../components/SEO";
+import SeoService from "../../utils/SeoService";
 
 import { Home, Layers, Loader2 } from "lucide-react";
 
@@ -1040,17 +1041,8 @@ const UniversityDetailPage = () => {
 
   return (
     <>
-      {/* SEO Component */}
-
-      <SEO
-        title={seo?.meta_title}
-        description={seo?.meta_description}
-        keywords={seo?.meta_keyword}
-        ogImage={seo?.og_image_path}
-        pageContent={seo?.page_content}
-        pageurl={seo?.page_url}
-        seorating={seo?.seo_rating}
-      />
+      {/* ✅ Enhanced SEO Component with SeoService */}
+      <SEO {...SeoService.generateUniversityDetailMeta(universityData)} />
 
       <div className="w-full bg-blue-50 shadow-sm pt-2">
         <div className="max-w-screen-xl mx-auto px-2 sm:px-3 py-3">
