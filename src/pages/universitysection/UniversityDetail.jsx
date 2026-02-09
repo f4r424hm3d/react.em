@@ -286,6 +286,7 @@ const UniversityDetailPage = () => {
   const [isCounsellingOpen, setIsCounsellingOpen] = useState(false);
 
   const [isApplyOpen, setIsApplyOpen] = useState(false);
+  const [isFeeOpen, setIsFeeOpen] = useState(false);
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
@@ -1082,7 +1083,6 @@ const UniversityDetailPage = () => {
       <div className="sm:hidden bg-gray-50">
         <div className="bg-white p-3">
           {/* Logo, Title, and Details */}
-
           <div className="flex items-start gap-3 mb-4">
             <div className="w-20 h-20 flex-shrink-0 border border-gray-200 rounded-xl p-1">
               <img
@@ -1103,20 +1103,8 @@ const UniversityDetailPage = () => {
               <h1 className="text-lg font-bold text-gray-900">
                 {universityData?.name || "University"}
               </h1>
-              {/* <div className="flex items-center gap-1.5 mt-1">
-
-                <FaMapMarkerAlt className="text-blue-500 text-xs" />
-
-                <span className="text-blue-600 font-medium text-sm">
-
-                  Location: {universityData.city}
-
-                </span>
-
-              </div> */}
               <div className="flex items-center gap-1.5 mt-1">
                 <FaMapMarkerAlt className="text-blue-500 text-xs flex-shrink-0" />
-
                 <span
                   className="text-blue-600 font-medium text-sm "
                   title={`Location: ${universityData?.city}`}
@@ -1127,7 +1115,6 @@ const UniversityDetailPage = () => {
               {/* SETARA Stars */}
               <div className="flex items-center gap-1 text-gray-600 text-sm">
                 <span className="font-medium">SETARA:</span>
-
                 {[...Array(5)].map((_, i) => (
                   <FaStar
                     key={i}
@@ -1142,42 +1129,22 @@ const UniversityDetailPage = () => {
             </div>
           </div>
 
-          {/* </div> */}
-
           {/* Main Image */}
-
           <div
             className="relative mb-4"
             style={{
-              border: featuredPhotos?.length > 0 ? "3px solid red" : "none",
-
+              border: featuredPhotos?.length > 0 ? "none" : "none", // Removed debug border
               minHeight: "200px",
             }}
           >
-            {console.log("Mobile image render check:", {
-              hasFeaturedPhotos: !!featuredPhotos,
-
-              length: featuredPhotos?.length,
-
-              firstPhoto: featuredPhotos?.[0],
-
-              photoPath: featuredPhotos?.[0]?.photo_path,
-
-              imageUrl: getImageUrl(featuredPhotos?.[0]?.photo_path),
-            })}
-
             {featuredPhotos?.length > 0 && featuredPhotos[0]?.photo_path && (
               <img
                 src={getImageUrl(featuredPhotos[0].photo_path)}
                 alt={featuredPhotos[0].photo_name || "University main image"}
                 className="w-full h-48 object-cover rounded-lg"
                 onError={(e) => {
-                  console.error("Image failed to load:", e.target.src);
-
+                  // console.error("Image failed to load:", e.target.src);
                   e.target.src = "/placeholder-university.jpg";
-                }}
-                onLoad={(e) => {
-                  console.log("✅ Image loaded successfully:", e.target.src);
                 }}
               />
             )}
@@ -1189,67 +1156,199 @@ const UniversityDetailPage = () => {
             )}
           </div>
 
-          {/* Action Buttons Row */}
+          {/* Info Boxes Grid (Established, Accredited, Hostel, Contact) */}
+          <div className="grid grid-cols-1 gap-3 mb-4">
+            {/* Established Year Card (style matched from desktop but full width or grid) */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
+                <BsCalendar3 className="text-xl text-blue-600" />
+                <h3 className="text-base font-bold leading-tight">
+                  {universityData.established || "1970"}
+                </h3>
+                <p className="text-gray-600 text-xs">Established Year</p>
+              </div>
 
-          {/* Global Rankings */}
+              <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
+                <FaGraduationCap className="text-xl text-green-600" />
+                <h3 className="text-base font-bold leading-tight">
+                  {universityData.Scholarship ? "Yes" : "No"}
+                </h3>
+                <p className="text-gray-600 text-xs">Scholarship</p>
+              </div>
 
+              <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
+                <FaEye className="text-xl text-purple-600" />
+                <h3 className="text-base font-bold leading-tight">
+                  {universityData.clicks}
+                </h3>
+                <p className="text-gray-600 text-xs">Clicks</p>
+              </div>
+
+              <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
+                <FaSchool className="text-xl text-orange-600" />
+                <h3 className="text-base font-bold leading-tight">
+                  {universityData.courses || "N/A"}
+                </h3>
+                <p className="text-gray-600 text-xs">Courses</p>
+              </div>
+            </div>
+
+            {/* Accredited By */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <FaBuilding className="text-blue-600 text-lg" />
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Accredited By
+                </h3>
+              </div>
+              <ul className="space-y-1 text-sm text-gray-700">
+                {Array.isArray(universityData.accredited_by) ? (
+                  universityData.accredited_by
+                    .slice(0, 3)
+                    .map((accreditation, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-blue-600 mt-0.5 text-xs">•</span>
+                        <span className="text-xs">{accreditation}</span>
+                      </li>
+                    ))
+                ) : (
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 mt-0.5 text-xs">•</span>
+                    <span className="text-xs">
+                      {universityData.accredited_by || "MQA"}
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* Hostel Facility */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <FaBed className="text-green-600 text-lg" />
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Hostel Facility
+                </h3>
+              </div>
+              <ul className="space-y-1 text-sm text-gray-700">
+                {Array.isArray(universityData.hostel_facility) ? (
+                  universityData.hostel_facility
+                    .slice(0, 3)
+                    .map((facility, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5 text-xs">•</span>
+                        <span className="text-xs">{facility}</span>
+                      </li>
+                    ))
+                ) : (
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5 text-xs">•</span>
+                    <span className="text-xs">
+                      {universityData.hostel_facility || "Available"}
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* Contact Info */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <FaPhoneAlt className="text-orange-600 text-lg" />
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Contact Info
+                </h3>
+              </div>
+              <div className="space-y-2 text-sm text-gray-700">
+                <div className="flex items-center gap-2">
+                  <FaPhoneAlt className="text-orange-500 text-xs" />
+                  <span className="text-xs">+60 1121376171</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaFax className="text-gray-500 text-xs" />
+                  <span className="text-xs">+91 9818560331</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaEnvelope className="text-blue-500 text-xs" />
+                  <span className="text-xs">info@educationmalaysia.in</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Global Rankings Section */}
+          <div className="bg-white rounded-xl shadow-md p-4 mb-4">
+            <h3 className="text-base font-semibold text-gray-900 mb-3">
+              Global Rankings
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg p-3 text-white shadow text-center">
+                <p className="text-xl font-bold">
+                  #{universityData.rank || "397"}
+                </p>
+                <p className="text-xs opacity-90">World Rank</p>
+              </div>
+              <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-lg p-3 text-white shadow text-center">
+                <p className="text-xl font-bold">
+                  {universityData.qs_rank || "1001-1400"}
+                </p>
+                <p className="text-xs opacity-90">QS Rank</p>
+              </div>
+              <div className="bg-gradient-to-r from-purple-400 to-purple-500 rounded-lg p-3 text-white shadow text-center">
+                <p className="text-xl font-bold">
+                  {universityData.times_rank || "1501+"}
+                </p>
+                <p className="text-xs opacity-90">Times Rank</p>
+              </div>
+              {universityData.qs_asia_rank && (
+                <div className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-lg p-3 text-white shadow text-center">
+                  <p className="text-xl font-bold">
+                    {universityData.qs_asia_rank}
+                  </p>
+                  <p className="text-xs opacity-90">QS Asia Rank</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
           <div className="bg-white rounded-xl shadow-md p-4 space-y-3">
             <h3 className="text-base font-semibold text-gray-900 mb-2">
               Downloads & Services
             </h3>
 
-            {/* Primary Action Buttons - Horizontal */}
-
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-1 gap-2">
               <button
                 onClick={() => setIsOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 text-xs font-bold"
+                className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm font-semibold"
               >
-                <FaDownload className="text-base" />
+                <FaDownload />
+                Download Brochure
+              </button>
 
-                <span>APPLY HERE</span>
+              <button
+                onClick={() => setIsFeeOpen(true)}
+                className="w-full bg-white border-2 border-blue-600 text-blue-600 px-4 py-2.5 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm font-semibold"
+              >
+                <FaFileAlt /> Download Fee Structure
               </button>
 
               <button
                 onClick={() => setIsCounsellingOpen(true)}
-                className="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-3 rounded-lg hover:from-green-700 hover:to-green-800 shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 text-xs font-bold"
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md transition-all flex items-center justify-center gap-2 text-sm font-bold"
               >
-                <FaBookOpen className="text-base" />
+                <FaBookOpen />
+                Book Direct University
+              </button>
 
-                <span>ENQUIRE NOW</span>
+              <button
+                onClick={() => setIsReviewModalOpen(true)}
+                className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+              >
+                <FaEdit /> Write a Review
               </button>
             </div>
-
-            {/* Secondary Buttons - Full Width */}
-
-            <button
-              onClick={() => setIsOpen(true)}
-              className="w-full bg-white border-2 border-blue-600 text-blue-600 px-4 py-2.5 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm font-semibold"
-            >
-              <FaFileAlt /> Download Fees Structure
-            </button>
-
-            <button
-              onClick={() => setIsReviewModalOpen(true)}
-              className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-            >
-              <FaEdit /> Write a review
-            </button>
           </div>
-
-          <PopupForm
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            universityData={universityData}
-            formType="brochure"
-          />
-
-          <PopupForm
-            isOpen={isCounsellingOpen}
-            onClose={() => setIsCounsellingOpen(false)}
-            universityData={universityData}
-            formType="counselling"
-          />
         </div>
       </div>
 
@@ -1714,7 +1813,7 @@ const UniversityDetailPage = () => {
                   </button>
 
                   <button
-                    onClick={() => setIsOpen(true)}
+                    onClick={() => setIsFeeOpen(true)}
                     className="w-full bg-gray-100 border border-gray-300 text-gray-800 px-5 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
                   >
                     <FaFileAlt className="text-base" />
@@ -1928,6 +2027,22 @@ const UniversityDetailPage = () => {
           )}
         </div>
       )}
+
+      {/* Brochure Popup (Download Brochure) */}
+      <PopupForm
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        universityData={universityData}
+        formType="brochure"
+      />
+
+      {/* Fee Structure Popup */}
+      <PopupForm
+        isOpen={isFeeOpen}
+        onClose={() => setIsFeeOpen(false)}
+        universityData={universityData}
+        formType="fee"
+      />
 
       {/* Apply Popup */}
       <PopupForm

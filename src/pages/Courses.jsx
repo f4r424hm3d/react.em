@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import PopupForm from "./universitysection/PopupForm";
+import AuthModal from "../components/AuthModal";
 
 const CourseCardSkeleton = () => (
   <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 sm:p-6 animate-pulse">
@@ -97,6 +98,8 @@ const Courses = () => {
   const [showComparisonModal, setShowComparisonModal] = useState(false);
   // ✅ Apply popup state
   const [isApplyOpen, setIsApplyOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingCourse, setPendingCourse] = useState(null);
   const [selectedCourseForApply, setSelectedCourseForApply] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const [seo, setSeo] = useState({});
@@ -1028,14 +1031,42 @@ const Courses = () => {
       },
     });
   };
-  // ✅ Open apply popup instead of redirecting
-  const handleApplyNow = (courseOrId) => {
+  // ✅ Apply Now with authentication check
+  const handleApplyNow = async (courseOrId) => {
     const course =
       typeof courseOrId === "object"
         ? courseOrId
         : coursesData.find((c) => c.id === courseOrId);
-    setSelectedCourseForApply(course || null);
-    setIsApplyOpen(true);
+
+    if (!course) {
+      console.error("Course not found");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // User is logged in - apply directly
+      try {
+        await api.get(`/student/apply-program/${course.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Course applied successfully!");
+        setAppliedCourses((prev) => new Set([...prev, course.id]));
+      } catch (error) {
+        if (error.response?.status === 409) {
+          toast.warn("You have already applied for this course.");
+          setAppliedCourses((prev) => new Set([...prev, course.id]));
+        } else {
+          console.error("Application failed:", error);
+          toast.error("Failed to apply. Please try again.");
+        }
+      }
+    } else {
+      // User not logged in - show AuthModal
+      setPendingCourse(course);
+      setShowAuthModal(true);
+    }
   };
   const handleAddToCompare = (course) => {
     if (comparisonCourses.length >= 3) {
@@ -2535,6 +2566,23 @@ const Courses = () => {
           logo_path: selectedCourseForApply?.university?.logo_path,
         }}
         formType="apply"
+      />
+
+      {/* AuthModal for authentication flow */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => {
+          setShowAuthModal(false);
+          setPendingCourse(null);
+        }}
+        courseId={pendingCourse?.id}
+        onSuccess={() => {
+          setShowAuthModal(false);
+          if (pendingCourse) {
+            setAppliedCourses((prev) => new Set([...prev, pendingCourse.id]));
+          }
+          setPendingCourse(null);
+        }}
       />
     </>
   );

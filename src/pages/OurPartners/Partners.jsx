@@ -22,221 +22,13 @@ import {
   LayoutDashboard,
   GraduationCap,
 } from "lucide-react";
-
-const partners = [
-  {
-    id: "1",
-    name: "Dr. Rajesh Kumar",
-    company: "MedEdu Consultants Pvt Ltd",
-    email: "rajesh.kumar@mededu.com",
-    mobile: "+91 98765 43210",
-    city: "New Delhi",
-    state: "Delhi",
-    designation: "Senior Education Consultant",
-    experience: "12 years",
-    specialization: [
-      "MBBS Admissions",
-      "Medical Counseling",
-      "Visa Assistance",
-    ],
-    rating: 4.9,
-    studentsPlaced: 450,
-    joinedYear: 2018,
-    image:
-      "https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "2",
-    name: "Priya Sharma",
-    company: "Global Medical Education",
-    email: "priya.sharma@globalmeded.in",
-    mobile: "+91 87654 32109",
-    city: "Mumbai",
-    state: "Maharashtra",
-    designation: "Director - International Relations",
-    experience: "8 years",
-    specialization: [
-      "International Admissions",
-      "Student Support",
-      "Career Guidance",
-    ],
-    rating: 4.8,
-    studentsPlaced: 320,
-    joinedYear: 2019,
-    image:
-      "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "3",
-    name: "Amit Patel",
-    company: "Future Doctors Academy",
-    email: "amit.patel@futuredoctors.co.in",
-    mobile: "+91 76543 21098",
-    city: "Ahmedabad",
-    state: "Gujarat",
-    designation: "Founder & CEO",
-    experience: "15 years",
-    specialization: ["NEET Coaching", "Abroad Studies", "Scholarship Guidance"],
-    rating: 4.9,
-    studentsPlaced: 680,
-    joinedYear: 2016,
-    image:
-      "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "4",
-    name: "Dr. Sunita Reddy",
-    company: "South India Medical Consultancy",
-    email: "sunita.reddy@simconsult.com",
-    mobile: "+91 65432 10987",
-    city: "Hyderabad",
-    state: "Telangana",
-    designation: "Chief Medical Advisor",
-    experience: "10 years",
-    specialization: [
-      "Medical Admissions",
-      "University Partnerships",
-      "Student Mentoring",
-    ],
-    rating: 4.7,
-    studentsPlaced: 380,
-    joinedYear: 2020,
-    image:
-      "https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "5",
-    name: "Vikram Singh",
-    company: "North Star Education Services",
-    email: "vikram.singh@northstar.edu.in",
-    mobile: "+91 54321 09876",
-    city: "Jaipur",
-    state: "Rajasthan",
-    designation: "Regional Manager",
-    experience: "6 years",
-    specialization: ["Study Abroad", "Documentation", "Pre-departure Support"],
-    rating: 4.6,
-    studentsPlaced: 250,
-    joinedYear: 2021,
-    image:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "6",
-    name: "Meera Krishnan",
-    company: "Kerala Medical Education Hub",
-    email: "meera.krishnan@kmeh.org",
-    mobile: "+91 43210 98765",
-    city: "Kochi",
-    state: "Kerala",
-    designation: "Senior Counselor",
-    experience: "9 years",
-    specialization: [
-      "Medical Counseling",
-      "Admission Guidance",
-      "Parent Consultation",
-    ],
-    rating: 4.8,
-    studentsPlaced: 420,
-    joinedYear: 2019,
-    image:
-      "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "7",
-    name: "Ravi Gupta",
-    company: "Eastern Medical Consultants",
-    email: "ravi.gupta@easternmed.in",
-    mobile: "+91 32109 87654",
-    city: "Kolkata",
-    state: "West Bengal",
-    designation: "Business Development Manager",
-    experience: "7 years",
-    specialization: [
-      "Business Development",
-      "University Relations",
-      "Student Recruitment",
-    ],
-    rating: 4.5,
-    studentsPlaced: 290,
-    joinedYear: 2020,
-    image:
-      "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "8",
-    name: "Dr. Anita Joshi",
-    company: "Himalayan Education Services",
-    email: "anita.joshi@himalayanedu.com",
-    mobile: "+91 21098 76543",
-    city: "Dehradun",
-    state: "Uttarakhand",
-    designation: "Medical Education Specialist",
-    experience: "11 years",
-    specialization: [
-      "Medical Education",
-      "Research Guidance",
-      "Academic Support",
-    ],
-    rating: 4.9,
-    studentsPlaced: 360,
-    joinedYear: 2018,
-    image:
-      "https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "9",
-    name: "Suresh Nair",
-    company: "Bangalore Medical Academy",
-    email: "suresh.nair@bmacademy.co.in",
-    mobile: "+91 10987 65432",
-    city: "Bangalore",
-    state: "Karnataka",
-    designation: "Academic Director",
-    experience: "13 years",
-    specialization: [
-      "Academic Planning",
-      "Curriculum Design",
-      "Faculty Training",
-    ],
-    rating: 4.7,
-    studentsPlaced: 520,
-    joinedYear: 2017,
-    image:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-  {
-    id: "10",
-    name: "Kavita Agarwal",
-    company: "Central India Medical Services",
-    email: "kavita.agarwal@cims.edu.in",
-    mobile: "+91 09876 54321",
-    city: "Bhopal",
-    state: "Madhya Pradesh",
-    designation: "Operations Manager",
-    experience: "5 years",
-    specialization: [
-      "Operations Management",
-      "Student Services",
-      "Quality Assurance",
-    ],
-    rating: 4.6,
-    studentsPlaced: 180,
-    joinedYear: 2022,
-    image:
-      "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=300",
-    verified: true,
-  },
-];
+import {
+  getPartners,
+  getCountries,
+  getStates,
+  getCities,
+} from "../../services/partnerService";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function Partners() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -249,85 +41,158 @@ function Partners() {
   const [showContactForm, setShowContactForm] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
 
-  const countries = [
-    "All Countries",
-    ...Array.from(new Set(partners.map((p) => p.country || "India"))).sort(),
-  ];
-  const states =
-    selectedCountry === "All Countries"
-      ? [
-          "All States",
-          ...Array.from(new Set(partners.map((p) => p.state))).sort(),
-        ]
-      : [
-          "All States",
-          ...Array.from(
-            new Set(
-              partners
-                .filter((p) => (p.country || "India") === selectedCountry)
-                .map((p) => p.state),
-            ),
-          ).sort(),
-        ];
+  // Data States
+  const [partners, setPartners] = useState([]);
+  const [countries, setCountries] = useState(["All Countries"]);
+  const [states, setStates] = useState(["All States"]);
+  const [cities, setCities] = useState(["All Cities"]);
+  const [loading, setLoading] = useState(true);
 
-  const cities =
-    selectedState === "All States"
-      ? [
-          "All Cities",
-          ...Array.from(
-            new Set(
-              partners
-                .filter(
-                  (p) =>
-                    selectedCountry === "All Countries" ||
-                    (p.country || "India") === selectedCountry,
-                )
-                .map((p) => p.city),
-            ),
-          ).sort(),
-        ]
-      : [
-          "All Cities",
-          ...Array.from(
-            new Set(
-              partners
-                .filter(
-                  (p) =>
-                    p.state === selectedState &&
-                    (selectedCountry === "All Countries" ||
-                      (p.country || "India") === selectedCountry),
-                )
-                .map((p) => p.city),
-            ),
-          ).sort(),
-        ];
+  // Fetch Countries on Mount
+  useEffect(() => {
+    const fetchInit = async () => {
+      try {
+        const cData = await getCountries();
+        console.log("Countries Data:", cData);
+        // Robust extraction: direct array, wrapped in 'countries', or wrapped in 'data'
+        let countryList = [];
+        if (Array.isArray(cData)) {
+          countryList = cData;
+        } else if (cData && Array.isArray(cData.countries)) {
+          countryList = cData.countries;
+        } else if (cData && Array.isArray(cData.data)) {
+          countryList = cData.data;
+        }
 
-  const filteredPartners = useMemo(() => {
-    return partners.filter((partner) => {
-      const matchesSearch =
-        partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        partner.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        partner.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        partner.state.toLowerCase().includes(searchTerm.toLowerCase());
+        setCountries(["All Countries", ...countryList]);
+      } catch (err) {
+        console.error("Failed to fetch countries", err);
+      }
+    };
+    fetchInit();
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
 
-      const matchesCountry =
-        selectedCountry === "All Countries" ||
-        (partner.country || "India") === selectedCountry;
-      const matchesState =
-        selectedState === "All States" || partner.state === selectedState;
-      const matchesCity =
-        selectedCity === "All Cities" || partner.city === selectedCity;
+  // Fetch States when Country changes
+  useEffect(() => {
+    const fetchStates = async () => {
+      if (selectedCountry === "All Countries") {
+        setStates(["All States"]);
+        setSelectedState("All States");
+        return;
+      }
+      try {
+        const sData = await getStates(selectedCountry);
+        console.log("States Data for", selectedCountry, ":", sData);
 
-      return matchesSearch && matchesCountry && matchesState && matchesCity;
-    });
+        let stateList = [];
+        if (Array.isArray(sData)) {
+          stateList = sData;
+        } else if (sData && Array.isArray(sData.states)) {
+          stateList = sData.states;
+        } else if (sData && Array.isArray(sData.data)) {
+          stateList = sData.data;
+        }
+
+        setStates(["All States", ...stateList]);
+        setSelectedState("All States"); // Reset State
+      } catch (err) {
+        console.error("Failed to fetch states", err);
+      }
+    };
+    fetchStates();
+  }, [selectedCountry]);
+
+  // Fetch Cities when State changes
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (selectedState === "All States") {
+        setCities(["All Cities"]);
+        setSelectedCity("All Cities");
+        return;
+      }
+      try {
+        const cData = await getCities(selectedCountry, selectedState);
+        console.log("Cities Data for", selectedState, ":", cData);
+
+        let cityList = [];
+        if (Array.isArray(cData)) {
+          cityList = cData;
+        } else if (cData && Array.isArray(cData.cities)) {
+          cityList = cData.cities;
+        } else if (cData && Array.isArray(cData.data)) {
+          cityList = cData.data;
+        }
+
+        setCities(["All Cities", ...cityList]);
+        setSelectedCity("All Cities"); // Reset City
+      } catch (err) {
+        console.error("Failed to fetch cities", err);
+      }
+    };
+    fetchCities();
+  }, [selectedCountry, selectedState]);
+
+  // Fetch Partners when any filter changes
+  useEffect(() => {
+    const fetchPartnersData = async () => {
+      setLoading(true);
+      try {
+        const params = {};
+        if (searchTerm) params.search = searchTerm;
+        if (selectedCountry !== "All Countries")
+          params.country = selectedCountry;
+        if (selectedState !== "All States") params.state = selectedState;
+        if (selectedCity !== "All Cities") params.city = selectedCity;
+
+        const pData = await getPartners(params);
+        console.log("Partners Data:", pData);
+
+        // Robust extraction
+        let partnerList = [];
+        if (Array.isArray(pData)) {
+          partnerList = pData;
+        } else if (pData && Array.isArray(pData.partners)) {
+          partnerList = pData.partners;
+        } else if (pData && Array.isArray(pData.data)) {
+          partnerList = pData.data;
+        }
+
+        setPartners(partnerList);
+      } catch (err) {
+        console.error("Failed to fetch partners", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchPartnersData();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCountry, selectedState, selectedCity]);
 
+  // Filter partners - Client-side filtering as backup or for search highlighting
+  // Note: The API already handles filtering, but we keep this if needed for extra client-side refinement
+  // For now, we'll direct the API results to the view
+  const filteredPartners = useMemo(() => {
+    // Since API filters, we just return partners (which are already filtered from API)
+    // unless we want to do client-side searching on top of API results?
+    // The user requirement says "Fetch Partners... Query Params: search".
+    // So the 'partners' state ALREADY contains the filtered list.
+    return partners;
+  }, [partners]);
+
+  // Group partners by State for display
   const partnersByState = useMemo(() => {
     const grouped = filteredPartners.reduce((acc, partner) => {
-      if (!acc[partner.state]) {
-        acc[partner.state] = [];
+      const stateKey = partner.state || "Other";
+      if (!acc[stateKey]) {
+        acc[stateKey] = [];
       }
-      acc[partner.state].push(partner);
+      acc[stateKey].push(partner);
       return acc;
     }, {});
 
@@ -337,16 +202,19 @@ function Partners() {
   const totalStats = useMemo(() => {
     return {
       totalPartners: partners.length,
-      totalStudents: partners.reduce((sum, p) => sum + p.studentsPlaced, 0),
-      averageRating: (
-        partners.reduce((sum, p) => sum + p.rating, 0) / partners.length
-      ).toFixed(1),
+      totalStudents: partners.reduce(
+        (sum, p) => sum + (p.studentsPlaced || 0),
+        0,
+      ),
+      averageRating: partners.length
+        ? (
+            partners.reduce((sum, p) => sum + (p.rating || 0), 0) /
+            partners.length
+          ).toFixed(1)
+        : "0.0",
       states: new Set(partners.map((p) => p.state)).size,
     };
-  }, []);
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-  }, []);
+  }, [partners]);
 
   const handleContactNow = (partner) => {
     setSelectedPartner(partner);
@@ -503,8 +371,8 @@ function Partners() {
                   }}
                   className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 bg-white shadow-sm cursor-pointer"
                 >
-                  {countries.map((country) => (
-                    <option key={country} value={country}>
+                  {countries.map((country, idx) => (
+                    <option key={idx} value={country}>
                       {country}
                     </option>
                   ))}
@@ -525,8 +393,8 @@ function Partners() {
                   }}
                   className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 bg-white shadow-sm cursor-pointer"
                 >
-                  {states.map((state) => (
-                    <option key={state} value={state}>
+                  {states.map((state, idx) => (
+                    <option key={idx} value={state}>
                       {state}
                     </option>
                   ))}
@@ -544,8 +412,8 @@ function Partners() {
                   onChange={(e) => setSelectedCity(e.target.value)}
                   className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 bg-white shadow-sm cursor-pointer"
                 >
-                  {cities.map((city) => (
-                    <option key={city} value={city}>
+                  {cities.map((city, idx) => (
+                    <option key={idx} value={city}>
                       {city}
                     </option>
                   ))}
@@ -557,7 +425,7 @@ function Partners() {
               <div className="text-gray-600">
                 Showing{" "}
                 <span className="font-semibold text-blue-600">
-                  {filteredPartners.length}
+                  {partners.length}
                 </span>{" "}
                 partners
               </div>
@@ -593,210 +461,246 @@ function Partners() {
       {/* Partners Directory */}
       <section className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {partnersByState.map(([state, statePartners]) => (
-            <div key={state} className="mb-16">
-              <div className="flex items-center mb-8">
-                <MapPin className="w-6 h-6 text-blue-600 mr-3" />
-                <h2 className="text-3xl font-bold text-gray-900">{state}</h2>
-                <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                  {statePartners.length} Partners
-                </span>
-              </div>
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <ClipLoader color="#2563eb" size={50} />
+            </div>
+          ) : partners.length > 0 ? (
+            partnersByState.map(([state, statePartners]) => (
+              <div key={state} className="mb-16">
+                <div className="flex items-center mb-8">
+                  <MapPin className="w-6 h-6 text-blue-600 mr-3" />
+                  <h2 className="text-3xl font-bold text-gray-900">{state}</h2>
+                  <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    {statePartners.length} Partners
+                  </span>
+                </div>
 
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                    : "space-y-6"
-                }
-              >
-                {statePartners.map((partner) => (
-                  <div
-                    key={partner.id}
-                    className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
-                      viewMode === "list"
-                        ? "flex items-center p-6"
-                        : "transform hover:-translate-y-2"
-                    }`}
-                  >
-                    {viewMode === "grid" ? (
-                      <>
-                        <div className="relative">
-                          <img
-                            src={partner.image}
-                            alt={partner.name}
-                            className="w-full h-48 object-cover"
-                          />
-                          <div className="absolute top-4 right-4 flex space-x-2">
-                            {partner.verified && (
-                              <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                                <CheckCircle className="w-3 h-3 mr-1" />
-                                Verified
-                              </div>
-                            )}
-                            <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                              <Star className="w-3 h-3 mr-1 fill-current" />
-                              {partner.rating}
+                <div
+                  className={
+                    viewMode === "grid"
+                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                      : "space-y-6"
+                  }
+                >
+                  {statePartners.map((partner) => (
+                    <div
+                      key={partner.id}
+                      className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
+                        viewMode === "list"
+                          ? "flex items-center p-6"
+                          : "transform hover:-translate-y-2"
+                      }`}
+                    >
+                      {viewMode === "grid" ? (
+                        <>
+                          <div className="relative">
+                            <img
+                              src={
+                                partner.image ||
+                                "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="
+                              }
+                              alt={partner.name}
+                              className="w-full h-48 object-cover"
+                            />
+                            <div className="absolute top-4 right-4 flex space-x-2">
+                              {partner.verified !== false && (
+                                <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Verified
+                                </div>
+                              )}
+                              {partner.rating > 0 && (
+                                <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                                  <Star className="w-3 h-3 mr-1 fill-current" />
+                                  {partner.rating}
+                                </div>
+                              )}
                             </div>
                           </div>
-                        </div>
 
-                        <div className="p-6">
-                          <div className="flex items-start justify-between mb-4">
+                          <div className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                                  {partner.name}
+                                </h3>
+                                <p className="text-blue-600 font-medium">
+                                  {partner.designation || "Partner"}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                  {partner.company}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-3 mb-4">
+                              <div className="flex items-center text-gray-600">
+                                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                                <span className="text-sm">
+                                  {partner.city}, {partner.state}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-gray-600">
+                                <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                                <span className="text-sm">
+                                  {partner.mobile}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-gray-600">
+                                <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                                <span className="text-sm truncate max-w-[200px]">
+                                  {partner.email}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mb-4 text-center">
+                              <div className="bg-blue-50 rounded-lg p-3">
+                                <div className="text-2xl font-bold text-blue-600">
+                                  {partner.studentsPlaced || 0}
+                                </div>
+                                <div className="text-xs text-gray-600">
+                                  Students Placed
+                                </div>
+                              </div>
+                              <div className="bg-green-50 rounded-lg p-3">
+                                <div className="text-2xl font-bold text-green-600">
+                                  {partner.experience || "N/A"}
+                                </div>
+                                <div className="text-xs text-gray-600">
+                                  Experience
+                                </div>
+                              </div>
+                            </div>
+
+                            {partner.specialization &&
+                              partner.specialization.length > 0 && (
+                                <div className="mb-4">
+                                  <div className="text-sm font-medium text-gray-700 mb-2">
+                                    Specializations:
+                                  </div>
+                                  <div className="flex flex-wrap gap-1">
+                                    {partner.specialization
+                                      .slice(0, 2)
+                                      .map((spec, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
+                                        >
+                                          {spec}
+                                        </span>
+                                      ))}
+                                    {partner.specialization.length > 2 && (
+                                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
+                                        +{partner.specialization.length - 2}
+                                        more
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleContactNow(partner)}
+                                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                              >
+                                Contact Now
+                              </button>
+                              <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <ExternalLink className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex-shrink-0 mr-6">
+                            <img
+                              src={
+                                partner.image ||
+                                "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="
+                              }
+                              alt={partner.name}
+                              className="w-24 h-24 rounded-xl object-cover"
+                            />
+                          </div>
+
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                             <div>
-                              <h3 className="text-xl font-bold text-gray-900 mb-1">
+                              <h3 className="text-lg font-bold text-gray-900 mb-1">
                                 {partner.name}
                               </h3>
-                              <p className="text-blue-600 font-medium">
-                                {partner.designation}
+                              <p className="text-blue-600 font-medium text-sm">
+                                {partner.designation || "Partner"}
                               </p>
                               <p className="text-gray-600 text-sm">
                                 {partner.company}
                               </p>
                             </div>
-                          </div>
 
-                          <div className="space-y-3 mb-4">
-                            <div className="flex items-center text-gray-600">
-                              <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                              <span className="text-sm">
-                                {partner.city}, {partner.state}
-                              </span>
+                            <div className="space-y-1">
+                              <div className="flex items-center text-gray-600">
+                                <MapPin className="w-3 h-3 mr-1" />
+                                <span className="text-sm">{partner.city}</span>
+                              </div>
+                              <div className="flex items-center text-gray-600">
+                                <Phone className="w-3 h-3 mr-1" />
+                                <span className="text-sm">
+                                  {partner.mobile}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-gray-600">
+                                <Mail className="w-3 h-3 mr-1" />
+                                <span className="text-sm">{partner.email}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center text-gray-600">
-                              <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                              <span className="text-sm">{partner.mobile}</span>
-                            </div>
-                            <div className="flex items-center text-gray-600">
-                              <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                              <span className="text-sm">{partner.email}</span>
-                            </div>
-                          </div>
 
-                          <div className="grid grid-cols-2 gap-4 mb-4 text-center">
-                            <div className="bg-blue-50 rounded-lg p-3">
-                              <div className="text-2xl font-bold text-blue-600">
-                                {partner.studentsPlaced}
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-blue-600">
+                                {partner.studentsPlaced || 0}
                               </div>
                               <div className="text-xs text-gray-600">
                                 Students Placed
                               </div>
-                            </div>
-                            <div className="bg-green-50 rounded-lg p-3">
-                              <div className="text-2xl font-bold text-green-600">
-                                {partner.experience}
-                              </div>
-                              <div className="text-xs text-gray-600">
-                                Experience
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mb-4">
-                            <div className="text-sm font-medium text-gray-700 mb-2">
-                              Specializations:
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {partner.specialization
-                                .slice(0, 2)
-                                .map((spec, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
-                                  >
-                                    {spec}
-                                  </span>
-                                ))}
-                              {partner.specialization.length > 2 && (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
-                                  +{partner.specialization.length - 2} more
+                              <div className="flex items-center justify-center mt-1">
+                                <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
+                                <span className="text-sm font-medium">
+                                  {partner.rating || "N/A"}
                                 </span>
-                              )}
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleContactNow(partner)}
-                              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                              Contact Now
-                            </button>
-                            <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                              <ExternalLink className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex-shrink-0 mr-6">
-                          <img
-                            src={partner.image}
-                            alt={partner.name}
-                            className="w-24 h-24 rounded-xl object-cover"
-                          />
-                        </div>
-
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-1">
-                              {partner.name}
-                            </h3>
-                            <p className="text-blue-600 font-medium text-sm">
-                              {partner.designation}
-                            </p>
-                            <p className="text-gray-600 text-sm">
-                              {partner.company}
-                            </p>
-                          </div>
-
-                          <div className="space-y-1">
-                            <div className="flex items-center text-gray-600">
-                              <MapPin className="w-3 h-3 mr-1" />
-                              <span className="text-sm">{partner.city}</span>
-                            </div>
-                            <div className="flex items-center text-gray-600">
-                              <Phone className="w-3 h-3 mr-1" />
-                              <span className="text-sm">{partner.mobile}</span>
-                            </div>
-                            <div className="flex items-center text-gray-600">
-                              <Mail className="w-3 h-3 mr-1" />
-                              <span className="text-sm">{partner.email}</span>
+                            <div className="text-right">
+                              <button
+                                onClick={() => handleContactNow(partner)}
+                                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                              >
+                                Contact Now
+                              </button>
                             </div>
                           </div>
-
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-blue-600">
-                              {partner.studentsPlaced}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              Students Placed
-                            </div>
-                            <div className="flex items-center justify-center mt-1">
-                              <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
-                              <span className="text-sm font-medium">
-                                {partner.rating}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="text-right">
-                            <button
-                              onClick={() => handleContactNow(partner)}
-                              className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                              Contact Now
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="text-center py-20">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">
+                No Partners Found
+              </h3>
+              <p className="text-gray-500 mt-2">
+                Try adjusting your search criteria or filters.
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </section>
 

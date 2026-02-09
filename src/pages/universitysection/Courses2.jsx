@@ -51,6 +51,8 @@ import { useLocation } from "react-router-dom";
 
 import PopupForm from "./PopupForm"; // ✅ Popup form import karo
 
+import AuthModal from "../../components/AuthModal";
+
 // Filter key mapping
 
 const filterKeyMap = {
@@ -333,10 +335,19 @@ const CourseCard = ({
 
         <button
           onClick={() => onApplyNow(course)}
-          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-blue-600 text-blue-700 font-medium hover:bg-blue-50 transition text-sm"
+          disabled={appliedCourses.has(course.id)}
+          className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl border font-medium transition text-sm ${
+            appliedCourses.has(course.id)
+              ? "bg-green-600 text-white border-green-600 cursor-not-allowed"
+              : "border-blue-600 text-blue-700 hover:bg-blue-50"
+          }`}
         >
-          <VscGitStashApply className="text-blue-700" />
-          Apply Now
+          <VscGitStashApply
+            className={
+              appliedCourses.has(course.id) ? "text-white" : "text-blue-700"
+            }
+          />
+          {appliedCourses.has(course.id) ? "Applied" : "Apply Now"}
         </button>
 
         <button
@@ -361,7 +372,12 @@ const CourseCard = ({
 
 // Course Detail Component
 
-const CourseDetailSection = ({ course, onClose, onApplyNow }) => {
+const CourseDetailSection = ({
+  course,
+  onClose,
+  onApplyNow,
+  appliedCourses,
+}) => {
   const { slug } = useParams();
 
   const navigate = useNavigate(); // University slug
@@ -683,20 +699,44 @@ const CourseDetailSection = ({ course, onClose, onApplyNow }) => {
 
                   <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                     <button
-                      onClick={() =>
-                        onApplyNow &&
+                      onClick={() => {
+                        // alert("DEBUG: Clicked Apply Now in Detail View");
+                        console.log(
+                          "🟢 [CourseDetailSection] Apply Now button clicked",
+                        );
+                        console.log("🟢 Course data:", course);
+                        console.log("🟢 CourseDetails data:", courseDetails);
+                        console.log("🟢 onApplyNow function:", onApplyNow);
+
+                        if (typeof onApplyNow !== "function") {
+                          alert("ERROR: onApplyNow is not a function!");
+                          console.error(
+                            "❌ onApplyNow is not a function:",
+                            onApplyNow,
+                          );
+                          return;
+                        }
+
                         onApplyNow({
                           ...course,
-
                           ...(courseDetails || {}),
-
+                          id: courseDetails?.id || course?.id,
                           course_name:
                             courseDetails?.course_name || course?.course_name,
-                        })
-                      }
-                      className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        });
+                      }}
+                      disabled={appliedCourses.has(
+                        courseDetails?.id || course?.id,
+                      )}
+                      className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                        appliedCourses.has(courseDetails?.id || course?.id)
+                          ? "bg-green-600 text-white cursor-not-allowed"
+                          : "bg-blue-600 text-white hover:bg-blue-700"
+                      }`}
                     >
-                      Apply Now
+                      {appliedCourses.has(courseDetails?.id || course?.id)
+                        ? "Applied"
+                        : "Apply Now"}
                     </button>
 
                     <button
@@ -856,6 +896,10 @@ const Courses2 = ({ courseSlug: propCourseSlug }) => {
 
   const [selectedCourseForApply, setSelectedCourseForApply] = useState(null);
 
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const [pendingCourse, setPendingCourse] = useState(null);
+
   const [universityData, setUniversityData] = useState(null);
 
   const [courseData, setCourseData] = useState([]);
@@ -883,6 +927,50 @@ const Courses2 = ({ courseSlug: propCourseSlug }) => {
   const [appliedCourses, setAppliedCourses] = useState(new Set());
 
   const page = parseInt(searchParams.get("page") || "1", 10);
+
+  // Handle Apply Now - Check authentication and show modal or apply directly
+  const handleApplyNow = async (course) => {
+    console.log("🔵 [Courses2] handleApplyNow called with course:", course);
+    const token = localStorage.getItem("token");
+    console.log("🔵 [Courses2] Token:", token ? "EXISTS" : "NULL");
+
+    if (token) {
+      // User is logged in - apply directly
+      console.log("✅ User is logged in, applying directly");
+      try {
+        await api.get(`/student/apply-program/${course.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Course applied successfully!");
+        setAppliedCourses((prev) => new Set([...prev, course.id]));
+
+        // Reload page to update UI
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } catch (error) {
+        if (error.response?.status === 409) {
+          toast.warn("You have already applied for this course.");
+          setAppliedCourses((prev) => new Set([...prev, course.id]));
+
+          // Reload page to show correct state
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          console.error("Application failed:", error);
+          toast.error("Failed to apply. Please try again.");
+        }
+      }
+    } else {
+      // User not logged in - show AuthModal
+      console.log("❌ User not logged in, showing AuthModal");
+      console.log("🔵 Setting pendingCourse to:", course);
+      setPendingCourse(course);
+      console.log("🔵 Setting showAuthModal to true");
+      setShowAuthModal(true);
+    }
+  };
 
   // ✅ Initialize filters from URL params OR location state
   useEffect(() => {
@@ -936,14 +1024,6 @@ const Courses2 = ({ courseSlug: propCourseSlug }) => {
       setCurrentFilters((prev) => ({ ...prev, ...initialFilters }));
     }
   }, []);
-
-  // ✅ Open apply popup instead of navigating
-
-  const handleApplyNow = (course) => {
-    setSelectedCourseForApply(course);
-
-    setIsApplyOpen(true);
-  };
 
   const buildQueryString = (filters, pageNumber) => {
     const params = new URLSearchParams();
@@ -1418,6 +1498,7 @@ const Courses2 = ({ courseSlug: propCourseSlug }) => {
           course={selectedCourse}
           onClose={() => setSelectedCourse(null)}
           onApplyNow={handleApplyNow}
+          appliedCourses={appliedCourses}
         />
 
         {/* ✅ Apply Popup - Inside selectedCourse view */}
@@ -1427,14 +1508,28 @@ const Courses2 = ({ courseSlug: propCourseSlug }) => {
           onClose={() => setIsApplyOpen(false)}
           universityData={{
             name: selectedCourseForApply?.university?.name || universityName,
-
             course_name: selectedCourseForApply?.course_name,
-
             id: selectedCourseForApply?.university?.id || universityData?.id,
-
             logo_path: selectedCourseForApply?.university?.logo_path,
           }}
           formType="apply"
+        />
+
+        {/* ✅ AuthModal for Course Detail View */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => {
+            setShowAuthModal(false);
+            setPendingCourse(null);
+          }}
+          courseId={pendingCourse?.id}
+          onSuccess={() => {
+            setShowAuthModal(false);
+            if (pendingCourse) {
+              setAppliedCourses((prev) => new Set([...prev, pendingCourse.id]));
+            }
+            setPendingCourse(null);
+          }}
         />
       </div>
     );
@@ -1640,6 +1735,29 @@ const Courses2 = ({ courseSlug: propCourseSlug }) => {
           logo_path: selectedCourseForApply?.university?.logo_path,
         }}
         formType="apply"
+      />
+
+      {/* AuthModal for authentication flow */}
+      {console.log(
+        "🟣 [Courses2] Rendering AuthModal - showAuthModal:",
+        showAuthModal,
+      )}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => {
+          console.log("🟣 [AuthModal] onClose called");
+          setShowAuthModal(false);
+          setPendingCourse(null);
+        }}
+        courseId={pendingCourse?.id}
+        onSuccess={() => {
+          console.log("🟣 [AuthModal] onSuccess called");
+          setShowAuthModal(false);
+          if (pendingCourse) {
+            setAppliedCourses((prev) => new Set([...prev, pendingCourse.id]));
+          }
+          setPendingCourse(null);
+        }}
       />
     </>
   );

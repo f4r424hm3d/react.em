@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   FaTimes,
@@ -16,7 +14,12 @@ import { LuRefreshCw } from "react-icons/lu";
 import api from "../../api";
 import { API_URL } from "../../config";
 
-const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) => {
+const PopupForm = ({
+  isOpen,
+  onClose,
+  universityData,
+  formType = "brochure",
+}) => {
   const [captcha, setCaptcha] = useState("");
   const [userInput, setUserInput] = useState("");
   const [countriesData, setCountriesData] = useState([]);
@@ -43,17 +46,23 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
   const [showSuccess, setShowSuccess] = useState(false);
 
   // ✅ Dynamic titles based on formType
-  const formTitle = formType === "counselling"
-    ? "Book Your Counselling Session"
-    : formType === "apply"
-      ? "Apply For This Course"
-      : "Register Now To Download Brochure";
+  const formTitle =
+    formType === "counselling"
+      ? "Book Your Counselling Session"
+      : formType === "apply"
+        ? "Apply For This Course"
+        : formType === "fee"
+          ? "Download Fee Structure"
+          : "Register Now To Download Brochure";
 
-  const submitButtonText = formType === "counselling"
-    ? "Book Session Now"
-    : formType === "apply"
-      ? "Submit Application"
-      : "Download Brochure";
+  const submitButtonText =
+    formType === "counselling"
+      ? "Book Session Now"
+      : formType === "apply"
+        ? "Submit Application"
+        : formType === "fee"
+          ? "Download Fee Structure"
+          : "Download Brochure";
 
   // ✅ Captcha Generator
   const generateCaptcha = () => {
@@ -74,9 +83,7 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
         setPhonecode(phonecode);
 
         const res = await api.get("/countries");
-        const countries = Array.isArray(res.data)
-          ? res.data
-          : res.data.data;
+        const countries = Array.isArray(res.data) ? res.data : res.data.data;
         setCountriesData(countries);
 
         const levelsResponse = await api.get("/levels");
@@ -116,7 +123,7 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
 
     if (code) {
       // Find country with this phone code
-      const matchedCountry = countriesData.find(c => c.phonecode == code);
+      const matchedCountry = countriesData.find((c) => c.phonecode == code);
       if (matchedCountry) {
         newFormData.nationality = matchedCountry.name;
       }
@@ -129,7 +136,7 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
     const name = e.target.value;
     let newFormData = { ...formData, nationality: name };
 
-    const matchedCountry = countriesData.find(c => c.name === name);
+    const matchedCountry = countriesData.find((c) => c.name === name);
     if (matchedCountry && matchedCountry.phonecode) {
       newFormData.c_code = matchedCountry.phonecode;
     }
@@ -147,11 +154,21 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
       c_code: (formValues.get("c_code") || "").toString().trim(),
       mobile: (formValues.get("mobile") || "").toString().trim(),
       nationality: (formValues.get("nationality") || "").toString().trim(),
-      highest_qualification: (formValues.get("highest_qualification") || "").toString().trim(),
-      interested_course_category: (formValues.get("interested_course_category") || "").toString().trim(),
-      preferred_date: (formValues.get("preferred_date") || "").toString().trim(),
+      highest_qualification: (formValues.get("highest_qualification") || "")
+        .toString()
+        .trim(),
+      interested_course_category: (
+        formValues.get("interested_course_category") || ""
+      )
+        .toString()
+        .trim(),
+      preferred_date: (formValues.get("preferred_date") || "")
+        .toString()
+        .trim(),
       time_zone: (formValues.get("time_zone") || "").toString().trim(),
-      preferred_time: (formValues.get("preferred_time") || "").toString().trim(),
+      preferred_time: (formValues.get("preferred_time") || "")
+        .toString()
+        .trim(),
       message: (formValues.get("message") || "").toString().trim(),
     };
 
@@ -160,9 +177,9 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
       const correctAnswer = eval(captcha);
       if (parseInt(userInput) !== correctAnswer) {
         alert("Invalid captcha answer");
-        generateCaptcha();  // Captcha refresh karo
-        setUserInput("");   // Input clear karo
-        return;  // Form submit nahi hoga
+        generateCaptcha(); // Captcha refresh karo
+        setUserInput(""); // Input clear karo
+        return; // Form submit nahi hoga
       }
     } catch {
       alert("Captcha error");
@@ -174,21 +191,27 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
     setLoading(true);
     try {
       // Different API endpoints based on formType
-      const endpoint = formType === "counselling"
-        ? "/inquiry/book-session"
-        : "/inquiry/brochure-request";
+      const endpoint =
+        formType === "counselling"
+          ? "/inquiry/book-session"
+          : "/inquiry/brochure-request"; // Use brochure endpoint for fee structure too
       // IMPORTANT: API ke according data prepare karo
       const submitData = {
         name: currentFormData.name,
         email: currentFormData.email,
-        country_code: currentFormData.c_code,  // CHANGE: c_code ko country_code bhejo
+        country_code: currentFormData.c_code, // CHANGE: c_code ko country_code bhejo
         mobile: currentFormData.mobile,
         nationality: currentFormData.nationality,
         highest_qualification: currentFormData.highest_qualification,
         interested_course_category: currentFormData.interested_course_category,
-        university_id: universityData.id,  // ADD: University ID
-        requestfor: formType === "counselling" ? "counselling" : "brochure",  // ADD: Request type
-        source_path: window.location.href,  // ADD: Current page URL
+        university_id: universityData.id, // ADD: University ID
+        requestfor:
+          formType === "counselling"
+            ? "counselling"
+            : formType === "fee"
+              ? "fee_structure"
+              : "brochure", // ADD: Request type
+        source_path: window.location.href, // ADD: Current page URL
       };
 
       // Counselling form ke liye extra fields
@@ -199,7 +222,7 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
         submitData.message = currentFormData.message;
       }
 
-      console.log(" Sending data:", submitData);  // Testing ke liye
+      console.log(" Sending data:", submitData); // Testing ke liye
 
       setShowSuccess(true);
       setLoading(false);
@@ -222,7 +245,8 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
         generateCaptcha();
       }, 2000);
 
-      api.post(endpoint, submitData)
+      api
+        .post(endpoint, submitData)
         .then((response) => {
           console.log("✅ API Response:", response.data);
         })
@@ -335,47 +359,48 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
                   : "How Education Malaysia helps you in"}
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              {formType === "counselling" ? (
-                // ✅ Counselling specific benefits
-                [
-                  [<FaCalendarAlt size={24} />, "Flexible Scheduling"],
-                  [<FaPhoneAlt size={24} />, "One-on-One Guidance"],
-                  [<FaGraduationCap size={24} />, "Course Selection Help"],
-                  [<FaLightbulb size={24} />, "Expert Advice"],
-                  [<FaMoneyBill size={24} />, "Scholarship Info"],
-                  [<FaGlobe size={24} />, "Visa Assistance"],
-                ].map(([icon, text], idx) => (
-                  <div
-                    key={idx}
-                    className="border border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center text-center bg-gray-50 shadow-sm hover:shadow-md transition"
-                  >
-                    <span className="text-green-600 mb-2">{icon}</span>
-                    <p className="text-gray-700 text-xs font-medium leading-snug">
-                      {text}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                // ✅ Original brochure benefits
-                [
-                  [<FaGraduationCap size={24} />, "Comprehensive Course Guidance"],
-                  [<FaBook size={24} />, "Brochure Access"],
-                  [<FaGlobe size={24} />, "International Student Support"],
-                  [<FaLightbulb size={24} />, "Personalized Counseling"],
-                  [<FaMoneyBill size={24} />, "Scholarship Assistance"],
-                  [<FaPhoneAlt size={24} />, "24/7 Support"],
-                ].map(([icon, text], idx) => (
-                  <div
-                    key={idx}
-                    className="border border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center text-center bg-gray-50 shadow-sm hover:shadow-md transition"
-                  >
-                    <span className="text-blue-600 mb-2">{icon}</span>
-                    <p className="text-gray-700 text-xs font-medium leading-snug">
-                      {text}
-                    </p>
-                  </div>
-                ))
-              )}
+              {formType === "counselling"
+                ? // ✅ Counselling specific benefits
+                  [
+                    [<FaCalendarAlt size={24} />, "Flexible Scheduling"],
+                    [<FaPhoneAlt size={24} />, "One-on-One Guidance"],
+                    [<FaGraduationCap size={24} />, "Course Selection Help"],
+                    [<FaLightbulb size={24} />, "Expert Advice"],
+                    [<FaMoneyBill size={24} />, "Scholarship Info"],
+                    [<FaGlobe size={24} />, "Visa Assistance"],
+                  ].map(([icon, text], idx) => (
+                    <div
+                      key={idx}
+                      className="border border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center text-center bg-gray-50 shadow-sm hover:shadow-md transition"
+                    >
+                      <span className="text-green-600 mb-2">{icon}</span>
+                      <p className="text-gray-700 text-xs font-medium leading-snug">
+                        {text}
+                      </p>
+                    </div>
+                  ))
+                : // ✅ Original brochure benefits
+                  [
+                    [
+                      <FaGraduationCap size={24} />,
+                      "Comprehensive Course Guidance",
+                    ],
+                    [<FaBook size={24} />, "Brochure Access"],
+                    [<FaGlobe size={24} />, "International Student Support"],
+                    [<FaLightbulb size={24} />, "Personalized Counseling"],
+                    [<FaMoneyBill size={24} />, "Scholarship Assistance"],
+                    [<FaPhoneAlt size={24} />, "24/7 Support"],
+                  ].map(([icon, text], idx) => (
+                    <div
+                      key={idx}
+                      className="border border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center text-center bg-gray-50 shadow-sm hover:shadow-md transition"
+                    >
+                      <span className="text-blue-600 mb-2">{icon}</span>
+                      <p className="text-gray-700 text-xs font-medium leading-snug">
+                        {text}
+                      </p>
+                    </div>
+                  ))}
             </div>
           </div>
 
@@ -385,9 +410,9 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
               {universityData?.logo_path ? (
                 <img
                   src={
-                    universityData.logo_path.startsWith('http')
+                    universityData.logo_path.startsWith("http")
                       ? universityData.logo_path
-                      : universityData.logo_path.startsWith('/storage/')
+                      : universityData.logo_path.startsWith("/storage/")
                         ? `https://www.educationmalaysia.in${universityData.logo_path}`
                         : `${API_URL}${universityData.logo_path}`
                   }
@@ -395,22 +420,29 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
                   className="w-20 h-20 object-contain mb-1"
                   onError={(e) => {
                     console.log("❌ Logo failed to load:", e.target.src);
-                    console.log("📋 logo_path value:", universityData.logo_path);
-                    e.target.style.display = 'none';
-                    e.target.nextElementSibling.style.display = 'flex';
+                    console.log(
+                      "📋 logo_path value:",
+                      universityData.logo_path,
+                    );
+                    e.target.style.display = "none";
+                    e.target.nextElementSibling.style.display = "flex";
                   }}
                 />
               ) : null}
               <div
                 className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mb-1 shadow-md"
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
               >
                 <span className="text-4xl">🎓</span>
               </div>
-              <h2 className={`text-xl font-bold text-center ${formType === "counselling" ? "text-green-700" : "text-blue-700"}`}>
+              <h2
+                className={`text-xl font-bold text-center ${formType === "counselling" ? "text-green-700" : "text-blue-700"}`}
+              >
                 {formTitle}
               </h2>
-              <p className="text-gray-600 text-sm mb-2">{universityData.name}</p>
+              <p className="text-gray-600 text-sm mb-2">
+                {universityData.name}
+              </p>
             </div>
 
             <form className="grid grid-cols-2 gap-3" onSubmit={handleSubmit}>
@@ -523,12 +555,24 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
                         required
                       >
                         <option value="">Choose time slot</option>
-                        <option value="09:00 AM - 10:00 AM">09:00 AM - 10:00 AM</option>
-                        <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
-                        <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
-                        <option value="02:00 PM - 03:00 PM">02:00 PM - 03:00 PM</option>
-                        <option value="03:00 PM - 04:00 PM">03:00 PM - 04:00 PM</option>
-                        <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
+                        <option value="09:00 AM - 10:00 AM">
+                          09:00 AM - 10:00 AM
+                        </option>
+                        <option value="10:00 AM - 11:00 AM">
+                          10:00 AM - 11:00 AM
+                        </option>
+                        <option value="11:00 AM - 12:00 PM">
+                          11:00 AM - 12:00 PM
+                        </option>
+                        <option value="02:00 PM - 03:00 PM">
+                          02:00 PM - 03:00 PM
+                        </option>
+                        <option value="03:00 PM - 04:00 PM">
+                          03:00 PM - 04:00 PM
+                        </option>
+                        <option value="04:00 PM - 05:00 PM">
+                          04:00 PM - 05:00 PM
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -566,39 +610,96 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
                         required
                       >
                         <option value="">Select your timezone</option>
-                        <option value="GMT-12:00">(GMT-12:00) International Date Line West</option>
-                        <option value="GMT-11:00">(GMT-11:00) Midway Island, Samoa</option>
+                        <option value="GMT-12:00">
+                          (GMT-12:00) International Date Line West
+                        </option>
+                        <option value="GMT-11:00">
+                          (GMT-11:00) Midway Island, Samoa
+                        </option>
                         <option value="GMT-10:00">(GMT-10:00) Hawaii</option>
                         <option value="GMT-09:00">(GMT-09:00) Alaska</option>
-                        <option value="GMT-08:00">(GMT-08:00) Pacific Time (US & Canada)</option>
-                        <option value="GMT-07:00">(GMT-07:00) Mountain Time (US & Canada)</option>
-                        <option value="GMT-06:00">(GMT-06:00) Central Time (US & Canada)</option>
-                        <option value="GMT-05:00">(GMT-05:00) Eastern Time (US & Canada)</option>
-                        <option value="GMT-04:00">(GMT-04:00) Atlantic Time (Canada)</option>
-                        <option value="GMT-03:30">(GMT-03:30) Newfoundland</option>
-                        <option value="GMT-03:00">(GMT-03:00) Brasilia, Buenos Aires</option>
-                        <option value="GMT-02:00">(GMT-02:00) Mid-Atlantic</option>
-                        <option value="GMT-01:00">(GMT-01:00) Azores, Cape Verde Islands</option>
-                        <option value="GMT+00:00">(GMT+00:00) London, Dublin, Lisbon</option>
-                        <option value="GMT+01:00">(GMT+01:00) Berlin, Paris, Rome</option>
-                        <option value="GMT+02:00">(GMT+02:00) Cairo, Athens, Helsinki</option>
-                        <option value="GMT+03:00">(GMT+03:00) Moscow, Kuwait, Riyadh</option>
+                        <option value="GMT-08:00">
+                          (GMT-08:00) Pacific Time (US & Canada)
+                        </option>
+                        <option value="GMT-07:00">
+                          (GMT-07:00) Mountain Time (US & Canada)
+                        </option>
+                        <option value="GMT-06:00">
+                          (GMT-06:00) Central Time (US & Canada)
+                        </option>
+                        <option value="GMT-05:00">
+                          (GMT-05:00) Eastern Time (US & Canada)
+                        </option>
+                        <option value="GMT-04:00">
+                          (GMT-04:00) Atlantic Time (Canada)
+                        </option>
+                        <option value="GMT-03:30">
+                          (GMT-03:30) Newfoundland
+                        </option>
+                        <option value="GMT-03:00">
+                          (GMT-03:00) Brasilia, Buenos Aires
+                        </option>
+                        <option value="GMT-02:00">
+                          (GMT-02:00) Mid-Atlantic
+                        </option>
+                        <option value="GMT-01:00">
+                          (GMT-01:00) Azores, Cape Verde Islands
+                        </option>
+                        <option value="GMT+00:00">
+                          (GMT+00:00) London, Dublin, Lisbon
+                        </option>
+                        <option value="GMT+01:00">
+                          (GMT+01:00) Berlin, Paris, Rome
+                        </option>
+                        <option value="GMT+02:00">
+                          (GMT+02:00) Cairo, Athens, Helsinki
+                        </option>
+                        <option value="GMT+03:00">
+                          (GMT+03:00) Moscow, Kuwait, Riyadh
+                        </option>
                         <option value="GMT+03:30">(GMT+03:30) Tehran</option>
-                        <option value="GMT+04:00">(GMT+04:00) Abu Dhabi, Muscat, Baku</option>
+                        <option value="GMT+04:00">
+                          (GMT+04:00) Abu Dhabi, Muscat, Baku
+                        </option>
                         <option value="GMT+04:30">(GMT+04:30) Kabul</option>
-                        <option value="GMT+05:00">(GMT+05:00) Islamabad, Karachi, Tashkent</option>
-                        <option value="GMT+05:30">(GMT+05:30) Mumbai, Kolkata, New Delhi</option>
+                        <option value="GMT+05:00">
+                          (GMT+05:00) Islamabad, Karachi, Tashkent
+                        </option>
+                        <option value="GMT+05:30">
+                          (GMT+05:30) Mumbai, Kolkata, New Delhi
+                        </option>
                         <option value="GMT+05:45">(GMT+05:45) Kathmandu</option>
-                        <option value="GMT+06:00">(GMT+06:00) Dhaka, Almaty</option>
-                        <option value="GMT+06:30">(GMT+06:30) Yangon (Rangoon)</option>
-                        <option value="GMT+07:00">(GMT+07:00) Bangkok, Hanoi, Jakarta</option>
-                        <option value="GMT+08:00">(GMT+08:00) Beijing, Hong Kong, Singapore, Kuala Lumpur</option>
-                        <option value="GMT+09:00">(GMT+09:00) Tokyo, Seoul, Osaka</option>
-                        <option value="GMT+09:30">(GMT+09:30) Adelaide, Darwin</option>
-                        <option value="GMT+10:00">(GMT+10:00) Sydney, Melbourne, Brisbane</option>
-                        <option value="GMT+11:00">(GMT+11:00) Solomon Islands, New Caledonia</option>
-                        <option value="GMT+12:00">(GMT+12:00) Auckland, Wellington, Fiji</option>
-                        <option value="GMT+13:00">(GMT+13:00) Nuku'alofa</option>
+                        <option value="GMT+06:00">
+                          (GMT+06:00) Dhaka, Almaty
+                        </option>
+                        <option value="GMT+06:30">
+                          (GMT+06:30) Yangon (Rangoon)
+                        </option>
+                        <option value="GMT+07:00">
+                          (GMT+07:00) Bangkok, Hanoi, Jakarta
+                        </option>
+                        <option value="GMT+08:00">
+                          (GMT+08:00) Beijing, Hong Kong, Singapore, Kuala
+                          Lumpur
+                        </option>
+                        <option value="GMT+09:00">
+                          (GMT+09:00) Tokyo, Seoul, Osaka
+                        </option>
+                        <option value="GMT+09:30">
+                          (GMT+09:30) Adelaide, Darwin
+                        </option>
+                        <option value="GMT+10:00">
+                          (GMT+10:00) Sydney, Melbourne, Brisbane
+                        </option>
+                        <option value="GMT+11:00">
+                          (GMT+11:00) Solomon Islands, New Caledonia
+                        </option>
+                        <option value="GMT+12:00">
+                          (GMT+12:00) Auckland, Wellington, Fiji
+                        </option>
+                        <option value="GMT+13:00">
+                          (GMT+13:00) Nuku'alofa
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -655,16 +756,19 @@ const PopupForm = ({ isOpen, onClose, universityData, formType = "brochure" }) =
 
               <p className="text-xs col-span-2 text-gray-500 mt-1">
                 By Submitting This Form, You Accept And Agree To Our{" "}
-                <span className="text-blue-600 cursor-pointer hover:underline">Terms Of Use.</span>
+                <span className="text-blue-600 cursor-pointer hover:underline">
+                  Terms Of Use.
+                </span>
               </p>
 
               <button
                 type="submit"
                 disabled={loading}
-                className={`${formType === "counselling"
-                  ? "bg-gradient-to-r from-green-600 to-green-800"
-                  : "bg-gradient-to-r from-blue-600 to-blue-800"
-                  } text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition col-span-2 disabled:opacity-50`}
+                className={`${
+                  formType === "counselling"
+                    ? "bg-gradient-to-r from-green-600 to-green-800"
+                    : "bg-gradient-to-r from-blue-600 to-blue-800"
+                } text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition col-span-2 disabled:opacity-50`}
               >
                 {loading ? "Submitting..." : submitButtonText}
               </button>
