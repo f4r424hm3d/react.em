@@ -27,6 +27,12 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Check if the request was canceled
+    if (error.code === "ERR_CANCELED" || error.name === "CanceledError") {
+      // Do not log canceled requests
+      return Promise.reject(error);
+    }
+
     const url = error.config?.url || 'unknown';
     const method = error.config?.method?.toUpperCase() || 'GET';
     

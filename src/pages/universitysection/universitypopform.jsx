@@ -129,6 +129,7 @@ export const FeeStructureForm = ({
   isOpen,
   onClose,
   onSuccess,
+  universityId,
 }) => {
   const [captchaQuestion, setCaptchaQuestion] = useState({
     num1: 0,
@@ -143,53 +144,50 @@ export const FeeStructureForm = ({
   // Sync Logic
   const [nationality, setNationality] = useState("");
   const [countryCode, setCountryCode] = useState("");
+  const [countriesData, setCountriesData] = useState([]);
+  const [phonecode, setPhonecode] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [courseCategories, setCourseCategories] = useState([]);
 
-  const countryCodes = {
-    Afghanistan: "+93",
-    Bangladesh: "+880",
-    Bhutan: "+975",
-    China: "+86",
-    India: "+91",
-    Indonesia: "+62",
-    Iran: "+98",
-    Iraq: "+964",
-    Japan: "+81",
-    Kazakhstan: "+7",
-    Kuwait: "+965",
-    Kyrgyzstan: "+996",
-    Maldives: "+960",
-    Myanmar: "+95",
-    Nepal: "+977",
-    Oman: "+968",
-    Pakistan: "+92",
-    Philippines: "+63",
-    Qatar: "+974",
-    "Saudi Arabia": "+966",
-    Singapore: "+65",
-    "South Korea": "+82",
-    "Sri Lanka": "+94",
-    Thailand: "+66",
-    Turkey: "+90",
-    "United Arab Emirates": "+971",
-    Uzbekistan: "+998",
-    Vietnam: "+84",
-    Yemen: "+967",
-    Other: "+",
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pRes = await api.get("/phonecodes");
+        setPhonecode(Array.isArray(pRes.data) ? pRes.data : pRes.data.data);
+
+        const cRes = await api.get("/countries");
+        setCountriesData(Array.isArray(cRes.data) ? cRes.data : cRes.data.data);
+
+        const lRes = await api.get("/levels");
+        setLevels(lRes.data.data || []);
+
+        const catRes = await api.get("/course-categories");
+        setCourseCategories(
+          Array.isArray(catRes.data) ? catRes.data : catRes.data.data,
+        );
+      } catch (e) {
+        console.error("Error fetching form data:", e);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleCountryCodeChange = (e) => {
+    const code = e.target.value;
+    setCountryCode(code);
+    if (code && countriesData.length > 0) {
+      const match = countriesData.find((c) => c.phonecode == code);
+      if (match) setNationality(match.name);
+    }
   };
 
   const handleNationalityChange = (e) => {
-    const val = e.target.value;
-    setNationality(val);
-    if (countryCodes[val]) setCountryCode(countryCodes[val]);
-  };
-
-  const handleCountryCodeChange = (e) => {
-    const val = e.target.value;
-    setCountryCode(val);
-    const nation = Object.keys(countryCodes).find(
-      (key) => countryCodes[key] === val,
-    );
-    if (nation) setNationality(nation);
+    const name = e.target.value;
+    setNationality(name);
+    if (name && countriesData.length > 0) {
+      const match = countriesData.find((c) => c.name === name);
+      if (match && match.phonecode) setCountryCode(match.phonecode);
+    }
   };
 
   const generateCaptcha = () => {
@@ -220,68 +218,41 @@ export const FeeStructureForm = ({
 
     const data = {
       name: formData.get("firstName"),
-
       email: formData.get("email"),
-
-      c_code: formData.get("countryCode").replace("+", ""),
-
+      country_code: formData.get("countryCode")?.replace("+", "") || "91",
       mobile: formData.get("phone"),
-
       nationality: formData.get("nationality"),
-
       highest_qualification: formData.get("level"),
-
       interested_course_category: formData.get("course"),
-
-      university_id: universityName || "Unknown",
-
+      university_id: universityId || universityName || "Unknown",
       requestfor: "fee_structure",
-
       source_path: window.location.href,
     };
-
-    const queryString = new URLSearchParams(data).toString();
-
-    const apiUrl = `https://www.educationmalaysia.in/api/inquiry/brochure-request?${queryString}`;
 
     setLoading(true);
 
     try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
+      // Use standard API POST request with JSON
+      const response = await api.post("/inquiry/brochure-request", data);
 
-        mode: "no-cors", // ✅ CRITICAL FIX - CORS bypass
-
-        headers: {
-          "X-API-key": "vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE=",
-        },
-      });
-
-      // ✅ With no-cors, we can't read response, but request is sent successfully
-
-      console.log("✅ Fee Structure request sent");
+      console.log("✅ Fee Structure request sent:", response.data);
 
       onClose();
 
-      if (onSuccess) onSuccess("Fee Structure request submitted successfully!");
+      if (onSuccess) onSuccess("Fee Structure sent successfully!");
 
       e.target.reset();
 
       setCaptchaInput("");
     } catch (err) {
-      console.error("❌ Error:", err);
+      console.error("❌ Error sending fee structure request:", err);
 
-      // ✅ Even if error, request might have been sent successfully
+      // Still close and notify user if it's just a network/CORS logging issue but likely succeeded
+      // OR better: show actual error. But for consistency with previous behavior:
 
-      console.log("⚠️ Request sent, but cannot verify response due to CORS");
-
-      onClose();
-
-      if (onSuccess) onSuccess("Fee Structure request submitted!");
-
-      e.target.reset();
-
-      setCaptchaInput("");
+      alert("Something went wrong. Please try again.");
+      setLoading(false); // Stop loading if error
+      return;
     } finally {
       setLoading(false);
     }
@@ -358,9 +329,9 @@ export const FeeStructureForm = ({
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
                 <option value="">Select Nationality</option>
-                {Object.keys(countryCodes).map((country) => (
-                  <option key={country} value={country}>
-                    {country}
+                {countriesData.map((country, idx) => (
+                  <option key={idx} value={country.name}>
+                    {country.name}
                   </option>
                 ))}
               </select>
@@ -375,13 +346,11 @@ export const FeeStructureForm = ({
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
                 <option value="">Select a course</option>
-                <option value="computer-science">Computer Science</option>
-                <option value="business-administration">
-                  Business Administration
-                </option>
-                <option value="engineering">Engineering</option>
-                <option value="medicine">Medicine</option>
-                <option value="other">Other</option>
+                {courseCategories.map((category, idx) => (
+                  <option key={idx} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -400,9 +369,9 @@ export const FeeStructureForm = ({
                 className="w-28 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
                 <option value="">Code</option>
-                {Object.entries(countryCodes).map(([country, code]) => (
-                  <option key={country} value={code}>
-                    {code}
+                {phonecode.map((code, idx) => (
+                  <option key={idx} value={code.phonecode}>
+                    +{code.phonecode}
                   </option>
                 ))}
               </select>
@@ -427,10 +396,11 @@ export const FeeStructureForm = ({
               className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
             >
               <option value="">Select Qualification</option>
-              <option value="diploma">Diploma</option>
-              <option value="bachelor">Bachelor's Degree</option>
-              <option value="master">Master's Degree</option>
-              <option value="phd">PhD</option>
+              {levels.map((level, idx) => (
+                <option key={idx} value={level.level}>
+                  {level.level}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -513,6 +483,7 @@ export const BrochureForm = ({
   isOpen,
   onClose,
   onSuccess,
+  universityId,
 }) => {
   const [captchaQuestion, setCaptchaQuestion] = useState({
     num1: 0,
@@ -521,62 +492,64 @@ export const BrochureForm = ({
   });
 
   const [captchaInput, setCaptchaInput] = useState("");
-
   const [captchaError, setCaptchaError] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
-  // ✅ New State for data & sync
-
+  // Sync Logic
+  const [nationality, setNationality] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [countriesData, setCountriesData] = useState([]);
-
-  const [phonecodeData, setPhonecodeData] = useState([]);
-
-  const [syncData, setSyncData] = useState({
-    nationality: "",
-
-    countryCode: "",
-  });
-
-  // ✅ Fetch Data
+  const [phonecode, setPhonecode] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [courseCategories, setCourseCategories] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const phoneRes = await api.get("/phonecodes");
+        const pRes = await api.get("/phonecodes");
+        setPhonecode(Array.isArray(pRes.data) ? pRes.data : pRes.data.data);
 
-        setPhonecodeData(
-          Array.isArray(phoneRes.data)
-            ? phoneRes.data
-            : phoneRes.data.data || [],
+        const cRes = await api.get("/countries");
+        setCountriesData(Array.isArray(cRes.data) ? cRes.data : cRes.data.data);
+
+        const lRes = await api.get("/levels");
+        setLevels(lRes.data.data || []);
+
+        const catRes = await api.get("/course-categories");
+        setCourseCategories(
+          Array.isArray(catRes.data) ? catRes.data : catRes.data.data,
         );
-
-        const countryRes = await api.get("/countries");
-
-        setCountriesData(
-          Array.isArray(countryRes.data)
-            ? countryRes.data
-            : countryRes.data.data || [],
-        );
-      } catch (error) {
-        console.error("Error fetching form data:", error);
+      } catch (e) {
+        console.error("Error fetching form data:", e);
       }
     };
+    fetchData();
+  }, []);
 
-    if (isOpen) fetchData();
-  }, [isOpen]);
+  const handleCountryCodeChange = (e) => {
+    const code = e.target.value;
+    setCountryCode(code);
+    if (code && countriesData.length > 0) {
+      const match = countriesData.find((c) => c.phonecode == code);
+      if (match) setNationality(match.name);
+    }
+  };
+
+  const handleNationalityChange = (e) => {
+    const name = e.target.value;
+    setNationality(name);
+    if (name && countriesData.length > 0) {
+      const match = countriesData.find((c) => c.name === name);
+      if (match && match.phonecode) setCountryCode(match.phonecode);
+    }
+  };
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
-
     const num2 = Math.floor(Math.random() * 10) + 1;
-
     const answer = num1 + num2;
-
     setCaptchaQuestion({ num1, num2, answer });
-
     setCaptchaInput("");
-
     setCaptchaError(false);
   };
 
@@ -584,118 +557,54 @@ export const BrochureForm = ({
     if (isOpen) generateCaptcha();
   }, [isOpen]);
 
-  // ✅ Sync Logic: Code -> Nationality
-
-  const handleCountryCodeChange = (e) => {
-    const code = e.target.value;
-
-    let newSyncData = { ...syncData, countryCode: code };
-
-    if (code) {
-      const matchedCountry = countriesData.find(
-        (c) => c.phonecode == code.replace("+", ""),
-      );
-
-      if (matchedCountry) {
-        newSyncData.nationality = matchedCountry.name;
-      }
-    }
-
-    setSyncData(newSyncData);
-  };
-
-  // ✅ Sync Logic: Nationality -> Code
-
-  const handleNationalityChange = (e) => {
-    const name = e.target.value;
-
-    let newSyncData = { ...syncData, nationality: name };
-
-    const matchedCountry = countriesData.find((c) => c.name === name);
-
-    if (matchedCountry && matchedCountry.phonecode) {
-      newSyncData.countryCode = `+${matchedCountry.phonecode}`;
-    }
-
-    setSyncData(newSyncData);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (parseInt(captchaInput) !== captchaQuestion.answer) {
       setCaptchaError(true);
-
       alert("❌ Wrong answer! Please solve the math problem correctly.");
-
       return;
     }
 
     const formData = new FormData(e.target);
 
-    const programs =
-      Array.from(formData.getAll("programs")).join(", ") || "Not specified";
-
     const data = {
       name: formData.get("firstName"),
-
       email: formData.get("email"),
-
-      c_code: formData.get("countryCode").replace("+", ""),
-
+      country_code: formData.get("countryCode")?.replace("+", "") || "91",
       mobile: formData.get("phone"),
-
       nationality: formData.get("nationality"),
-
-      highest_qualification: programs,
-
-      interested_course_category: "General",
-
-      university_id: universityName || "Unknown",
-
+      highest_qualification: formData.get("level"), // Dropdown value
+      interested_course_category: formData.get("course"), // Dropdown value
+      university_id: universityId || universityName || "Unknown",
       requestfor: "brochure",
-
       source_path: window.location.href,
     };
-
-    const queryString = new URLSearchParams(data).toString();
-
-    const apiUrl = `https://www.educationmalaysia.in/api/inquiry/brochure-request?${queryString}`;
 
     setLoading(true);
 
     try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
+      // Use standard API POST request with JSON
+      const response = await api.post("/inquiry/brochure-request", data);
 
-        mode: "no-cors", // ✅ CRITICAL FIX
-
-        headers: {
-          "X-API-key": "vN7kO8pM6vGz1Nz0Vw4k5AjcB5n9hTzY6QsErK8gNbE=",
-        },
-      });
-
-      console.log("✅ Brochure request sent");
+      console.log("✅ Brochure request sent:", response.data);
 
       onClose();
 
-      if (onSuccess) onSuccess("Brochure request submitted successfully!");
+      if (onSuccess) onSuccess("Brochure request sent successfully!");
 
       e.target.reset();
 
       setCaptchaInput("");
     } catch (err) {
-      console.error("❌ Error:", err);
-
-      console.log("⚠️ Request sent, but cannot verify response due to CORS");
-
-      onClose();
-
-      if (onSuccess) onSuccess("Brochure request submitted!");
-
-      e.target.reset();
-
-      setCaptchaInput("");
+      console.error("❌ Error sending brochure request:", err);
+      // alert("Something went wrong. Please try again.");
+      // Improve error message if possible
+      alert(
+        "Submission failed. Please check your connection or contact support.",
+      );
+      setLoading(false);
+      return;
     } finally {
       setLoading(false);
     }
@@ -718,7 +627,7 @@ export const BrochureForm = ({
                 className="w-full h-full object-contain"
               />
             ) : (
-              <span className="text-3xl">📥</span>
+              <span className="text-3xl">📚</span>
             )}
           </div>
           <h3 className="text-lg md:text-2xl font-bold text-gray-900 leading-snug">
@@ -737,10 +646,11 @@ export const BrochureForm = ({
                 Full Name
               </label>
               <input
+                type="text"
                 name="firstName"
                 required
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
                 placeholder="Enter your full name"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
               />
             </div>
             <div className="space-y-1">
@@ -748,37 +658,56 @@ export const BrochureForm = ({
                 Email Address
               </label>
               <input
-                name="email"
                 type="email"
+                name="email"
                 required
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
                 placeholder="Enter your email"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
               />
             </div>
           </div>
 
-          {/* Nationality */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
-              Nationality
-            </label>
-            <select
-              name="nationality"
-              required
-              value={syncData.nationality}
-              onChange={handleNationalityChange}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
-            >
-              <option value="">Select Nationality</option>
-              {countriesData.map((country, idx) => (
-                <option key={idx} value={country.name}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
+          {/* Nationality & Course */}
+          <div className="grid md:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Nationality
+              </label>
+              <select
+                name="nationality"
+                required
+                value={nationality}
+                onChange={handleNationalityChange}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
+              >
+                <option value="">Select Nationality</option>
+                {countriesData.map((country, idx) => (
+                  <option key={idx} value={country.name}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
+                Interested Course
+              </label>
+              <select
+                name="course"
+                required
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
+              >
+                <option value="">Select a course</option>
+                {courseCategories.map((category, idx) => (
+                  <option key={idx} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Phone Number */}
+          {/* Phone Number with Code */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
               Phone Number
@@ -787,13 +716,13 @@ export const BrochureForm = ({
               <select
                 name="countryCode"
                 required
-                value={syncData.countryCode}
+                value={countryCode}
                 onChange={handleCountryCodeChange}
-                className="px-2 py-2.5 md:px-3 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white w-24 md:w-32 text-sm md:text-base appearance-none"
+                className="w-28 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
               >
                 <option value="">Code</option>
-                {phonecodeData.map((code, idx) => (
-                  <option key={idx} value={`+${code.phonecode}`}>
+                {phonecode.map((code, idx) => (
+                  <option key={idx} value={code.phonecode}>
                     +{code.phonecode}
                   </option>
                 ))}
@@ -801,61 +730,30 @@ export const BrochureForm = ({
               <input
                 name="phone"
                 required
-                className="flex-1 px-3 py-2.5 md:px-4 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm md:text-base"
+                type="tel"
                 placeholder="Enter your mobile number"
+                className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 placeholder:text-gray-400 font-medium"
               />
             </div>
           </div>
 
-          {/* Interested Education Level */}
-          <div className="space-y-2">
+          {/* Highest Qualification */}
+          <div className="space-y-1">
             <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wide ml-1">
-              Interested Education Level
+              Highest Qualification
             </label>
-            <div className="grid grid-cols-2 gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="programs"
-                  value="undergraduate"
-                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
-                />
-                <span className="text-sm text-gray-700 font-medium">
-                  Undergraduate
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="programs"
-                  value="postgraduate"
-                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
-                />
-                <span className="text-sm text-gray-700 font-medium">
-                  Postgraduate
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="programs"
-                  value="diploma"
-                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
-                />
-                <span className="text-sm text-gray-700 font-medium">
-                  Diploma
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="programs"
-                  value="phd"
-                  className="w-4 h-4 text-green-600 rounded focus:ring-green-500 border-gray-300"
-                />
-                <span className="text-sm text-gray-700 font-medium">PhD</span>
-              </label>
-            </div>
+            <select
+              name="level"
+              required
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-800 font-medium appearance-none"
+            >
+              <option value="">Select Qualification</option>
+              {levels.map((level, idx) => (
+                <option key={idx} value={level.level}>
+                  {level.level}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* CAPTCHA */}
@@ -900,29 +798,55 @@ export const BrochureForm = ({
               </button>
             </div>
           </div>
-          {captchaError && (
-            <p className="text-red-600 text-[10px] font-bold text-center -mt-1">
-              ❌ Incorrect answer
-            </p>
-          )}
 
-          {/* Buttons */}
-          <div className="pt-1 flex gap-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-2.5 rounded-xl shadow-md transform active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-            >
-              {loading ? "Submitting..." : "Download Brochure"}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 font-semibold text-sm transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-bold shadow-lg hover:shadow-green-500/30 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? "opacity-75 cursor-wait" : ""}`}
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Processing Request...
+              </>
+            ) : (
+              <>
+                <span>Download Brochure Now</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </>
+            )}
+          </button>
         </form>
       </div>
     </ModalWrapper>

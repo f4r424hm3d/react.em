@@ -897,6 +897,7 @@ const UniversitiesList = () => {
 
       {/* Fee Structure Modal */}
       <FeeStructureForm
+        universityId={selectedUniversity?.id}
         universityName={selectedUniversity?.name}
         universityLogo={
           selectedUniversity?.logo_path
@@ -912,6 +913,7 @@ const UniversitiesList = () => {
 
       {/* Brochure Modal */}
       <BrochureForm
+        universityId={selectedUniversity?.id}
         universityName={selectedUniversity?.name}
         universityLogo={
           selectedUniversity?.logo_path
