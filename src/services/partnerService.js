@@ -1,7 +1,6 @@
 import api from '../api';
 
 export const getPartners = async (params) => {
-  // params: search, company, country, state, city
   try {
     const response = await api.get('/our-partners/partners', { params });
     return response.data;

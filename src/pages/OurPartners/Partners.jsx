@@ -146,19 +146,68 @@ function Partners() {
         if (selectedCity !== "All Cities") params.city = selectedCity;
 
         const pData = await getPartners(params);
-        console.log("Partners Data:", pData);
+        console.log("API RAW RESPONSE:", pData);
 
-        // Robust extraction
         let partnerList = [];
+
+        // Handle various API response structures
         if (Array.isArray(pData)) {
           partnerList = pData;
-        } else if (pData && Array.isArray(pData.partners)) {
-          partnerList = pData.partners;
-        } else if (pData && Array.isArray(pData.data)) {
+        } else if (pData?.data && Array.isArray(pData.data)) {
+          // Common wrapper: { data: [...] } or { status: true, data: [...] }
           partnerList = pData.data;
+        } else if (pData?.partners && Array.isArray(pData.partners)) {
+          // Custom wrapper: { partners: [...] }
+          partnerList = pData.partners;
+        } else if (typeof pData === "string") {
+          // Handle double JSON encoding or string response
+          try {
+            const parsed = JSON.parse(pData);
+            console.log("Parsed string response:", parsed);
+            if (Array.isArray(parsed)) partnerList = parsed;
+            else if (parsed.data && Array.isArray(parsed.data))
+              partnerList = parsed.data;
+            else if (parsed.partners && Array.isArray(parsed.partners))
+              partnerList = parsed.partners;
+          } catch (e) {
+            console.error("JSON parse error on string response", e);
+          }
+        } else if (typeof pData === "object" && pData !== null) {
+          // Fallback: try to find ANY array property if specific ones fail
+          // Prioritize 'data', 'content', 'items', 'list'
+          const candidateKeys = [
+            "data",
+            "content",
+            "items",
+            "list",
+            "partners",
+          ];
+          for (const key of candidateKeys) {
+            if (pData[key] && Array.isArray(pData[key])) {
+              partnerList = pData[key];
+              break;
+            }
+          }
+          // Ultimate fallback: First array found
+          if (partnerList.length === 0) {
+            const arrayProp = Object.values(pData).find((val) =>
+              Array.isArray(val),
+            );
+            if (arrayProp) {
+              console.log("Found implicit array in response:", arrayProp);
+              partnerList = arrayProp;
+            }
+          }
         }
 
-        setPartners(partnerList);
+        console.log("Final Extracted Partner List Length:", partnerList.length);
+        if (partnerList.length > 0) {
+          console.log("Sample Partner:", partnerList[0]);
+        } else {
+          console.warn("No partners found in extracted list.");
+        }
+
+        setPartners(partnerList || []);
       } catch (err) {
         console.error("Failed to fetch partners", err);
       } finally {
