@@ -156,6 +156,18 @@ function Partners() {
         } else if (pData?.data && Array.isArray(pData.data)) {
           // Common wrapper: { data: [...] } or { status: true, data: [...] }
           partnerList = pData.data;
+        } else if (
+          pData?.data &&
+          typeof pData.data === "object" &&
+          pData.data !== null
+        ) {
+          // ✅ FIX: Handle Grouped Object Response (e.g. { Kerala: [...], ... })
+          console.log("Detecting Grouped Response Object:", pData.data);
+          // Extract values (arrays of partners) and flatten them
+          // Filter out non-array values just in case (though API seems clean)
+          partnerList = Object.values(pData.data)
+            .filter((val) => Array.isArray(val))
+            .flat();
         } else if (pData?.partners && Array.isArray(pData.partners)) {
           // Custom wrapper: { partners: [...] }
           partnerList = pData.partners;

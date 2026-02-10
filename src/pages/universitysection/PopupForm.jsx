@@ -40,7 +40,18 @@ const PopupForm = ({
     time_zone: "",
     preferred_time: "",
     message: "",
+    requestfor: "brochure",
   });
+
+  useEffect(() => {
+    const reqType =
+      formType === "counselling"
+        ? "counselling"
+        : formType === "fee"
+          ? "fees"
+          : "brochure";
+    setFormData((prev) => ({ ...prev, requestfor: reqType }));
+  }, [formType, isOpen]);
 
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -147,39 +158,15 @@ const PopupForm = ({
     e.preventDefault();
 
     const formValues = new FormData(e.currentTarget);
-    const currentFormData = {
-      ...formData,
-      name: (formValues.get("name") || "").toString().trim(),
-      email: (formValues.get("email") || "").toString().trim(),
-      c_code: (formValues.get("c_code") || "").toString().trim(),
-      mobile: (formValues.get("mobile") || "").toString().trim(),
-      nationality: (formValues.get("nationality") || "").toString().trim(),
-      highest_qualification: (formValues.get("highest_qualification") || "")
-        .toString()
-        .trim(),
-      interested_course_category: (
-        formValues.get("interested_course_category") || ""
-      )
-        .toString()
-        .trim(),
-      preferred_date: (formValues.get("preferred_date") || "")
-        .toString()
-        .trim(),
-      time_zone: (formValues.get("time_zone") || "").toString().trim(),
-      preferred_time: (formValues.get("preferred_time") || "")
-        .toString()
-        .trim(),
-      message: (formValues.get("message") || "").toString().trim(),
-    };
 
-    // captcha check
+    // Captcha Validation
     try {
       const correctAnswer = eval(captcha);
       if (parseInt(userInput) !== correctAnswer) {
         alert("Invalid captcha answer");
-        generateCaptcha(); // Captcha refresh karo
-        setUserInput(""); // Input clear karo
-        return; // Form submit nahi hoga
+        generateCaptcha(); // Refresh Captcha
+        setUserInput(""); // Clear Input
+        return;
       }
     } catch {
       alert("Captcha error");
@@ -189,94 +176,84 @@ const PopupForm = ({
     }
 
     setLoading(true);
+
     try {
-      // Different API endpoints based on formType
+      // Determine Endpoint
       const endpoint =
         formType === "counselling"
           ? "/inquiry/book-session"
-          : "/inquiry/brochure-request"; // Use brochure endpoint for fee structure too
-      // IMPORTANT: API ke according data prepare karo
+          : "/inquiry/brochure-request";
+
+      // Prepare Data Payload
       const submitData = {
-        name: currentFormData.name,
-        email: currentFormData.email,
-        country_code: currentFormData.c_code, // CHANGE: c_code ko country_code bhejo
-        mobile: currentFormData.mobile,
-        nationality: currentFormData.nationality,
-        highest_qualification: currentFormData.highest_qualification,
-        interested_course_category: currentFormData.interested_course_category,
-        university_id: universityData.id, // ADD: University ID
+        name: formValues.get("name")?.toString().trim(),
+        email: formValues.get("email")?.toString().trim(),
+        country_code: formValues
+          .get("c_code")
+          ?.toString()
+          .replace("+", "")
+          .trim(),
+        mobile: formValues.get("mobile")?.toString().trim(),
+        nationality: formValues.get("nationality")?.toString().trim(),
+        highest_qualification: formValues
+          .get("highest_qualification")
+          ?.toString()
+          .trim(),
+        interested_course_category: formValues
+          .get("interested_course_category")
+          ?.toString()
+          .trim(),
+        university_id: universityData?.id || universityData?.university_id,
         requestfor:
           formType === "counselling"
             ? "counselling"
             : formType === "fee"
-              ? "fee_structure"
-              : "brochure", // ADD: Request type
-        source_path: window.location.href, // ADD: Current page URL
+              ? "fees"
+              : "brochure",
+        source_path: window.location.href,
       };
 
-      // Counselling form ke liye extra fields
+      // Add Optional Fields for Counselling
       if (formType === "counselling") {
-        submitData.preferred_date = currentFormData.preferred_date;
-        submitData.time_zone = currentFormData.time_zone;
-        submitData.preferred_time = currentFormData.preferred_time;
-        submitData.message = currentFormData.message;
+        submitData.preferred_date = formValues
+          .get("preferred_date")
+          ?.toString()
+          .trim();
+        submitData.time_zone = formValues.get("time_zone")?.toString().trim();
+        submitData.preferred_time = formValues
+          .get("preferred_time")
+          ?.toString()
+          .trim();
+        submitData.message = formValues.get("message")?.toString().trim();
       }
 
-      console.log(" Sending data:", submitData); // Testing ke liye
+      console.log("🚀 Sending Form Data:", submitData);
 
+      // Await API Call
+      const response = await api.post(endpoint, submitData);
+
+      console.log("✅ Form Submitted Successfully:", response.data);
       setShowSuccess(true);
-      setLoading(false);
 
-      setTimeout(() => {
-        setFormData({
-          name: "",
-          email: "",
-          c_code: "",
-          mobile: "",
-          nationality: "",
-          highest_qualification: "",
-          interested_course_category: "",
-          preferred_date: "",
-          time_zone: "",
-          preferred_time: "",
-          message: "",
-        });
-        setUserInput("");
-        generateCaptcha();
-      }, 2000);
-
-      api
-        .post(endpoint, submitData)
-        .then((response) => {
-          console.log("✅ API Response:", response.data);
-        })
-        .catch((error) => {
-          console.error("❌ Enquiry failed (background):", error);
-        });
+      // Reset Form State (Optional delay or wait for user to click OK)
+      // We rely on user clicking "OK" to reset and close, as per original design.
     } catch (error) {
-      console.error("❌ Enquiry failed:", error);
-      console.error("❌ Error Response:", error.response?.data);
-      console.error("❌ Error Status:", error.response?.status);
+      console.error("❌ Submission Failed:", error);
+      console.error("❌ Error Details:", error.response?.data);
 
-      // Better error handling
       let errorMsg = "Something went wrong, please try again.";
 
       if (error.code === "ECONNABORTED") {
         errorMsg = "Request timeout (30s). Please try again.";
       } else if (error.response?.data?.errors) {
-        // Validation errors ko format karo
         const errors = error.response.data.errors;
         const errorList = Object.values(errors).flat().join("\n");
         errorMsg = `Please fix the following:\n${errorList}`;
       } else if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
-      } else if (error.response?.data?.error) {
-        errorMsg = error.response.data.error;
       }
 
       alert(errorMsg);
-
-      // Captcha refresh karo
       generateCaptcha();
       setUserInput("");
     } finally {
@@ -446,6 +423,11 @@ const PopupForm = ({
             </div>
 
             <form className="grid grid-cols-2 gap-3" onSubmit={handleSubmit}>
+              <input
+                type="hidden"
+                name="requestfor"
+                value={formData.requestfor}
+              />
               <input
                 type="text"
                 name="name"
