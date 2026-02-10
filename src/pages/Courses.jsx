@@ -105,6 +105,7 @@ const Courses = () => {
   const [seo, setSeo] = useState({});
   const [totalCourses, setTotalCourses] = useState(0);
   const [dynamicDescription, setDynamicDescription] = useState("");
+  const [specializationSearch, setSpecializationSearch] = useState("");
   console.log("🔥 Inside Component - dynamicDescription:", dynamicDescription);
 
   // Add selected filters state
@@ -194,11 +195,17 @@ const Courses = () => {
         if (val) {
           const paramKey = keyMapping[key];
           if (paramKey) {
-            const slugValue = String(val)
-              .toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, "");
-            queryParams.set(paramKey, slugValue);
+            // ✅ intakes & study_modes: preserve original value
+            if (key === "intakes" || key === "study_modes") {
+              const rawValue = Array.isArray(val) ? val[0] : String(val).trim();
+              if (rawValue) queryParams.set(paramKey, rawValue);
+            } else {
+              const slugValue = String(val)
+                .toLowerCase()
+                .replace(/\s+/g, "-")
+                .replace(/[^a-z0-9-]/g, "");
+              queryParams.set(paramKey, slugValue);
+            }
           }
         }
       }
@@ -239,22 +246,17 @@ const Courses = () => {
             id: item.id,
           })) || [],
 
+        // ✅ study_modes & intakes: preserve original casing (no lowercase/hyphenation)
         study_modes:
           fetchedFilters.study_modes?.map((item) => ({
-            value: String(item.study_mode || item.slug || item.name)
-              .toLowerCase()
-              .trim()
-              .replace(/\s+/g, "-"),
+            value: String(item.study_mode || item.slug || item.name).trim(),
             label: item.study_mode || item.name || item.slug,
             id: item.id,
           })) || [],
 
         intakes:
           fetchedFilters.intakes?.map((item) => ({
-            value: String(item.month || item.slug || item.name)
-              .toLowerCase()
-              .trim()
-              .replace(/\s+/g, "-"),
+            value: String(item.month || item.slug || item.name).trim(),
             label: item.month || item.name || item.slug,
             id: item.id,
           })) || [],
@@ -362,8 +364,13 @@ const Courses = () => {
           const paramKey = keyMapping[key];
           if (paramKey) {
             values.forEach((val) => {
-              // ✅ LOWERCASE + DASHES format mein bhejo
-              const cleanValue = String(val).toLowerCase().replace(/\s+/g, "-");
+              // ✅ intakes & study_modes: preserve original value
+              let cleanValue;
+              if (key === "intakes" || key === "study_modes") {
+                cleanValue = String(val).trim();
+              } else {
+                cleanValue = String(val).toLowerCase().replace(/\s+/g, "-");
+              }
               queryParams.append(paramKey, cleanValue);
             });
           }
@@ -542,7 +549,13 @@ const Courses = () => {
       const stateKey = keyMapping[key];
 
       if (stateKey && stateKey !== pathFilterType) {
-        const cleanValue = value.toLowerCase().trim().replace(/\s+/g, "-"); // ✅ Consistent format
+        // ✅ intakes & study_modes: preserve original casing
+        let cleanValue;
+        if (stateKey === "intakes" || stateKey === "study_modes") {
+          cleanValue = value.trim();
+        } else {
+          cleanValue = value.toLowerCase().trim().replace(/\s+/g, "-"); // ✅ Consistent format
+        }
 
         if (!filtersFromURL[stateKey].includes(cleanValue)) {
           filtersFromURL[stateKey].push(cleanValue);
@@ -747,7 +760,11 @@ const Courses = () => {
     };
   }, [filters]);
   const handleFilterChange = (filterType, value) => {
-    const normalizedValue = String(value).toLowerCase().trim();
+    // ✅ intakes & study_modes: preserve original casing
+    const normalizedValue =
+      filterType === "intakes" || filterType === "study_modes"
+        ? String(value).trim()
+        : String(value).toLowerCase().trim();
 
     const currentValues = selectedFilters[filterType];
     const isSelected = currentValues.includes(normalizedValue);
@@ -863,17 +880,23 @@ const Courses = () => {
         intakes: "intake",
       };
 
+      // ✅ intakes & study_modes should NEVER be path segments, always query params
       let pathFilter = filterType;
       let pathFilterValue =
         newValues.length > 0 ? newValues[newValues.length - 1] : null;
+
+      // ✅ If current filter is intakes/study_modes, skip path usage
+      if (pathFilter === "intakes" || pathFilter === "study_modes") {
+        pathFilter = null;
+        pathFilterValue = null;
+      }
 
       if (!pathFilterValue) {
         const priorityOrder = [
           "levels",
           "categories",
           "specializations",
-          "intakes",
-          "study_modes",
+          // ✅ removed intakes & study_modes from path priority
         ];
         for (const key of priorityOrder) {
           if (updatedFilters[key]?.length > 0) {
@@ -891,9 +914,13 @@ const Courses = () => {
           if (paramKey) {
             vals.forEach((val) => {
               if (key !== pathFilter || val !== pathFilterValue) {
-                const cleanValue = String(val)
-                  .toLowerCase()
-                  .replace(/\s+/g, "-");
+                // ✅ intakes & study_modes: preserve original value
+                let cleanValue;
+                if (key === "intakes" || key === "study_modes") {
+                  cleanValue = String(val).trim();
+                } else {
+                  cleanValue = String(val).toLowerCase().replace(/\s+/g, "-");
+                }
                 params.append(paramKey, cleanValue);
               }
             });
@@ -910,9 +937,14 @@ const Courses = () => {
           ? `${cleanPath}?${params.toString()}`
           : cleanPath;
         console.log("🔥 Navigating to:", finalURL);
-        navigate(finalURL, { replace: true }); // ✅ Don't add to history
+        navigate(finalURL, { replace: true });
       } else {
-        navigate("/courses-in-malaysia", { replace: true }); // ✅ Don't add to history
+        // ✅ No path filter — use /courses-in-malaysia with query params
+        const finalURL = params.toString()
+          ? `/courses-in-malaysia?${params.toString()}`
+          : "/courses-in-malaysia";
+        console.log("🔥 Navigating to:", finalURL);
+        navigate(finalURL, { replace: true });
       }
 
       setCurrentPage(1);
@@ -1224,45 +1256,77 @@ const Courses = () => {
 
                   {openFilters[key] && (
                     <div className="mt-2 space-y-2 pl-2 max-h-56 overflow-y-auto">
-                      {items.map((item) => {
-                        const value =
-                          item.value ||
-                          item.slug ||
-                          item.name ||
-                          item.month ||
-                          item.study_mode ||
-                          item;
-                        const display =
-                          item.label ||
-                          item.name ||
-                          item.slug ||
-                          item.month ||
-                          item.study_mode ||
-                          item;
-                        return (
-                          <label
-                            key={item.id || value}
-                            className="flex items-center gap-2 py-1.5 cursor-pointer hover:bg-blue-50 rounded-lg pl-0 pr-2 transition-all group"
-                          >
-                            <input
-                              type="checkbox"
-                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 flex-shrink-0"
-                              checked={selectedFilters[key].includes(
-                                String(value).toLowerCase().trim(),
-                              )}
-                              onChange={() => {
-                                const normalizedValue = String(value)
-                                  .toLowerCase()
-                                  .trim();
-                                handleFilterChange(key, normalizedValue);
-                              }}
-                            />
-                            <span className="text-gray-700 text-sm font-medium group-hover:text-blue-700 text-left">
-                              {display}
-                            </span>
-                          </label>
-                        );
-                      })}
+                      {/* ✅ Search input for specializations (mobile) */}
+                      {key === "specializations" && (
+                        <div className="sticky top-0 bg-white z-10 pb-2 mb-2 border-b border-gray-200 pr-2">
+                          <input
+                            type="text"
+                            placeholder="Search specializations..."
+                            value={specializationSearch}
+                            onChange={(e) =>
+                              setSpecializationSearch(e.target.value)
+                            }
+                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      )}
+                      {items
+                        .filter((item) => {
+                          // ✅ Filter specializations by search term
+                          if (
+                            key !== "specializations" ||
+                            !specializationSearch
+                          )
+                            return true;
+                          const searchTerm = specializationSearch.toLowerCase();
+                          const label = (
+                            item.label ||
+                            item.name ||
+                            item.slug ||
+                            ""
+                          ).toLowerCase();
+                          return label.includes(searchTerm);
+                        })
+                        .map((item) => {
+                          const value =
+                            item.value ||
+                            item.slug ||
+                            item.name ||
+                            item.month ||
+                            item.study_mode ||
+                            item;
+                          const display =
+                            item.label ||
+                            item.name ||
+                            item.slug ||
+                            item.month ||
+                            item.study_mode ||
+                            item;
+                          return (
+                            <label
+                              key={item.id || value}
+                              className="flex items-center gap-2 py-1.5 cursor-pointer hover:bg-blue-50 rounded-lg pl-0 pr-2 transition-all group"
+                            >
+                              <input
+                                type="checkbox"
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+                                checked={selectedFilters[key].includes(
+                                  String(value).toLowerCase().trim(),
+                                )}
+                                onChange={() => {
+                                  const normalizedValue = String(value)
+                                    .toLowerCase()
+                                    .trim();
+                                  handleFilterChange(key, normalizedValue);
+                                }}
+                              />
+                              <span className="text-gray-700 text-sm font-medium group-hover:text-blue-700 text-left">
+                                {display}
+                              </span>
+                            </label>
+                          );
+                        })}
                     </div>
                   )}
                 </div>
@@ -1369,70 +1433,103 @@ const Courses = () => {
 
                           {openFilters[key] && (
                             <div className="px-3 pb-3 space-y-1.5 max-h-56 overflow-y-auto bg-gradient-to-b from-gray-50/50 to-white">
-                              {items.map((item) => {
-                                // ✅ Extract value from item object (already normalized in fetchFilterOptions)
-                                const value =
-                                  item.value ||
-                                  item.slug ||
-                                  item.name ||
-                                  item.month ||
-                                  item.study_mode ||
-                                  item;
-                                const display =
-                                  item.label ||
-                                  item.name ||
-                                  item.slug ||
-                                  item.month ||
-                                  item.study_mode ||
-                                  item;
+                              {/* ✅ Search input for specializations */}
+                              {key === "specializations" && (
+                                <div className="sticky top-0 bg-white z-10 pb-2 mb-2 border-b border-gray-200">
+                                  <input
+                                    type="text"
+                                    placeholder="Search specializations..."
+                                    value={specializationSearch}
+                                    onChange={(e) =>
+                                      setSpecializationSearch(e.target.value)
+                                    }
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                </div>
+                              )}
+                              {items
+                                .filter((item) => {
+                                  // ✅ Filter specializations by search term
+                                  if (
+                                    key !== "specializations" ||
+                                    !specializationSearch
+                                  )
+                                    return true;
+                                  const searchTerm =
+                                    specializationSearch.toLowerCase();
+                                  const label = (
+                                    item.label ||
+                                    item.name ||
+                                    item.slug ||
+                                    ""
+                                  ).toLowerCase();
+                                  return label.includes(searchTerm);
+                                })
+                                .map((item) => {
+                                  // ✅ Extract value from item object (already normalized in fetchFilterOptions)
+                                  const value =
+                                    item.value ||
+                                    item.slug ||
+                                    item.name ||
+                                    item.month ||
+                                    item.study_mode ||
+                                    item;
+                                  const display =
+                                    item.label ||
+                                    item.name ||
+                                    item.slug ||
+                                    item.month ||
+                                    item.study_mode ||
+                                    item;
 
-                                // ✅ Normalize value to match selectedFilters format (lowercase with dashes)
-                                const normalizedValue = String(value)
-                                  .toLowerCase()
-                                  .trim()
-                                  .replace(/\s+/g, "-");
+                                  // ✅ Normalize value to match selectedFilters format (lowercase with dashes)
+                                  const normalizedValue = String(value)
+                                    .toLowerCase()
+                                    .trim()
+                                    .replace(/\s+/g, "-");
 
-                                // ✅ Check if this filter is selected
-                                const isChecked =
-                                  selectedFilters[key]?.includes(
-                                    normalizedValue,
-                                  ) || false;
+                                  // ✅ Check if this filter is selected
+                                  const isChecked =
+                                    selectedFilters[key]?.includes(
+                                      normalizedValue,
+                                    ) || false;
 
-                                return (
-                                  <label
-                                    key={item.id || value}
-                                    className={`flex items-center gap-3 py-2 px-3 cursor-pointer rounded-lg transition-all group ${
-                                      isChecked
-                                        ? "bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 shadow-sm"
-                                        : "hover:bg-blue-50/50 border border-transparent"
-                                    }`}
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      className="w-4 h-4 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
-                                      checked={isChecked}
-                                      onChange={() => {
-                                        console.log(
-                                          `🔘 Checkbox clicked - Type: ${key}, Value: ${normalizedValue}, Currently: ${isChecked ? "checked" : "unchecked"}`,
-                                        );
-                                        handleFilterChange(
-                                          key,
-                                          normalizedValue,
-                                        );
-                                      }}
-                                    />
-                                    <span
-                                      className={`text-sm font-medium text-left transition-colors ${
+                                  return (
+                                    <label
+                                      key={item.id || value}
+                                      className={`flex items-center gap-3 py-2 px-3 cursor-pointer rounded-lg transition-all group ${
                                         isChecked
-                                          ? "text-blue-900 font-semibold"
-                                          : "text-gray-700 group-hover:text-blue-700"
+                                          ? "bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 shadow-sm"
+                                          : "hover:bg-blue-50/50 border border-transparent"
                                       }`}
                                     >
-                                      {display}
-                                    </span>
-                                  </label>
-                                );
-                              })}
+                                      <input
+                                        type="checkbox"
+                                        className="w-4 h-4 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+                                        checked={isChecked}
+                                        onChange={() => {
+                                          console.log(
+                                            `🔘 Checkbox clicked - Type: ${key}, Value: ${normalizedValue}, Currently: ${isChecked ? "checked" : "unchecked"}`,
+                                          );
+                                          handleFilterChange(
+                                            key,
+                                            normalizedValue,
+                                          );
+                                        }}
+                                      />
+                                      <span
+                                        className={`text-sm font-medium text-left transition-colors ${
+                                          isChecked
+                                            ? "text-blue-900 font-semibold"
+                                            : "text-gray-700 group-hover:text-blue-700"
+                                        }`}
+                                      >
+                                        {display}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
                             </div>
                           )}
                         </div>
