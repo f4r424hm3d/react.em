@@ -30,7 +30,7 @@ const Exam = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [seo,setSeo] = useState({})
-const API_BASE_URL = "	https://www.educationmalaysia.in/storage/"; 
+const API_BASE_URL = "	https://admin.educationmalaysia.in/storage/"; 
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

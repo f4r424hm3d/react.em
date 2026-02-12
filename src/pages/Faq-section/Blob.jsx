@@ -306,7 +306,7 @@ const NewsCardGrid = () => {
             filteredBlogs.map((item) => {
               const imageUrl = item.imgpath?.startsWith("http")
                 ? item.imgpath
-                : `https://www.educationmalaysia.in/storage/${item.thumbnail_path || "default.jpg"}`;
+                : `https://admin.educationmalaysia.in/storage/${item.thumbnail_path || "default.jpg"}`;
               const catSlug = item.get_category?.category_slug;
 
               return (

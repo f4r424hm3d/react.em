@@ -246,11 +246,11 @@ const DocumentUpload = () => {
                         : doc.imgpath
                       : "";
 
-                    // User requested specific path format: https://www.educationmalaysia.in/storage/uploads/...
+                    // User requested specific path format: https://admin.educationmalaysia.in/storage/uploads/...
                     // Ignore doc.upload_source if it's not helpful, or use it if it's absolute.
                     // But primarily ensure 'storage' is present for these documents.
 
-                    let source = "https://www.educationmalaysia.in/storage/";
+                    let source = "https://admin.educationmalaysia.in/storage/";
 
                     // If the path already contains 'storage/', remove it from source or path to avoid duplicate
                     if (path.startsWith("storage/")) {

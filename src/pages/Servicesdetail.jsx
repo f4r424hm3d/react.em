@@ -404,7 +404,7 @@ const ServiceDetail = () => {
               <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 border border-blue-100">
                 {service.thumbnail_path && (
                   <img
-                    src={`https://www.educationmalaysia.in/storage/${service.thumbnail_path}`}
+                    src={`https://admin.educationmalaysia.in/storage/${service.thumbnail_path}`}
                     alt={service.page_name}
                     className="w-full h-48 sm:h-60 md:h-80 object-cover rounded-xl mb-6 shadow-md"
                   />

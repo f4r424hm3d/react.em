@@ -82,7 +82,7 @@ const LoadingSkeleton = () => (
 
 //         // Images within the description
 //         .replace(/<img src="(.*?)"/g, (match, src) => {
-//             const fullSrc = src.startsWith('http') ? src : `https://www.educationmalaysia.in/storage/${src}`;
+//             const fullSrc = src.startsWith('http') ? src : `https://admin.educationmalaysia.in/storage/${src}`;
 //             return `<img src="${fullSrc}" class="w-full h-auto max-w-lg mx-auto my-6 rounded-lg shadow-md"`;
 //         })
 
@@ -176,7 +176,7 @@ const ExamDetail = () => {
     const [error, setError] = useState(false);
     const [seo, setSeo] = useState({});
 
-    const API_IMAGE_BASE_URL = "https://www.educationmalaysia.in/storage/";
+    const API_IMAGE_BASE_URL = "https://admin.educationmalaysia.in/storage/";
 
     useEffect(() => {
         const fetchExam = async () => {

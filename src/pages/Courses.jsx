@@ -1890,7 +1890,7 @@ const Courses = () => {
                               {/* Logo */}
                               <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-200 shadow-sm overflow-hidden">
                                 <img
-                                  src={`https://www.educationmalaysia.in/storage/${course.university?.logo_path}`}
+                                  src={`https://admin.educationmalaysia.in/storage/${course.university?.logo_path}`}
                                   alt={course.university?.name}
                                   className="w-full h-full object-contain p-1"
                                 />

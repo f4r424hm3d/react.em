@@ -221,7 +221,7 @@ const BlogDetail = () => {
 
             {blog.thumbnail_path && (
               <img
-                src={`https://www.educationmalaysia.in/storage/${blog.thumbnail_path}`}
+                src={`https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`}
                 alt={blog.headline}
                 className="w-full rounded-xl shadow-md"
               />
@@ -429,7 +429,7 @@ const BlogDetail = () => {
                     >
                       {item.thumbnail_path && (
                         <img
-                          src={`https://www.educationmalaysia.in/storage/${item.thumbnail_path}`}
+                          src={`https://admin.educationmalaysia.in/storage/${item.thumbnail_path}`}
                           alt={item.headline}
                           className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
                         />

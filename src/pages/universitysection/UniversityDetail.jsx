@@ -636,7 +636,7 @@ const UniversityDetailPage = () => {
 
             const cleaned = String(path).replace(/^\/+/, "");
 
-            return `https://www.educationmalaysia.in/storage/${cleaned}`;
+            return `https://admin.educationmalaysia.in/storage/${cleaned}`;
           };
 
           if (Array.isArray(photosArray)) {
