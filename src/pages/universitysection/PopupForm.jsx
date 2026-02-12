@@ -390,7 +390,7 @@ const PopupForm = ({
                     universityData.logo_path.startsWith("http")
                       ? universityData.logo_path
                       : universityData.logo_path.startsWith("/storage/")
-                        ? `https://www.educationmalaysia.in${universityData.logo_path}`
+                        ? `https://admin.educationmalaysia.in${universityData.logo_path}`
                         : `${API_URL}${universityData.logo_path}`
                   }
                   alt={universityData.name}

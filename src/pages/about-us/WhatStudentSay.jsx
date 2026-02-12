@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaQuoteRight, 
-  FaUser, 
-  FaGlobeAmericas, 
-  FaBriefcase, 
-  FaPaperPlane, 
-  FaStar 
+import {
+  FaQuoteRight,
+  FaUser,
+  FaGlobeAmericas,
+  FaBriefcase,
+  FaPaperPlane,
+  FaStar,
 } from "react-icons/fa";
 import api from "../../api";
 import { toast } from "react-toastify";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 // Pre-filled testimonials
 const initialTestimonials = [
@@ -19,7 +21,7 @@ const initialTestimonials = [
     country: "PAKISTAN",
     rating: 5,
     text: "As a student I am really thankful that I got contacted with them. Their co-operation with students is really impressive and my overall experience is excellent with them.",
-    date: "2 months ago"
+    date: "2 months ago",
   },
   {
     name: "Neha",
@@ -27,7 +29,7 @@ const initialTestimonials = [
     country: "INDIA",
     rating: 5,
     text: "I am studying accountancy in Malaysia and got a very good help from their Gurgaon office regarding choosing the right course.",
-    date: "1 month ago"
+    date: "1 month ago",
   },
   {
     name: "Aman",
@@ -35,7 +37,7 @@ const initialTestimonials = [
     country: "NEPAL",
     rating: 4,
     text: "They guided me at every step from selecting the university to the visa process. The team is really helpful.",
-    date: "3 weeks ago"
+    date: "3 weeks ago",
   },
   {
     name: "Siti",
@@ -43,7 +45,7 @@ const initialTestimonials = [
     country: "MALAYSIA",
     rating: 5,
     text: "Very professional and responsive. Their assistance helped me a lot in getting into the course I dreamed of.",
-    date: "1 week ago"
+    date: "1 week ago",
   },
 ];
 
@@ -56,7 +58,7 @@ const WhatStudentsSay = () => {
     role: "Student",
     country: "",
     review: "",
-    rating: 5
+    rating: 5,
   });
   const [loading, setLoading] = useState(false);
 
@@ -75,7 +77,13 @@ const WhatStudentsSay = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.phone || !formData.country || !formData.review) {
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.country ||
+      !formData.review
+    ) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -94,7 +102,7 @@ const WhatStudentsSay = () => {
       country: formData.country,
       rating: formData.rating,
       text: formData.review,
-      date: "Just now" // Dynamic display
+      date: "Just now", // Dynamic display
     };
 
     // Update UI immediately (Optimistic UI)
@@ -110,20 +118,23 @@ const WhatStudentsSay = () => {
       role: "Student",
       country: "",
       review: "",
-      rating: 5
+      rating: 5,
     });
     setLoading(false);
 
     // Fire API call
     try {
       const params = new URLSearchParams();
-      params.append('name', currentData.name);
-      params.append('email', currentData.email);
-      params.append('mobile', currentData.phone);
-      params.append('country_code', '91'); // Defaulting, or could be dynamic
-      params.append('nationality', currentData.country);
-      params.append('source', `Testimonial - Role: ${currentData.role} | Rating: ${currentData.rating}/5 | Review: ${currentData.review}`);
-      params.append('source_path', window.location.href);
+      params.append("name", currentData.name);
+      params.append("email", currentData.email);
+      params.append("mobile", currentData.phone);
+      params.append("country_code", "91"); // Defaulting, or could be dynamic
+      params.append("nationality", currentData.country);
+      params.append(
+        "source",
+        `Testimonial - Role: ${currentData.role} | Rating: ${currentData.rating}/5 | Review: ${currentData.review}`,
+      );
+      params.append("source_path", window.location.href);
 
       await api.post("/inquiry/simple-form", params, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -136,6 +147,27 @@ const WhatStudentsSay = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 font-sans">
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          name: "Student Testimonials - Education Malaysia",
+          description:
+            "Read what students say about their experience with Education Malaysia. Real stories from international students.",
+          keywords:
+            "student reviews, education malaysia testimonials, study abroad reviews, student feedback",
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "What Students Say",
+          slug: "students-say",
+        }}
+      />
+
       {/* Hero Header */}
       <section className="relative py-20 px-4 overflow-hidden bg-gradient-to-br from-blue-900 to-blue-700 text-white">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -149,14 +181,14 @@ const WhatStudentsSay = () => {
               What People Are Saying About Us
             </h1>
             <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-              Hear directly from our global community of students and parents about their journey with Education Malaysia.
+              Hear directly from our global community of students and parents
+              about their journey with Education Malaysia.
             </p>
           </motion.div>
         </div>
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 pb-20">
-        
         {/* Reviews Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
           <AnimatePresence>
@@ -177,8 +209,12 @@ const WhatStudentsSay = () => {
                         {review.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900">{review.name}</h3>
-                        <p className="text-xs text-blue-600 font-semibold uppercase">{review.role}</p>
+                        <h3 className="font-bold text-gray-900">
+                          {review.name}
+                        </h3>
+                        <p className="text-xs text-blue-600 font-semibold uppercase">
+                          {review.role}
+                        </p>
                       </div>
                     </div>
                     <FaQuoteRight className="text-gray-200 text-4xl" />
@@ -186,7 +222,14 @@ const WhatStudentsSay = () => {
 
                   <div className="flex text-yellow-400 mb-4 text-sm max-w-full overflow-hidden">
                     {[...Array(5)].map((_, i) => (
-                      <FaStar key={i} className={i < (review.rating || 5) ? "fill-current" : "text-gray-300"} />
+                      <FaStar
+                        key={i}
+                        className={
+                          i < (review.rating || 5)
+                            ? "fill-current"
+                            : "text-gray-300"
+                        }
+                      />
                     ))}
                   </div>
 
@@ -200,7 +243,9 @@ const WhatStudentsSay = () => {
                     <FaGlobeAmericas className="text-blue-400" />
                     <span className="font-medium">{review.country}</span>
                   </div>
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">{review.date}</span>
+                  <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
+                    {review.date}
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -215,7 +260,9 @@ const WhatStudentsSay = () => {
             <div className="relative z-10">
               <h2 className="text-3xl font-bold mb-6">Share Your Story</h2>
               <p className="text-blue-100 mb-8 leading-relaxed">
-                Your feedback helps us improve and inspires others to pursue their dreams in Malaysia. Let the world know about your experience!
+                Your feedback helps us improve and inspires others to pursue
+                their dreams in Malaysia. Let the world know about your
+                experience!
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -224,7 +271,9 @@ const WhatStudentsSay = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold">Professional Support</h4>
-                    <p className="text-sm text-blue-200">Guidance at every step</p>
+                    <p className="text-sm text-blue-200">
+                      Guidance at every step
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -233,7 +282,9 @@ const WhatStudentsSay = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold">Global Community</h4>
-                    <p className="text-sm text-blue-200">Join students from everywhere</p>
+                    <p className="text-sm text-blue-200">
+                      Join students from everywhere
+                    </p>
                   </div>
                 </div>
               </div>
@@ -243,13 +294,18 @@ const WhatStudentsSay = () => {
           {/* Right Side: Form */}
           <div className="p-8 md:p-12 md:w-2/3">
             <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
-              Write a Review <span className="text-blue-600 text-sm font-normal bg-blue-50 px-3 py-1 rounded-full">It only takes a minute</span>
+              Write a Review{" "}
+              <span className="text-blue-600 text-sm font-normal bg-blue-50 px-3 py-1 rounded-full">
+                It only takes a minute
+              </span>
             </h3>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 ml-1">Full Name</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">
+                    Full Name
+                  </label>
                   <div className="relative">
                     <FaUser className="absolute left-4 top-3.5 text-gray-400" />
                     <input
@@ -264,7 +320,9 @@ const WhatStudentsSay = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 ml-1">Your Role</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">
+                    Your Role
+                  </label>
                   <div className="relative">
                     <FaBriefcase className="absolute left-4 top-3.5 text-gray-400" />
                     <select
@@ -284,7 +342,9 @@ const WhatStudentsSay = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -295,7 +355,9 @@ const WhatStudentsSay = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 ml-1">Phone Number</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">
+                    Phone Number
+                  </label>
                   <input
                     type="tel"
                     name="phone"
@@ -309,8 +371,10 @@ const WhatStudentsSay = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 ml-1">Country</label>
-                   <div className="relative">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">
+                    Country
+                  </label>
+                  <div className="relative">
                     <FaGlobeAmericas className="absolute left-4 top-3.5 text-gray-400" />
                     <select
                       name="country"
@@ -333,7 +397,9 @@ const WhatStudentsSay = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 ml-1">Rating</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">
+                    Rating
+                  </label>
                   <div className="flex gap-2 pt-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -341,7 +407,9 @@ const WhatStudentsSay = () => {
                         type="button"
                         onClick={() => handleRating(star)}
                         className={`text-2xl transition-transform hover:scale-110 ${
-                          formData.rating >= star ? "text-yellow-400" : "text-gray-300"
+                          formData.rating >= star
+                            ? "text-yellow-400"
+                            : "text-gray-300"
                         }`}
                       >
                         <FaStar />
@@ -352,7 +420,9 @@ const WhatStudentsSay = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 ml-1">Your Review</label>
+                <label className="text-sm font-semibold text-gray-700 ml-1">
+                  Your Review
+                </label>
                 <textarea
                   name="review"
                   rows="4"

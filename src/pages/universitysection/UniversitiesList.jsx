@@ -3,7 +3,8 @@ import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { FiChevronDown, FiSearch, FiX } from "react-icons/fi";
 import { FaStar } from "react-icons/fa6";
 import { Clock, MapPin, DollarSign, Users, Eye, Book } from "lucide-react";
-import { Helmet } from "react-helmet";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 import api from "../../api";
 import {
   FeeStructureForm,
@@ -463,21 +464,27 @@ const UniversitiesList = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title || "Universities in Malaysia"}</title>
-        <meta name="description" content={seo?.meta_description || ""} />
-      </Helmet>
+      {/* ✅ Dynamic SEO with SeoHead */}
+      <SeoHead
+        pageType="universities-listing"
+        data={{
+          name: title,
+          category: selectedFilters.instituteType || selectedFilters.state,
+          description: seo?.meta_description,
+          keywords: seo?.meta_keyword,
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="universities-listing"
+        data={{
+          name: title,
+          category: selectedFilters.instituteType || selectedFilters.state,
+        }}
+      />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-sm text-gray-500">
-          <Link to="/" className="hover:text-blue-600">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span>Universities</span>
-        </nav>
-
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">

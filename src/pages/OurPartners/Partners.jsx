@@ -29,6 +29,8 @@ import {
   getCities,
 } from "../../services/partnerService";
 import ClipLoader from "react-spinners/ClipLoader";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 function Partners() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -292,6 +294,27 @@ function Partners() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          name: "Our Global Partners - Education Malaysia",
+          description:
+            "Explore our global network of authorized education partners. Join us to help students study in Malaysia.",
+          keywords:
+            "education partners, study abroad agents, education consultants malaysia, partner network",
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "Our Partners",
+          slug: "view-our-partners",
+        }}
+      />
+
       {/* Hero Section */}
       <section className="relative bg-blue-800 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-blue/30"></div>

@@ -48,6 +48,7 @@ import ServicesDiscover from "./pages/servicesdiscover";
 
 import Graduate from "./pages/Grdadute";
 import Graduatedetail from "./pages/Graduatedetail";
+import Home from "./pages/Home";
 import TeamEducationMalaysia from "./pages/TeamEducationMalaysia";
 
 //about us pages
@@ -102,24 +103,7 @@ function App() {
       <WhatsAppButton />
 
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Hero />
-              <StudyJurney />
-              <UniversitySlider />
-              <Malaysia />
-              <Culture />
-              <MalaysiaStudyInfo />
-              <ProgrammeSelector />
-              <FieldStudy />
-              <CountryDashboard />
-              <UniversityRankingTable />
-              <TestimonialSlider />
-            </>
-          }
-        />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/universities" element={<Universities />} />
@@ -214,8 +198,8 @@ function App() {
         <Route path="/contact-us" element={<Contact />} />
         <Route path="/terms-and-conditions" element={<Term />} />
         <Route path="/blog" element={<Blob />} />
+        <Route path="/blog/:category_slug" element={<Blob />} />
         <Route path="/blog/:category/:slugWithId" element={<BlogDetail />} />
-        <Route path="/blog/category/:category_slug" element={<Blob />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/select-level" element={<SelectLevel />} />
         <Route path="/courses" element={<SelectLevel />} />

@@ -1,0 +1,14 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.educationmalaysia.in/sitemap.xml
+Sitemap: https://www.educationmalaysia.in/api/sitemap
+
+# Crawl-delay (optional, adjust as needed)
+# Crawl-delay: 10
+
+# Disallow admin/private areas (if any)
+# Disallow: /admin/
+# Disallow: /private/

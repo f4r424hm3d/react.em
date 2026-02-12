@@ -29,8 +29,8 @@ import api from "../../api";
 
 import UniversityCoursesCard from "./UniversityCoursesCard";
 
-import SEO from "../../components/SEO";
-import SeoService from "../../utils/SeoService";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 import { Home, Layers, Loader2 } from "lucide-react";
 
@@ -636,7 +636,7 @@ const UniversityDetailPage = () => {
 
             const cleaned = String(path).replace(/^\/+/, "");
 
-            return `https://www.educationmalaysia.in/storage/${cleaned}`;
+            return `https://admin.educationmalaysia.in/storage/${cleaned}`;
           };
 
           if (Array.isArray(photosArray)) {
@@ -1042,39 +1042,29 @@ const UniversityDetailPage = () => {
 
   return (
     <>
-      {/* ✅ Enhanced SEO Component with SeoService */}
-      <SEO {...SeoService.generateUniversityDetailMeta(universityData)} />
+      {/* ✅ NEW: Dynamic SEO with SeoHead - Fixes "undefined" canonical issue */}
+      <SeoHead
+        pageType="university-detail"
+        data={{
+          name: universityData?.name,
+          slug: slug,
+          description:
+            universityData?.short_description || universityData?.description,
+          keywords: seo?.meta_keyword,
+          image: universityData?.logo_path
+            ? `${API_URL}${universityData.logo_path}`
+            : null,
+        }}
+      />
 
-      <div className="w-full bg-blue-50 shadow-sm pt-2">
-        <div className="max-w-screen-xl mx-auto px-2 sm:px-3 py-3">
-          <div className="flex items-center space-x-2 sm:space-x-3 text-sm text-gray-600">
-            <Link
-              to="/"
-              className="flex items-center gap-1 hover:underline hover:text-blue-500"
-            >
-              <Home size={18} /> Home
-            </Link>
-
-            <span>/</span>
-
-            <Link
-              to="/universities"
-              className="flex items-center gap-1 hover:underline hover:text-blue-500"
-            >
-              <Layers size={18} /> Universities
-            </Link>
-
-            <span>/</span>
-
-            <Link
-              to={`/university/${slug}`}
-              className="flex items-center gap-1 hover:underline hover:text-blue-500"
-            >
-              <Layers size={18} /> {universityData?.name || "University"}
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* ✅ NEW: Dynamic Breadcrumb - Auto-generated from URL */}
+      <DynamicBreadcrumb
+        pageType="university-detail"
+        data={{
+          name: universityData?.name,
+          slug: slug,
+        }}
+      />
 
       {/* <div className="min-h-screen bg-gray-50"> */}
 

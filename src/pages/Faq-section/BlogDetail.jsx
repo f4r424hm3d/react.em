@@ -10,7 +10,8 @@ import {
   Home,
   Layers,
 } from "lucide-react";
-import { Helmet } from "react-helmet";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 import { Link } from "react-router-dom";
 
 function formatBlogHTML(html, sectionIndex = null) {
@@ -125,7 +126,31 @@ const BlogDetail = () => {
 
   return (
     <>
-      <Helmet>{/* ... helmet content ... */}</Helmet>
+      {/* ✅ Dynamic SEO with SeoHead */}
+      <SeoHead
+        pageType="blog-detail"
+        data={{
+          title: seo?.meta_title || blog.headline,
+          description: seo?.meta_description || blog.short_description,
+          keywords: seo?.meta_keyword,
+          image: blog.thumbnail_path
+            ? `https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`
+            : null,
+          slug: `${category}/${slugWithId}`,
+          publishedTime: blog.created_at,
+          author: blog.author?.name,
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="blog-detail"
+        data={{
+          title: blog.headline,
+          category: category,
+          slug: `${category}/${slugWithId}`,
+        }}
+      />
 
       {/* ✅ RESPONSIVE IMAGE & TABLE RESET STYLES */}
       <style>{`
@@ -155,37 +180,6 @@ const BlogDetail = () => {
           display: block !important;
         }
       `}</style>
-
-      <div className="w-full bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center flex-wrap gap-2 text-sm text-gray-600">
-            <Link
-              to="/"
-              className="flex items-center gap-1 hover:text-blue-600 transition font-medium"
-            >
-              <Home size={16} /> Home
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link
-              to="/blog"
-              className="flex items-center gap-1 hover:text-blue-600 transition font-medium"
-            >
-              <Layers size={16} /> Blog
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link
-              to={`/blog/category/${category}`}
-              className="hover:text-blue-600 transition font-medium capitalize"
-            >
-              {category.replace(/-/g, " ")}
-            </Link>
-            <span className="text-gray-300">•</span>
-            <span className="text-gray-900 font-semibold line-clamp-1">
-              {blog.headline}
-            </span>
-          </div>
-        </div>
-      </div>
 
       <div className="bg-gray-50 py-4 md:py-8">
         <div className="max-w-7xl mx-auto px-3 md:px-4 flex flex-col lg:flex-row gap-6 md:gap-8">
@@ -221,7 +215,7 @@ const BlogDetail = () => {
 
             {blog.thumbnail_path && (
               <img
-                src={`https://www.educationmalaysia.in/storage/${blog.thumbnail_path}`}
+                src={`https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`}
                 alt={blog.headline}
                 className="w-full rounded-xl shadow-md"
               />
@@ -397,7 +391,7 @@ const BlogDetail = () => {
                   {categories.map((cat) => (
                     <li key={cat.id}>
                       <a
-                        href={`/blog/category/${cat.category_slug}`}
+                        href={`/blog/${cat.category_slug}`}
                         className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 rounded-lg hover:bg-blue-50 transition group"
                       >
                         <span className="text-gray-700 group-hover:text-blue-600 font-medium text-sm md:text-base">
@@ -429,7 +423,7 @@ const BlogDetail = () => {
                     >
                       {item.thumbnail_path && (
                         <img
-                          src={`https://www.educationmalaysia.in/storage/${item.thumbnail_path}`}
+                          src={`https://admin.educationmalaysia.in/storage/${item.thumbnail_path}`}
                           alt={item.headline}
                           className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
                         />

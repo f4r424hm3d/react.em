@@ -100,7 +100,7 @@ const Hero = () => {
                 src={
                   banner.banner_path.startsWith("/")
                     ? banner.banner_path
-                    : `https://www.educationmalaysia.in/storage/${banner.banner_path}`
+                    : `https://admin.educationmalaysia.in/storage/${banner.banner_path}`
                 }
                 alt={banner.alt_text || `Banner ${i + 1}`}
                 className="w-full h-full object-cover"

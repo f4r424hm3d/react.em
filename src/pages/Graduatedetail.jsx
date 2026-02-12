@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from "react";
 import {
   Shield,
   Award,
@@ -16,38 +15,41 @@ import {
   Search,
   AlertCircle,
   ExternalLink,
-   ClipboardCheck,
+  ClipboardCheck,
   FileCheck,
-RefreshCw,
- Globe,
- BadgeCheck
-  
-} from 'lucide-react';
-
-
+  RefreshCw,
+  Globe,
+  BadgeCheck,
+} from "lucide-react";
+import SeoHead from "../components/SeoHead";
+import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
 
 const MqaPage = () => {
   // --- Roles Section Data ---
   const roles = [
     {
       icon: BookOpen,
-      title: 'Malaysian Qualifications Framework',
-      description: 'Implementing the MQF as the foundation for national qualifications',
+      title: "Malaysian Qualifications Framework",
+      description:
+        "Implementing the MQF as the foundation for national qualifications",
     },
     {
       icon: CheckCircle2,
-      title: 'Standards Development',
-      description: 'Developing standards, credits and instruments for awarding qualifications',
+      title: "Standards Development",
+      description:
+        "Developing standards, credits and instruments for awarding qualifications",
     },
     {
       icon: Users,
-      title: 'Quality Assurance',
-      description: 'Quality-assuring higher education institutions and programmes (public & private)',
+      title: "Quality Assurance",
+      description:
+        "Quality-assuring higher education institutions and programmes (public & private)",
     },
     {
       icon: Database,
-      title: 'Qualifications Register',
-      description: 'Maintaining the MQR which lists all accredited programmes and qualifications',
+      title: "Qualifications Register",
+      description:
+        "Maintaining the MQR which lists all accredited programmes and qualifications",
     },
   ];
 
@@ -55,41 +57,41 @@ const MqaPage = () => {
   const audiences = [
     {
       icon: GraduationCap,
-      title: 'For Students',
-      color: 'from-emerald-600 to-teal-600',
-      bgColor: 'from-emerald-50 to-teal-50',
+      title: "For Students",
+      color: "from-emerald-600 to-teal-600",
+      bgColor: "from-emerald-50 to-teal-50",
       points: [
-        'Check if your programme is MQA-accredited via the MQR before enrolling',
-        'Ensures your qualification will be recognised by employers and for further studies',
-        'Makes you eligible for government education loans and financial support',
-        'Guarantees your programme meets national quality standards',
-        'Provides assurance for postgraduate programme entry requirements',
+        "Check if your programme is MQA-accredited via the MQR before enrolling",
+        "Ensures your qualification will be recognised by employers and for further studies",
+        "Makes you eligible for government education loans and financial support",
+        "Guarantees your programme meets national quality standards",
+        "Provides assurance for postgraduate programme entry requirements",
       ],
     },
     {
       icon: Building2,
-      title: 'For Institutions',
-      color: 'from-teal-600 to-cyan-600',
-      bgColor: 'from-teal-50 to-cyan-50',
+      title: "For Institutions",
+      color: "from-teal-600 to-cyan-600",
+      bgColor: "from-teal-50 to-cyan-50",
       points: [
-        'Must ensure programmes meet MQA standards for accreditation',
-        'Need to maintain accreditation status through continuous quality assurance',
-        'Required to continuously improve teaching and learning quality',
-        'Must demonstrate compliance with national education standards',
-        'Benefit from enhanced credibility and reputation through accreditation',
+        "Must ensure programmes meet MQA standards for accreditation",
+        "Need to maintain accreditation status through continuous quality assurance",
+        "Required to continuously improve teaching and learning quality",
+        "Must demonstrate compliance with national education standards",
+        "Benefit from enhanced credibility and reputation through accreditation",
       ],
     },
     {
       icon: Briefcase,
-      title: 'For Employers',
-      color: 'from-cyan-600 to-blue-600',
-      bgColor: 'from-cyan-50 to-blue-50',
+      title: "For Employers",
+      color: "from-cyan-600 to-blue-600",
+      bgColor: "from-cyan-50 to-blue-50",
       points: [
-        'Qualified holders from MQA-accredited programmes provide quality assurance',
-        'Non-accredited programmes may pose risks for employment recognition',
-        'Accreditation ensures graduates meet industry-relevant standards',
-        'Critical for public sector employment and professional registrations',
-        'Provides confidence in the competency and knowledge of graduates',
+        "Qualified holders from MQA-accredited programmes provide quality assurance",
+        "Non-accredited programmes may pose risks for employment recognition",
+        "Accreditation ensures graduates meet industry-relevant standards",
+        "Critical for public sector employment and professional registrations",
+        "Provides confidence in the competency and knowledge of graduates",
       ],
     },
   ];
@@ -97,90 +99,135 @@ const MqaPage = () => {
   // How to check
   // --- How to Check Section Data ---
 
-
-
   const steps = [
     {
-      step: '1',
-      title: 'Visit the MQR Website',
-      description: 'Navigate to the Malaysian Qualifications Register online portal',
-      action: 'www.mqa.gov.my/mqr'
+      step: "1",
+      title: "Visit the MQR Website",
+      description:
+        "Navigate to the Malaysian Qualifications Register online portal",
+      action: "www.mqa.gov.my/mqr",
     },
     {
-      step: '2',
-      title: 'Select Category',
-      description: 'Choose between public, private, or other institution categories',
-      action: 'Choose your institution type'
+      step: "2",
+      title: "Select Category",
+      description:
+        "Choose between public, private, or other institution categories",
+      action: "Choose your institution type",
     },
     {
-      step: '3',
-      title: 'Search by Institution',
-      description: 'Enter the name of the institution you want to verify',
-      action: 'Type institution name'
+      step: "3",
+      title: "Search by Institution",
+      description: "Enter the name of the institution you want to verify",
+      action: "Type institution name",
     },
     {
-      step: '4',
-      title: 'Verify Programme',
-      description: 'Check that your specific programme is listed and currently accredited',
-      action: 'Confirm accreditation status'
-    }
+      step: "4",
+      title: "Verify Programme",
+      description:
+        "Check that your specific programme is listed and currently accredited",
+      action: "Confirm accreditation status",
+    },
   ];
-//   const Process = () => {
-    const Anmol = [
+  //   const Process = () => {
+  const Anmol = [
     {
       icon: ClipboardCheck,
-      title: 'Provisional Accreditation',
-      description: 'New programmes that meet minimum requirements receive provisional accreditation to begin operations',
-      details: ['Initial evaluation', 'Minimum standards check', 'Curriculum review']
+      title: "Provisional Accreditation",
+      description:
+        "New programmes that meet minimum requirements receive provisional accreditation to begin operations",
+      details: [
+        "Initial evaluation",
+        "Minimum standards check",
+        "Curriculum review",
+      ],
     },
     {
       icon: FileCheck,
-      title: 'Evidence Submission',
-      description: 'Institutions provide comprehensive evidence of teaching quality, assessments, resources, and governance',
-      details: ['Teaching & learning methods', 'Faculty qualifications', 'Infrastructure & support services']
+      title: "Evidence Submission",
+      description:
+        "Institutions provide comprehensive evidence of teaching quality, assessments, resources, and governance",
+      details: [
+        "Teaching & learning methods",
+        "Faculty qualifications",
+        "Infrastructure & support services",
+      ],
     },
     {
       icon: Award,
-      title: 'Full Accreditation',
-      description: 'After producing graduates and demonstrating quality outcomes, programmes can achieve full accreditation',
-      details: ['Graduate outcomes review', 'Quality assurance', 'Stakeholder feedback']
+      title: "Full Accreditation",
+      description:
+        "After producing graduates and demonstrating quality outcomes, programmes can achieve full accreditation",
+      details: [
+        "Graduate outcomes review",
+        "Quality assurance",
+        "Stakeholder feedback",
+      ],
     },
     {
       icon: RefreshCw,
-      title: 'MQR Registration',
-      description: 'Accredited programmes are listed on the Malaysian Qualifications Register with full details',
-      details: ['Public verification', 'Validity period', 'Continuous monitoring']
-    }
+      title: "MQR Registration",
+      description:
+        "Accredited programmes are listed on the Malaysian Qualifications Register with full details",
+      details: [
+        "Public verification",
+        "Validity period",
+        "Continuous monitoring",
+      ],
+    },
   ];
   const benefits = [
     {
       icon: Shield,
-      title: 'Quality Standards',
-      description: 'Assures that programmes meet national quality standards and have been evaluated against recognised criteria',
-      color: 'from-emerald-600 to-teal-600'
+      title: "Quality Standards",
+      description:
+        "Assures that programmes meet national quality standards and have been evaluated against recognised criteria",
+      color: "from-emerald-600 to-teal-600",
     },
     {
       icon: BadgeCheck,
-      title: 'Employment Recognition',
-      description: 'Supports recognition of qualifications for employment, especially in the public sector, and for further studies',
-      color: 'from-teal-600 to-cyan-600'
+      title: "Employment Recognition",
+      description:
+        "Supports recognition of qualifications for employment, especially in the public sector, and for further studies",
+      color: "from-teal-600 to-cyan-600",
     },
     {
       icon: Globe,
-      title: 'International Mobility',
-      description: 'Enhances comparability and mobility of qualifications within Malaysia and internationally through MQF and MQR',
-      color: 'from-cyan-600 to-blue-600'
+      title: "International Mobility",
+      description:
+        "Enhances comparability and mobility of qualifications within Malaysia and internationally through MQF and MQR",
+      color: "from-cyan-600 to-blue-600",
     },
     {
       icon: TrendingUp,
-      title: 'Continuous Improvement',
-      description: 'Helps institutions with credibility, benchmarking, continuous improvement and regulatory compliance',
-      color: 'from-blue-600 to-emerald-600'
-    }
+      title: "Continuous Improvement",
+      description:
+        "Helps institutions with credibility, benchmarking, continuous improvement and regulatory compliance",
+      color: "from-blue-600 to-emerald-600",
+    },
   ];
 
   return (
     <>
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          name: "MQA - Malaysian Qualifications Agency",
+          description:
+            "Ensuring quality and standards in higher education across Malaysia using MQA accreditation.",
+          keywords:
+            "MQA malaysia, malaysian qualifications agency, accreditation malaysia, MQR check",
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "MQA - Guidelines",
+          slug: "MQA",
+        }}
+      />
       {/* -------------------- HERO SECTION -------------------- */}
       <section
         id="home"
@@ -202,7 +249,8 @@ const MqaPage = () => {
             </h1>
 
             <p className="text-lg sm:text-xl text-blue-100 mb-6 max-w-3xl mx-auto leading-relaxed">
-              Ensuring quality and standards in higher education across Malaysia since 2007
+              Ensuring quality and standards in higher education across Malaysia
+              since 2007
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -224,18 +272,18 @@ const MqaPage = () => {
               {[
                 {
                   icon: Shield,
-                  title: 'Quality Assured',
-                  desc: 'National standards for all accredited programmes',
+                  title: "Quality Assured",
+                  desc: "National standards for all accredited programmes",
                 },
                 {
                   icon: Award,
-                  title: 'Globally Recognized',
-                  desc: 'International alignment and mobility',
+                  title: "Globally Recognized",
+                  desc: "International alignment and mobility",
                 },
                 {
                   icon: TrendingUp,
-                  title: 'Continuous Improvement',
-                  desc: 'Driving excellence in higher education',
+                  title: "Continuous Improvement",
+                  desc: "Driving excellence in higher education",
                 },
               ].map((card, index) => (
                 <div
@@ -245,8 +293,12 @@ const MqaPage = () => {
                   <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto">
                     <card.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
-                  <p className="text-blue-100 text-sm leading-relaxed">{card.desc}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">
+                    {card.title}
+                  </h3>
+                  <p className="text-blue-100 text-sm leading-relaxed">
+                    {card.desc}
+                  </p>
                 </div>
               ))}
             </div>
@@ -254,18 +306,18 @@ const MqaPage = () => {
         </div>
       </section>
 
-
-      
-
       {/* -------------------- MQA INFO SECTION -------------------- */}
       <section id="about" className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">What is MQA?</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
+              What is MQA?
+            </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
             <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              The Malaysian Qualifications Agency is the statutory body responsible for overseeing
-              accreditation and quality assurance of higher education programmes and qualifications in Malaysia.
+              The Malaysian Qualifications Agency is the statutory body
+              responsible for overseeing accreditation and quality assurance of
+              higher education programmes and qualifications in Malaysia.
             </p>
           </div>
 
@@ -279,38 +331,55 @@ const MqaPage = () => {
                   Founded Under the Malaysian Qualifications Agency Act 2007
                 </h3>
                 <p className="text-slate-600 leading-relaxed mb-4">
-                  MQA began operations on 1 November 2007, with a mandate covering both public and
-                  private higher education institutions across Malaysia.
+                  MQA began operations on 1 November 2007, with a mandate
+                  covering both public and private higher education institutions
+                  across Malaysia.
                 </p>
 
                 <ul className="space-y-2">
                   <li className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                     <p className="text-slate-700 leading-relaxed">
-                      <strong>Coverage:</strong> All public and private higher education institutions
+                      <strong>Coverage:</strong> All public and private higher
+                      education institutions
                     </p>
                   </li>
                   <li className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                     <p className="text-slate-700 leading-relaxed">
-                      <strong>Legal Framework:</strong> Malaysian Qualifications Agency Act 2007
+                      <strong>Legal Framework:</strong> Malaysian Qualifications
+                      Agency Act 2007
                     </p>
                   </li>
                 </ul>
               </div>
 
               <div className="space-y-4">
-                {[{ icon: Eye, title: 'Vision', desc: 'To be a global authority in quality assurance of higher education' },
-                  { icon: Target, title: 'Mission', desc: 'To put in place a system of quality assurance for higher education recognised internationally and aligned with national development needs' },
+                {[
+                  {
+                    icon: Eye,
+                    title: "Vision",
+                    desc: "To be a global authority in quality assurance of higher education",
+                  },
+                  {
+                    icon: Target,
+                    title: "Mission",
+                    desc: "To put in place a system of quality assurance for higher education recognised internationally and aligned with national development needs",
+                  },
                 ].map((item, i) => (
-                  <div key={i} className="bg-white rounded-2xl p-4 shadow-md border border-blue-200">
+                  <div
+                    key={i}
+                    className="bg-white rounded-2xl p-4 shadow-md border border-blue-200"
+                  >
                     <div className="flex items-center space-x-3 mb-2">
                       <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-2 rounded-lg">
                         <item.icon className="w-5 h-5 text-white" />
                       </div>
                       <h4 className="font-bold text-slate-800">{item.title}</h4>
                     </div>
-                    <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+                    <p className="text-slate-600 leading-relaxed">
+                      {item.desc}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -319,7 +388,9 @@ const MqaPage = () => {
 
           {/* Key Roles */}
           <div className="text-center mb-6">
-            <h3 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">Key Roles</h3>
+            <h3 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
+              Key Roles
+            </h3>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto"></div>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -338,184 +409,211 @@ const MqaPage = () => {
           </div>
         </div>
       </section>
-{/* 
+      {/* 
       whya matters */}
 
-       <section id="why" className="py-8 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full filter blur-3xl"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-2">
-            Why MQA Accreditation Matters
-          </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-blue-400 to-blue-300 mx-auto mb-3"></div>
-          <p className="text-base text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            For students, institutions, employers and external stakeholders, MQA accreditation provides
-            critical assurance and recognition
-          </p>
+      <section
+        id="why"
+        className="py-8 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden"
+      >
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full filter blur-3xl"></div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {benefits.map((benefit, index) => (
-            <div
-              key={index}
-              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-white/30 transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="bg-gradient-to-br from-blue-600 to-blue-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <benefit.icon className="w-6 h-6 text-white" strokeWidth={2} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-white">{benefit.title}</h3>
-              <p className="text-blue-100 leading-relaxed">{benefit.description}</p>
-            </div>
-          ))}
-        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-2">
+              Why MQA Accreditation Matters
+            </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-400 to-blue-300 mx-auto mb-3"></div>
+            <p className="text-base text-blue-100 max-w-3xl mx-auto leading-relaxed">
+              For students, institutions, employers and external stakeholders,
+              MQA accreditation provides critical assurance and recognition
+            </p>
+          </div>
 
-        <div className="mt-6 bg-gradient-to-br from-blue-600/20 to-blue-400/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 shadow-xl">
-          <h3 className="text-2xl font-bold text-white mb-4 text-center">Critical for Success</h3>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-200 bg-clip-text text-transparent mb-2">
-                Students
+          <div className="grid md:grid-cols-2 gap-6">
+            {benefits.map((benefit, index) => (
+              <div
+                key={index}
+                className="group bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-white/30 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="bg-gradient-to-br from-blue-600 to-blue-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <benefit.icon
+                    className="w-6 h-6 text-white"
+                    strokeWidth={2}
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-white">
+                  {benefit.title}
+                </h3>
+                <p className="text-blue-100 leading-relaxed">
+                  {benefit.description}
+                </p>
               </div>
-              <p className="text-blue-100 leading-relaxed text-sm">
-                Ensures qualification recognition and eligibility for loans
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-blue-200 to-blue-100 bg-clip-text text-transparent mb-2">
-                Institutions
+            ))}
+          </div>
+
+          <div className="mt-6 bg-gradient-to-br from-blue-600/20 to-blue-400/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 shadow-xl">
+            <h3 className="text-2xl font-bold text-white mb-4 text-center">
+              Critical for Success
+            </h3>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-200 bg-clip-text text-transparent mb-2">
+                  Students
+                </div>
+                <p className="text-blue-100 leading-relaxed text-sm">
+                  Ensures qualification recognition and eligibility for loans
+                </p>
               </div>
-              <p className="text-blue-100 leading-relaxed text-sm">
-                Maintains standards and drives continuous improvement
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-blue-100 to-white bg-clip-text text-transparent mb-2">
-                Employers
+              <div className="text-center">
+                <div className="text-3xl font-bold bg-gradient-to-r from-blue-200 to-blue-100 bg-clip-text text-transparent mb-2">
+                  Institutions
+                </div>
+                <p className="text-blue-100 leading-relaxed text-sm">
+                  Maintains standards and drives continuous improvement
+                </p>
               </div>
-              <p className="text-blue-100 leading-relaxed text-sm">
-                Provides quality assurance for recruitment decisions
-              </p>
+              <div className="text-center">
+                <div className="text-3xl font-bold bg-gradient-to-r from-blue-100 to-white bg-clip-text text-transparent mb-2">
+                  Employers
+                </div>
+                <p className="text-blue-100 leading-relaxed text-sm">
+                  Provides quality assurance for recruitment decisions
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
       {/* process */}
-        <section id="process" className="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-50/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
-            Accreditation Process
-          </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
-          <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Understanding how programmes achieve and maintain MQA accreditation
-          </p>
-        </div>
+      <section
+        id="process"
+        className="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-50/20"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
+              Accreditation Process
+            </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
+            <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Understanding how programmes achieve and maintain MQA
+              accreditation
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {Anmol.map((step, index) => (
-            <div key={index} className="relative group">
-              <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full">
-                <div className="absolute -top-4 left-4 bg-gradient-to-br from-blue-600 to-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
-                  {index + 1}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {Anmol.map((step, index) => (
+              <div key={index} className="relative group">
+                <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full">
+                  <div className="absolute -top-4 left-4 bg-gradient-to-br from-blue-600 to-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+                    {index + 1}
+                  </div>
+
+                  <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-2 group-hover:scale-110 transition-transform duration-300">
+                    <step.icon className="w-6 h-6 text-blue-700" />
+                  </div>
+
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">
+                    {step.title}
+                  </h3>
+                  <p className="text-slate-600 mb-3 leading-relaxed text-sm">
+                    {step.description}
+                  </p>
+
+                  <ul className="space-y-1">
+                    {step.details.map((detail, idx) => (
+                      <li
+                        key={idx}
+                        className="flex items-start space-x-2 text-xs text-slate-600"
+                      >
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-2 group-hover:scale-110 transition-transform duration-300">
-                  <step.icon className="w-6 h-6 text-blue-700" />
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-800 mb-2">{step.title}</h3>
-                <p className="text-slate-600 mb-3 leading-relaxed text-sm">{step.description}</p>
-
-                <ul className="space-y-1">
-                  {step.details.map((detail, idx) => (
-                    <li key={idx} className="flex items-start space-x-2 text-xs text-slate-600">
-                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></span>
-                      <span>{detail}</span>
-                    </li>
-                  ))}
-                </ul>
+                {index < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400"></div>
+                  </div>
+                )}
               </div>
+            ))}
+          </div>
 
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                  <div className="w-6 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400"></div>
-                </div>
-              )}
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* MQF Card */}
+            <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 p-6 text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-blue-500/40">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              <h3 className="relative z-10 flex items-center text-xl font-semibold mb-4">
+                <span className="mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+                  <FileCheck className="h-5 w-5" />
+                </span>
+                MQF – Malaysian Qualifications Framework
+              </h3>
+
+              <p className="relative z-10 text-sm text-blue-100 leading-relaxed mb-4">
+                A unified system that classifies all post-secondary
+                qualifications in Malaysia from certificate to doctoral level,
+                covering both higher education and TVET sectors.
+              </p>
+
+              <div className="relative z-10 rounded-xl bg-white/15 p-4 backdrop-blur-md border border-white/10">
+                <p className="text-xs text-blue-100">
+                  Ensures consistency, transparency, and international
+                  comparability of Malaysian qualifications.
+                </p>
+              </div>
             </div>
-          ))}
+
+            {/* MQR Card */}
+            <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-blue-900 to-slate-900 p-6 text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-indigo-500/40">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              <h3 className="relative z-10 flex items-center text-xl font-semibold mb-4">
+                <span className="mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+                  <Award className="h-5 w-5" />
+                </span>
+                MQR – Malaysian Qualifications Register
+              </h3>
+
+              <p className="relative z-10 text-sm text-blue-100 leading-relaxed mb-4">
+                The official register of accredited programmes and
+                qualifications maintained by MQA, showing qualification level,
+                credits, validity period, and institution name.
+              </p>
+
+              <div className="relative z-10 rounded-xl bg-white/15 p-4 backdrop-blur-md border border-white/10">
+                <p className="text-xs text-blue-100">
+                  Trusted source to verify the accreditation status of any
+                  programme.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-
-       <div className="grid md:grid-cols-2 gap-8">
-  {/* MQF Card */}
-  <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 p-6 text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-blue-500/40">
-    
-    {/* Glow effect */}
-    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-    <h3 className="relative z-10 flex items-center text-xl font-semibold mb-4">
-      <span className="mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
-        <FileCheck className="h-5 w-5" />
-      </span>
-      MQF – Malaysian Qualifications Framework
-    </h3>
-
-    <p className="relative z-10 text-sm text-blue-100 leading-relaxed mb-4">
-      A unified system that classifies all post-secondary qualifications in Malaysia from
-      certificate to doctoral level, covering both higher education and TVET sectors.
-    </p>
-
-    <div className="relative z-10 rounded-xl bg-white/15 p-4 backdrop-blur-md border border-white/10">
-      <p className="text-xs text-blue-100">
-        Ensures consistency, transparency, and international comparability of Malaysian qualifications.
-      </p>
-    </div>
-  </div>
-
-  {/* MQR Card */}
-  <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-blue-900 to-slate-900 p-6 text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-indigo-500/40">
-    
-    {/* Glow effect */}
-    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-    <h3 className="relative z-10 flex items-center text-xl font-semibold mb-4">
-      <span className="mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
-        <Award className="h-5 w-5" />
-      </span>
-      MQR – Malaysian Qualifications Register
-    </h3>
-
-    <p className="relative z-10 text-sm text-blue-100 leading-relaxed mb-4">
-      The official register of accredited programmes and qualifications maintained by MQA,
-      showing qualification level, credits, validity period, and institution name.
-    </p>
-
-    <div className="relative z-10 rounded-xl bg-white/15 p-4 backdrop-blur-md border border-white/10">
-      <p className="text-xs text-blue-100">
-        Trusted source to verify the accreditation status of any programme.
-      </p>
-    </div>
-  </div>
-</div>
-
-      </div>
-    </section>
+      </section>
 
       {/* -------------------- FOR YOU SECTION -------------------- */}
       <section id="for-you" className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">What This Means For You</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
+              What This Means For You
+            </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
             <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Understanding the importance of MQA accreditation for different stakeholders
+              Understanding the importance of MQA accreditation for different
+              stakeholders
             </p>
           </div>
 
@@ -525,19 +623,26 @@ const MqaPage = () => {
                 key={index}
                 className="group bg-white rounded-2xl border-2 border-blue-200 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
               >
-                <div className={`bg-gradient-to-br ${audience.bgColor} p-6 border-b-2 border-blue-200`}>
+                <div
+                  className={`bg-gradient-to-br ${audience.bgColor} p-6 border-b-2 border-blue-200`}
+                >
                   <div
                     className={`bg-gradient-to-br ${audience.color} w-14 h-14 rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}
                   >
                     <audience.icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-800">{audience.title}</h3>
+                  <h3 className="text-xl font-bold text-slate-800">
+                    {audience.title}
+                  </h3>
                 </div>
 
                 <div className="p-6">
                   <ul className="space-y-3">
                     {audience.points.map((point, idx) => (
-                      <li key={idx} className="flex items-start space-x-3 group/item">
+                      <li
+                        key={idx}
+                        className="flex items-start space-x-3 group/item"
+                      >
                         <div className="flex-shrink-0 mt-1">
                           <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
@@ -554,126 +659,143 @@ const MqaPage = () => {
             ))}
           </div>
 
-
           <div className="mt-6 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full filter blur-3xl"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-4 text-center">Key Takeaway</h3>
+              <h3 className="text-2xl font-bold mb-4 text-center">
+                Key Takeaway
+              </h3>
               <p className="text-lg text-blue-100 text-center max-w-4xl mx-auto leading-relaxed">
-                MQA accreditation is not just a formality — it's a critical assurance of quality,
-                recognition, and standards that impacts students' futures, institutional credibility,
-                and employer confidence in the Malaysian higher education system.
+                MQA accreditation is not just a formality — it's a critical
+                assurance of quality, recognition, and standards that impacts
+                students' futures, institutional credibility, and employer
+                confidence in the Malaysian higher education system.
               </p>
             </div>
           </div>
         </div>
       </section>
-       <section id="check" className="py-8 bg-gradient-to-br from-blue-50 via-blue-50/30 to-blue-50/40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
-            How to Verify Accreditation
-          </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
-          <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Follow these simple steps to check if a programme is MQA-accredited
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {steps.map((item, index) => (
-            <div key={index} className="relative">
-              <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
-                <div className="bg-gradient-to-br from-blue-600 to-blue-400 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-3 shadow-lg">
-                  {item.step}
-                </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-2">{item.title}</h3>
-                <p className="text-slate-600 mb-3 leading-relaxed text-sm">{item.description}</p>
-                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                  <p className="text-sm font-medium text-blue-700">{item.action}</p>
-                </div>
-              </div>
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                  <div className="w-6 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400"></div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-3 rounded-xl">
-                <CheckCircle2 className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800">Why Verify?</h3>
-            </div>
-            <ul className="space-y-3">
-              {[
-                'Ensure your investment in education is recognized',
-                'Avoid non-accredited programmes that may not be recognized',
-                'Confirm eligibility for government loans and support',
-                'Guarantee employment recognition, especially in public sector',
-                'Ensure smooth transfer or progression to further studies'
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-slate-700 leading-relaxed text-sm">{item}</span>
-                </li>
-              ))}
-            </ul>
+      <section
+        id="check"
+        className="py-8 bg-gradient-to-br from-blue-50 via-blue-50/30 to-blue-50/40"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
+              How to Verify Accreditation
+            </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-blue-400 mx-auto mb-3"></div>
+            <p className="text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Follow these simple steps to check if a programme is
+              MQA-accredited
+            </p>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-3 rounded-xl">
-                <AlertCircle className="w-5 h-5 text-white" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {steps.map((item, index) => (
+              <div key={index} className="relative">
+                <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
+                  <div className="bg-gradient-to-br from-blue-600 to-blue-400 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-3 shadow-lg">
+                    {item.step}
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-slate-600 mb-3 leading-relaxed text-sm">
+                    {item.description}
+                  </p>
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <p className="text-sm font-medium text-blue-700">
+                      {item.action}
+                    </p>
+                  </div>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400"></div>
+                  </div>
+                )}
               </div>
-              <h3 className="text-xl font-bold text-slate-800">Important Notes</h3>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-3 rounded-xl">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800">
+                  Why Verify?
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Ensure your investment in education is recognized",
+                  "Avoid non-accredited programmes that may not be recognized",
+                  "Confirm eligibility for government loans and support",
+                  "Guarantee employment recognition, especially in public sector",
+                  "Ensure smooth transfer or progression to further studies",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-slate-700 leading-relaxed text-sm">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-3">
-              {[
-                'Some institutions may have only certain programmes accredited',
-                'Always verify the specific programme you intend to study',
-                'Accreditation status can have expiry dates - check validity',
-                'Non-accredited programmes may not qualify for government support',
-                'International recognition depends on MQA accreditation'
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-slate-700 leading-relaxed text-sm">{item}</span>
-                </li>
-              ))}
-            </ul>
+
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-3 rounded-xl">
+                  <AlertCircle className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800">
+                  Important Notes
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Some institutions may have only certain programmes accredited",
+                  "Always verify the specific programme you intend to study",
+                  "Accreditation status can have expiry dates - check validity",
+                  "Non-accredited programmes may not qualify for government support",
+                  "International recognition depends on MQA accreditation",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-slate-700 leading-relaxed text-sm">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 text-white shadow-2xl text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4 backdrop-blur-sm">
+              <Search className="w-8 h-8 text-white" strokeWidth={2} />
+            </div>
+            <h3 className="text-2xl font-bold mb-3">Ready to Verify?</h3>
+            <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Visit the Malaysian Qualifications Register to check the
+              accreditation status of any programme
+            </p>
+            <a
+              href="https://www.mqa.gov.my/mqr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            >
+              <span>Visit MQR Portal</span>
+              <ExternalLink className="w-5 h-5" />
+            </a>
           </div>
         </div>
-
-        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 text-white shadow-2xl text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4 backdrop-blur-sm">
-            <Search className="w-8 h-8 text-white" strokeWidth={2} />
-          </div>
-          <h3 className="text-2xl font-bold mb-3">Ready to Verify?</h3>
-          <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto leading-relaxed">
-            Visit the Malaysian Qualifications Register to check the accreditation status of any programme
-          </p>
-          <a
-            href="https://www.mqa.gov.my/mqr/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center space-x-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-          >
-            <span>Visit MQR Portal</span>
-            <ExternalLink className="w-5 h-5" />
-          </a>
-        </div>
-      </div>
-    </section>
-
-   
-
-  
+      </section>
     </>
   );
 };

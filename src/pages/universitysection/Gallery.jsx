@@ -1,44 +1,44 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FaSearchPlus, FaTimes } from "react-icons/fa";
-import api from '../../api';
+import api from "../../api";
 
 const Gallery = () => {
   const [selectedImg, setSelectedImg] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { slug} = useParams();
+  const { slug } = useParams();
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchGalleryData = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/university-gallery/${slug}`);
         // console.log('API Response:', response.data);
-        
+
         // Handle API response – support both data.universityPhotos and universityPhotos
         let galleryData = [];
-        const photos = response?.data?.universityPhotos ?? response?.data?.data?.universityPhotos;
+        const photos =
+          response?.data?.universityPhotos ??
+          response?.data?.data?.universityPhotos;
         if (Array.isArray(photos)) {
           const toAbsoluteUrl = (path) => {
             if (!path) return null;
             if (/^https?:\/\//i.test(path)) return path;
             // Ensure we prefix with site root (not the API base)
-            const cleaned = String(path).replace(/^\/+/, '');
-            return `https://www.educationmalaysia.in/storage/${cleaned}`;
+            const cleaned = String(path).replace(/^\/+/, "");
+            return `https://admin.educationmalaysia.in/storage/${cleaned}`;
           };
 
           galleryData = photos
             .map((photo) => toAbsoluteUrl(photo?.photo_path))
             .filter(Boolean);
         }
-        
+
         // console.log('Processed gallery data:', galleryData);
         setImages(galleryData);
-        
       } catch (error) {
-        console.error('Error fetching gallery data:', error);
+        console.error("Error fetching gallery data:", error);
         setImages([]);
       } finally {
         setLoading(false);
@@ -77,7 +77,7 @@ const Gallery = () => {
   }
 
   return (
-     <div className="mt-6">
+    <div className="mt-6">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Gallery</h2>
 
       {/* Image Grid */}

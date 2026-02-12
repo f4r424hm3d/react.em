@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../api";
-import { Helmet } from "react-helmet";
-import { Home, Layers } from "lucide-react";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 const LoadingSkeleton = () => {
   return (
@@ -101,10 +101,12 @@ const NewsCardGrid = () => {
     try {
       let res;
       if (category === "all") {
-        res = await api.get(`/blog?page=${page}`);
+        res = await api.get(`/blog?page=${page}&per_page=100`);
         setSeo(res.data.seo);
       } else {
-        res = await api.get(`/blog-by-category/${category}?page=${page}`);
+        res = await api.get(
+          `/blog-by-category/${category}?page=${page}&per_page=100`,
+        );
         setSeo(res.data.seo);
       }
 
@@ -134,9 +136,13 @@ const NewsCardGrid = () => {
     let filtered = [...blogs];
 
     // Filter by search query
+    // Filter by search query
     if (searchQuery.trim()) {
-      filtered = filtered.filter((blog) =>
-        blog.headline.toLowerCase().includes(searchQuery.toLowerCase()),
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (blog) =>
+          blog.headline.toLowerCase().includes(query) ||
+          blog.get_category?.category_name?.toLowerCase().includes(query),
       );
     }
 
@@ -158,7 +164,7 @@ const NewsCardGrid = () => {
     if (slug === "all") {
       navigate("/blog");
     } else {
-      navigate(`/blog/category/${slug}`);
+      navigate(`/blog/${slug}`);
     }
   };
 
@@ -177,50 +183,21 @@ const NewsCardGrid = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title}</title>
-        <meta name="title" content={seo?.meta_title} />
-        <meta name="description" content={seo?.meta_description} />
-        <meta name="keywords" content={seo?.meta_keyword} />
-        <meta name="robots" content={seo?.robots || "index, follow"} />
-        {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
-        <meta property="og:title" content={seo?.meta_title} />
-        <meta property="og:description" content={seo?.meta_description} />
-        <meta property="og:image" content={seo?.og_image_path} />
-        <meta property="og:url" content={seo?.page_url} />
-        <meta
-          property="og:site_name"
-          content={seo?.site_name || "Study in Malaysia"}
-        />
-        <meta property="og:type" content={seo?.og_type || "website"} />
-        <meta property="og:locale" content={seo?.og_locale || "en_US"} />
-        {seo?.seo_rating && (
-          <meta name="seo:rating" content={seo?.seo_rating} />
-        )}
-        {seo?.seo_rating_schema && (
-          <script type="application/ld+json">
-            {JSON.stringify(seo.seo_rating_schema)}
-          </script>
-        )}
-      </Helmet>
+      {/* ✅ NEW: Dynamic SEO - Auto-generates unique meta tags based on URL, category, and pagination */}
+      <SeoHead
+        data={{
+          category: category_slug,
+          keywords: seo?.meta_keyword,
+          image: seo?.og_image_path,
+        }}
+      />
 
-      {/* Breadcrumb */}
-      <div className="w-full bg-blue-50 shadow-sm">
-        <div className="max-w-screen-xl mx-auto px-4 py-3">
-          <div className="flex items-center space-x-3 text-sm text-gray-600">
-            <Link
-              to="/"
-              className="flex items-center gap-1 hover:underline hover:text-blue-500"
-            >
-              <Home size={18} /> Home
-            </Link>
-            <span>/</span>
-            <h1 className="flex items-center gap-1">
-              <Layers size={18} /> Blog
-            </h1>
-          </div>
-        </div>
-      </div>
+      {/* ✅ NEW: Dynamic Breadcrumb - Auto-updates based on URL and pagination */}
+      <DynamicBreadcrumb
+        data={{
+          category: category_slug,
+        }}
+      />
 
       <div className="p-6 lg:p-10">
         {/* Search and Filter Section */}
@@ -306,7 +283,7 @@ const NewsCardGrid = () => {
             filteredBlogs.map((item) => {
               const imageUrl = item.imgpath?.startsWith("http")
                 ? item.imgpath
-                : `https://www.educationmalaysia.in/storage/${item.thumbnail_path || "default.jpg"}`;
+                : `https://admin.educationmalaysia.in/storage/${item.thumbnail_path || "default.jpg"}`;
               const catSlug = item.get_category?.category_slug;
 
               return (

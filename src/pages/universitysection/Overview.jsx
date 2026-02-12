@@ -220,7 +220,7 @@ const Overview = ({ universityData }) => {
     }
 
     const imagePath =
-      "https://www.educationmalaysia.in/storage/" +
+      "https://admin.educationmalaysia.in/storage/" +
       section.thumbnail_path
         .replace(/^storage\//, "")
         .replace(/^public\//, "")

@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import api from "../../api";
-import {Helmet} from "react-helmet";
-import LinearDeterminate from '../../components/LinearDeterminate';
-import { Link } from "react-router-dom";
-import { Home, Layers } from "lucide-react";
 
-
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
+import LinearDeterminate from "../../components/LinearDeterminate";
 
 const Faqs = () => {
   const [categories, setCategories] = useState([]);
@@ -17,7 +15,7 @@ const Faqs = () => {
   const [faqLoading, setFaqLoading] = useState(false);
   const [error, setError] = useState(null);
   const [faqError, setFaqError] = useState(null);
-  const [seo , setSeo] = useState({});
+  const [seo, setSeo] = useState({});
 
   const toggleQuestion = (index) => {
     setOpenQuestionIndex(openQuestionIndex === index ? null : index);
@@ -82,123 +80,117 @@ const Faqs = () => {
   }
 
   if (error) {
-    return <div className="py-10 text-center text-lg text-red-600">{error}</div>;
+    return (
+      <div className="py-10 text-center text-lg text-red-600">{error}</div>
+    );
   }
 
   if (!categories || categories.length === 0) {
-    return <div className="py-10 text-center text-lg text-red-600">No FAQ Categories available.</div>;
+    return (
+      <div className="py-10 text-center text-lg text-red-600">
+        No FAQ Categories available.
+      </div>
+    );
   }
 
   return (
     <>
- <Helmet>
-      {/* 🔹 Basic SEO */}
-      <title>{seo?.meta_title}</title>
-      <meta name="title" content={seo?.meta_title} />
-      <meta name="description" content={seo?.meta_description} />
-      <meta name="keywords" content={seo?.meta_keyword} />
+      {/* 🔹 Dynamic SEO using SeoHead */}
+      <SeoHead
+        data={{
+          title:
+            seo?.meta_title ||
+            "Frequently Asked Questions - Education Malaysia",
+          description:
+            seo?.meta_description ||
+            "Find answers to common questions about studying in Malaysia, visas, universities, and more.",
+          keywords:
+            seo?.meta_keyword ||
+            "faq education malaysia, study in malaysia questions, malaysia university faq",
+          image: seo?.og_image_path,
+          url: seo?.page_url,
+          canonicalUrl: seo?.page_url,
+          robots: seo?.robots || "index, follow",
+          schema: seo?.seo_rating_schema,
+        }}
+      />
 
-      {/* 🔹 Robots */}
-      <meta name="robots" content={seo?.robots || "index, follow"} />
+      {/* 🔹 Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "FAQs",
+          slug: "faqs",
+        }}
+      />
 
-      {/* 🔹 Canonical */}
-      {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
+      <div className="py-10 px-4 max-w-5xl mx-auto">
+        <h2 className="text-center text-2xl md:text-3xl font-semibold mb-6">
+          Frequently Asked Questions
+        </h2>
 
-      {/* 🔹 Open Graph (Facebook, LinkedIn, etc.) */}
-      <meta property="og:title" content={seo?.meta_title} />
-      <meta property="og:description" content={seo?.meta_description} />
-      <meta property="og:image" content={seo?.og_image_path} />
-      <meta property="og:url" content={seo?.page_url} />
-      <meta property="og:site_name" content={seo?.site_name || "Study in Malaysia"} />
-      <meta property="og:type" content={seo?.og_type || "website"} />
-      <meta property="og:locale" content={seo?.og_locale || "en_US"} />
- {/* 🔹 SEO Rating (as meta) */}
-      {seo?.seo_rating && <meta name="seo:rating" content={seo?.seo_rating} />}
-
-      {/* 🔹 JSON-LD Schema (Structured Data) */}
-      {seo?.seo_rating_schema && (
-        <script type="application/ld+json">
-          {JSON.stringify(seo.seo_rating_schema)}
-        </script>
-      )}
-     
-    </Helmet>
-
- {/* Breadcrumb */}
-      <div className="w-full bg-blue-50 shadow-sm">
-        <div className="max-w-screen-xl mx-auto px-4 py-3">
-          <div className="flex items-center space-x-3 text-sm text-gray-600">
-            <Link to="/" className="flex items-center gap-1 hover:underline hover:text-blue-500">
-              <Home size={18} /> Home
-            </Link>
-            <span>/</span>
-            <Link to="/faqs" className="flex items-center gap-1 hover:underline hover:text-blue-500">
-              <Layers size={18} /> FAQs
-            </Link>
-          </div>
-        </div>
-      </div>
-
-    <div className="py-10 px-4 max-w-5xl mx-auto">
-      <h2 className="text-center text-2xl md:text-3xl font-semibold mb-6">
-        Frequently Asked Questions
-      </h2>
-
-      <div className="flex flex-wrap justify-center gap-3 mb-6">
-        {categories.map((cat) => (
-          <button
-            key={cat.category_slug}
-            onClick={() => {
-              setActiveTab(cat.category_slug);
-              setOpenQuestionIndex(null);
-            }}
-            className={`px-4 py-2 rounded-2xl font-medium text-sm capitalize ${activeTab === cat.category_slug
-                ? "bg-blue-800 text-white"
-                : "bg-gray-100 text-blue-700"
-            }`}
-          >
-            {cat.category_name}
-          </button>
-        ))}
-      </div>
-
-      {faqLoading ? (
-        <div className="text-center text-gray-600"><LinearDeterminate /></div>
-      ) : faqError ? (
-        <div className="text-center text-red-600">{faqError}</div>
-      ) : (
-        <div className="space-y-4">
-          {faqs.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white border rounded-2xl shadow-sm hover:shadow transition duration-300"
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {categories.map((cat) => (
+            <button
+              key={cat.category_slug}
+              onClick={() => {
+                setActiveTab(cat.category_slug);
+                setOpenQuestionIndex(null);
+              }}
+              className={`px-4 py-2 rounded-2xl font-medium text-sm capitalize ${
+                activeTab === cat.category_slug
+                  ? "bg-blue-800 text-white"
+                  : "bg-gray-100 text-blue-700"
+              }`}
             >
-              <button
-                className="w-full flex justify-between items-center px-5 py-4 text-left text-blue-800 font-medium"
-                onClick={() => toggleQuestion(index)}
-              >
-                <span>{item.question}</span>
-                {openQuestionIndex === index ? (
-                  <FaMinus className="text-blue-600" />
-                ) : (
-                  <FaPlus className="text-blue-600" />
-                )}
-              </button>
-              {openQuestionIndex === index && (
-                <div
-                  className="px-5 pb-4 text-sm text-gray-700 whitespace-pre-line"
-                  dangerouslySetInnerHTML={{ __html: formatHTML(item.answer) }}
-                />
-              )}
-            </div>
+              {cat.category_name}
+            </button>
           ))}
-
-          {faqs.length === 0 && (
-            <div className="text-center text-gray-500">No FAQs found for this category.</div>
-          )}
         </div>
-      )}
-    </div>
+
+        {faqLoading ? (
+          <div className="text-center text-gray-600">
+            <LinearDeterminate />
+          </div>
+        ) : faqError ? (
+          <div className="text-center text-red-600">{faqError}</div>
+        ) : (
+          <div className="space-y-4">
+            {faqs.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white border rounded-2xl shadow-sm hover:shadow transition duration-300"
+              >
+                <button
+                  className="w-full flex justify-between items-center px-5 py-4 text-left text-blue-800 font-medium"
+                  onClick={() => toggleQuestion(index)}
+                >
+                  <span>{item.question}</span>
+                  {openQuestionIndex === index ? (
+                    <FaMinus className="text-blue-600" />
+                  ) : (
+                    <FaPlus className="text-blue-600" />
+                  )}
+                </button>
+                {openQuestionIndex === index && (
+                  <div
+                    className="px-5 pb-4 text-sm text-gray-700 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: formatHTML(item.answer),
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+
+            {faqs.length === 0 && (
+              <div className="text-center text-gray-500">
+                No FAQs found for this category.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 };

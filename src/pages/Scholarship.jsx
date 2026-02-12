@@ -15,7 +15,7 @@
 //         <div className="absolute top-4 left-4 w-16 h-6 bg-gray-300 rounded-full"></div>
 //         <div className="absolute top-14 left-4 w-20 h-5 bg-gray-300 rounded-full"></div>
 //       </div>
-      
+
 //       {/* Content Skeleton */}
 //       <div className="p-6 space-y-4">
 //         <div className="space-y-3">
@@ -62,7 +62,7 @@
 //           alt={title}
 //           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 //         />
-        
+
 //         {/* Gradient Overlay */}
 //         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent group-hover:from-black/40 transition-all duration-300"></div>
 
@@ -70,8 +70,8 @@
 //         <div className="absolute top-4 left-4">
 //           <span className={`
 //             inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm
-//             ${active_status?.toLowerCase() === 'live' ? 'bg-emerald-500/90 text-white' : 
-//               active_status?.toLowerCase() === 'active' ? 'bg-blue-500/90 text-white' : 
+//             ${active_status?.toLowerCase() === 'live' ? 'bg-emerald-500/90 text-white' :
+//               active_status?.toLowerCase() === 'active' ? 'bg-blue-500/90 text-white' :
 //               'bg-orange-500/90 text-white'}
 //           `}>
 //             <Clock size={12} />
@@ -102,7 +102,7 @@
 //         <h3 className="text-gray-900 font-bold text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
 //           {title}
 //         </h3>
-        
+
 //         <button
 //           onClick={handleExplore}
 //           className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 group/btn"
@@ -179,8 +179,7 @@
 
 //       {/* Enhanced Hero Section */}
 //       <section className="relative px-4 md:px-10 py-20 bg-gray-100 min-h-screen overflow-hidden ">
-        
-        
+
 //         <div className="relative z-10">
 //           {/* Enhanced Title */}
 //           <div className="text-center mb-10 -mt-10">
@@ -208,7 +207,7 @@
 //                 <div
 //                   key={scholar.id}
 //                   className="animate-fade-in-up"
-//                   style={{ 
+//                   style={{
 //                     animationDelay: `${index * 100}ms`,
 //                     animationFillMode: 'both'
 //                   }}
@@ -235,7 +234,7 @@
 //           0% { background-position: -400% 0; }
 //           100% { background-position: 400% 0; }
 //         }
-        
+
 //         @keyframes fade-in-up {
 //           from {
 //             opacity: 0;
@@ -246,15 +245,15 @@
 //             transform: translateY(0);
 //           }
 //         }
-        
+
 //         .animate-shimmer {
 //           animation: shimmer 2s infinite;
 //         }
-        
+
 //         .animate-fade-in-up {
 //           animation: fade-in-up 0.6s ease-out;
 //         }
-        
+
 //         .line-clamp-2 {
 //           display: -webkit-box;
 //           -webkit-line-clamp: 2;
@@ -269,9 +268,17 @@
 // export default ScholarshipCards;
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Home, Layers, ArrowRight, ExternalLink, Clock, Award } from "lucide-react";
+import {
+  Home,
+  Layers,
+  ArrowRight,
+  ExternalLink,
+  Clock,
+  Award,
+} from "lucide-react";
 import api from "../api";
-import { Helmet } from "react-helmet";
+import SeoHead from "../components/SeoHead";
+import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
 import { API_URL } from "../config";
 
 // ✅ LOADING SKELETON COMPONENT
@@ -283,7 +290,7 @@ const LoadingSkeleton = () => {
         {/* Badge Skeletons */}
         <div className="absolute top-4 left-4 w-20 h-5 bg-gray-300 rounded-full"></div>
       </div>
-      
+
       {/* Content Skeleton */}
       <div className="p-6 space-y-4">
         <div className="space-y-3">
@@ -297,7 +304,15 @@ const LoadingSkeleton = () => {
 };
 
 // ✅ ENHANCED CARD COMPONENT
-const ScholarshipCard = ({ thumbnail_path, type, active_status, title, slug, page_type, landing_page_link }) => {
+const ScholarshipCard = ({
+  thumbnail_path,
+  type,
+  active_status,
+  title,
+  slug,
+  page_type,
+  landing_page_link,
+}) => {
   const navigate = useNavigate();
 
   // 🔹 Conditional Explore More Handler
@@ -330,7 +345,7 @@ const ScholarshipCard = ({ thumbnail_path, type, active_status, title, slug, pag
           alt={title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent group-hover:from-black/40 transition-all duration-300"></div>
 
@@ -357,13 +372,16 @@ const ScholarshipCard = ({ thumbnail_path, type, active_status, title, slug, pag
         <h3 className="text-gray-900 font-bold text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
           {title}
         </h3>
-        
+
         <button
           onClick={handleExplore}
           className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 group/btn"
         >
           <span>Explore More</span>
-          <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform duration-300" />
+          <ArrowRight
+            size={16}
+            className="group-hover/btn:translate-x-1 transition-transform duration-300"
+          />
         </button>
       </div>
     </div>
@@ -383,7 +401,9 @@ const ScholarshipCards = () => {
       .get("/scholarships")
       .then((res) => {
         setScholarships(
-          Array.isArray(res.data.scholarships) ? res.data.scholarships : [res.data]
+          Array.isArray(res.data.scholarships)
+            ? res.data.scholarships
+            : [res.data],
         );
         setSeo(res.data.seo || {});
       })
@@ -393,57 +413,40 @@ const ScholarshipCards = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title}</title>
-        <meta name="title" content={seo?.meta_title} />
-        <meta name="description" content={seo?.meta_description} />
-        <meta name="keywords" content={seo?.meta_keyword} />
-        <meta name="robots" content={seo?.robots || "index, follow"} />
-        {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
-        <meta property="og:title" content={seo?.meta_title} />
-        <meta property="og:description" content={seo?.meta_description} />
-        <meta property="og:image" content={seo?.og_image_path} />
-        <meta property="og:url" content={seo?.page_url} />
-        <meta property="og:site_name" content={seo?.site_name || "Study in Malaysia"} />
-        <meta property="og:type" content={seo?.og_type || "website"} />
-        <meta property="og:locale" content={seo?.og_locale || "en_US"} />
-        {seo?.seo_rating && <meta name="seo:rating" content={seo?.seo_rating} />}
-        {seo?.seo_rating_schema && (
-          <script type="application/ld+json">
-            {JSON.stringify(seo.seo_rating_schema)}
-          </script>
-        )}
-      </Helmet>
+      {/* ✅ Dynamic SEO with SeoHead */}
+      <SeoHead
+        pageType="scholarships-listing"
+        data={{
+          name: "Study Abroad Scholarships",
+          description: seo?.meta_description,
+          keywords: seo?.meta_keyword,
+        }}
+      />
 
-      {/* Enhanced Breadcrumb */}
-      <div className="w-full bg-sky-50  border-gray-200">
-        <div className="max-w-screen-xl mx-auto px-4 py-4">
-          <div className="flex items-center space-x-3 text-sm text-gray-600">
-            <Link to="/" className="flex items-center gap-2 hover:text-blue-600 transition-colors duration-200 group">
-              <Home size={18} className="group-hover:scale-110 transition-transform" />
-              <span className="font-medium">Home</span>
-            </Link>
-            <span className="text-gray-400">/</span>
-            <Link to="/scholarships" className="flex items-center gap-2 hover:text-blue-600 transition-colors duration-200 group">
-              <Layers size={18} className="group-hover:scale-110 transition-transform" />
-              <span className="font-medium">Scholarships</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="scholarships-listing"
+        data={{
+          name: "Scholarships",
+        }}
+      />
 
       {/* Enhanced Hero Section */}
       <section className="relative px-4 md:px-10 py-20 bg-gray-100 min-h-screen overflow-hidden ">
-        
-        
         <div className="relative z-10">
           {/* Enhanced Title */}
           <div className="text-center mb-10 -mt-10">
             <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-              Study <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Abroad Scholarships</span>
+              Study{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                Abroad Scholarships
+              </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Discover amazing scholarship opportunities with <span className="font-semibold text-blue-600">Education Malaysia</span>
+              Discover amazing scholarship opportunities with{" "}
+              <span className="font-semibold text-blue-600">
+                Education Malaysia
+              </span>
             </p>
             <div className="mt-8 flex justify-center">
               <div className="h-1 w-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
@@ -463,9 +466,9 @@ const ScholarshipCards = () => {
                 <div
                   key={scholar.id}
                   className="animate-fade-in-up"
-                  style={{ 
+                  style={{
                     animationDelay: `${index * 100}ms`,
-                    animationFillMode: 'both'
+                    animationFillMode: "both",
                   }}
                 >
                   <ScholarshipCard
@@ -487,10 +490,14 @@ const ScholarshipCards = () => {
       {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes shimmer {
-          0% { background-position: -400% 0; }
-          100% { background-position: 400% 0; }
+          0% {
+            background-position: -400% 0;
+          }
+          100% {
+            background-position: 400% 0;
+          }
         }
-        
+
         @keyframes fade-in-up {
           from {
             opacity: 0;
@@ -501,15 +508,15 @@ const ScholarshipCards = () => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-shimmer {
           animation: shimmer 2s infinite;
         }
-        
+
         .animate-fade-in-up {
           animation: fade-in-up 0.6s ease-out;
         }
-        
+
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

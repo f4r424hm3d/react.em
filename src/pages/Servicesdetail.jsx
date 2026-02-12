@@ -1,14 +1,18 @@
-
-
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import GetInTouchForm from '../components/GetInTouchForm';
-import OtherServicesBox from '../components/OtherFeatures';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import GetInTouchForm from "../components/GetInTouchForm";
+import OtherServicesBox from "../components/OtherFeatures";
 import TrendingCourse2 from "../components/TrandingCourse2";
-import UniversityBox from '../components/FeaturedUniversities';
-import api from '../api';
-import { Helmet } from "react-helmet";
-import { GraduationCap, MapPin, FileText, Globe, CheckCircle } from 'lucide-react';
+import UniversityBox from "../components/FeaturedUniversities";
+import api from "../api";
+import SeoHead from "../components/SeoHead";
+import {
+  GraduationCap,
+  MapPin,
+  FileText,
+  Globe,
+  CheckCircle,
+} from "lucide-react";
 
 // ---------------------- Skeleton Loader ----------------------
 const ServiceDetailSkeleton = () => (
@@ -36,7 +40,7 @@ const ServiceDetail = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
   const [seo, setSeo] = useState({});
-  const [contentTab, setContentTab] = useState('documents');
+  const [contentTab, setContentTab] = useState("documents");
 
   const toggleSidebar = () => setShowSidebar(!showSidebar);
   const closeSidebar = () => setShowSidebar(false);
@@ -65,35 +69,30 @@ const ServiceDetail = () => {
   }
 
   if (!service) {
-    return <div className="text-center text-red-500 mt-10 p-4">Service not found.</div>;
+    return (
+      <div className="text-center text-red-500 mt-10 p-4">
+        Service not found.
+      </div>
+    );
   }
 
   const showEnhancedTabs = service.contents?.length >= 3;
 
   return (
     <>
-      {/* 🔹 SEO Meta Tags */}
-      <Helmet>
-        <title>{seo?.meta_title}</title>
-        <meta name="title" content={seo?.meta_title} />
-        <meta name="description" content={seo?.meta_description} />
-        <meta name="keywords" content={seo?.meta_keyword} />
-        <meta name="robots" content={seo?.robots || "index, follow"} />
-        {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
-        <meta property="og:title" content={seo?.meta_title} />
-        <meta property="og:description" content={seo?.meta_description} />
-        <meta property="og:image" content={seo?.og_image_path} />
-        <meta property="og:url" content={seo?.page_url} />
-        <meta property="og:site_name" content={seo?.site_name || "Study in Malaysia"} />
-        <meta property="og:type" content={seo?.og_type || "website"} />
-        <meta property="og:locale" content={seo?.og_locale || "en_US"} />
-        {seo?.seo_rating && <meta name="seo:rating" content={seo?.seo_rating} />}
-        {seo?.seo_rating_schema && (
-          <script type="application/ld+json">
-            {JSON.stringify(seo.seo_rating_schema)}
-          </script>
-        )}
-      </Helmet>
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          name: service.page_name,
+          description: seo?.meta_description,
+          keywords: seo?.meta_keyword,
+          slug: slug,
+          image: service.thumbnail_path
+            ? `https://admin.educationmalaysia.in/storage/${service.thumbnail_path}`
+            : null,
+        }}
+      />
 
       {/* ✅ CUSTOM CSS - BLUE LINE REMOVED */}
       <style>{`
@@ -281,7 +280,9 @@ const ServiceDetail = () => {
 
             <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <p className="text-base sm:text-lg md:text-xl text-emerald-100">2025 Edition</p>
+              <p className="text-base sm:text-lg md:text-xl text-emerald-100">
+                2025 Edition
+              </p>
             </div>
 
             {service?.headline && (
@@ -293,7 +294,10 @@ const ServiceDetail = () => {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" className="w-full h-6 sm:h-8 md:h-12 fill-white">
+          <svg
+            viewBox="0 0 1440 60"
+            className="w-full h-6 sm:h-8 md:h-12 fill-white"
+          >
             <path d="M0,30 Q360,0 720,30 T1440,30 L1440,60 L0,60 Z"></path>
           </svg>
         </div>
@@ -305,33 +309,36 @@ const ServiceDetail = () => {
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex flex-col sm:flex-row gap-2">
               <button
-                onClick={() => setContentTab('documents')}
-                className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base ${contentTab === 'documents'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-slate-600 hover:bg-gray-200'
-                  }`}
+                onClick={() => setContentTab("documents")}
+                className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base ${
+                  contentTab === "documents"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-slate-600 hover:bg-gray-200"
+                }`}
               >
                 <FileText className="w-4 h-4" />
                 <span>Required Documents</span>
               </button>
 
               <button
-                onClick={() => setContentTab('additional')}
-                className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base ${contentTab === 'additional'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-slate-600 hover:bg-gray-200'
-                  }`}
+                onClick={() => setContentTab("additional")}
+                className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base ${
+                  contentTab === "additional"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-slate-600 hover:bg-gray-200"
+                }`}
               >
                 <Globe className="w-4 h-4" />
                 <span>Additional Info</span>
               </button>
 
               <button
-                onClick={() => setContentTab('checklist')}
-                className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base ${contentTab === 'checklist'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'bg-gray-100 text-slate-600 hover:bg-gray-200'
-                  }`}
+                onClick={() => setContentTab("checklist")}
+                className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base ${
+                  contentTab === "checklist"
+                    ? "bg-emerald-600 text-white shadow-md"
+                    : "bg-gray-100 text-slate-600 hover:bg-gray-200"
+                }`}
               >
                 <CheckCircle className="w-4 h-4" />
                 <span>Checklist</span>
@@ -373,7 +380,7 @@ const ServiceDetail = () => {
                 overflow-y-auto
                 shadow-2xl md:shadow-none
                 transition-transform duration-300
-                ${showSidebar ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+                ${showSidebar ? "translate-x-0" : "translate-x-full md:translate-x-0"}
               `}
             >
               <button
@@ -404,7 +411,7 @@ const ServiceDetail = () => {
               <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 border border-blue-100">
                 {service.thumbnail_path && (
                   <img
-                    src={`https://www.educationmalaysia.in/storage/${service.thumbnail_path}`}
+                    src={`https://admin.educationmalaysia.in/storage/${service.thumbnail_path}`}
                     alt={service.page_name}
                     className="w-full h-48 sm:h-60 md:h-80 object-cover rounded-xl mb-6 shadow-md"
                   />
@@ -414,14 +421,26 @@ const ServiceDetail = () => {
                   <div className="content-wrapper">
                     {showEnhancedTabs ? (
                       <>
-                        {contentTab === 'documents' && (
-                          <div dangerouslySetInnerHTML={{ __html: service.contents[0].tab_content }} />
+                        {contentTab === "documents" && (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: service.contents[0].tab_content,
+                            }}
+                          />
                         )}
-                        {contentTab === 'additional' && (
-                          <div dangerouslySetInnerHTML={{ __html: service.contents[1].tab_content }} />
+                        {contentTab === "additional" && (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: service.contents[1].tab_content,
+                            }}
+                          />
                         )}
-                        {contentTab === 'checklist' && (
-                          <div dangerouslySetInnerHTML={{ __html: service.contents[2].tab_content }} />
+                        {contentTab === "checklist" && (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: service.contents[2].tab_content,
+                            }}
+                          />
                         )}
                       </>
                     ) : (
@@ -432,10 +451,11 @@ const ServiceDetail = () => {
                               <button
                                 key={index}
                                 onClick={() => setActiveTab(index)}
-                                className={`px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-all ${activeTab === index
-                                  ? "bg-blue-600 text-white shadow-md transform scale-105"
-                                  : "bg-white border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
-                                  }`}
+                                className={`px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-all ${
+                                  activeTab === index
+                                    ? "bg-blue-600 text-white shadow-md transform scale-105"
+                                    : "bg-white border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
+                                }`}
                               >
                                 {item.tab_title.length > 40
                                   ? item.tab_title.slice(0, 40) + "..."
@@ -445,7 +465,11 @@ const ServiceDetail = () => {
                           </div>
                         </div>
 
-                        <div dangerouslySetInnerHTML={{ __html: service.contents[activeTab].tab_content }} />
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: service.contents[activeTab].tab_content,
+                          }}
+                        />
                       </>
                     )}
                   </div>

@@ -1,8 +1,8 @@
-
-
 import React, { useEffect } from "react";
 import OtherFeatures from "../../components/OtherFeatures";
 import FeaturedUniversities from "../../components/FeaturedUniversities";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 const WhyStudyInM = () => {
   useEffect(() => {
@@ -11,6 +11,27 @@ const WhyStudyInM = () => {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          name: "Why Study in Malaysia?",
+          description:
+            "Discover why Malaysia is a top destination for international students. Affordable education, world-class universities, and diverse culture.",
+          keywords:
+            "why study in malaysia, study in malaysia benefits, malaysia education system, affordable education malaysia",
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "Why Study in Malaysia",
+          slug: "why-study",
+        }}
+      />
+
       {/* Left Sidebar - Expanded Width & Better Spacing */}
       <div className="hidden lg:block lg:w-[350px] xl:w-[400px] bg-white border-r border-gray-200 shadow-md p-6 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto shrink-0 z-10">
         <div className="text-left text-blue-700 font-semibold space-y-8">
@@ -28,11 +49,16 @@ const WhyStudyInM = () => {
         </h1>
 
         <p className="text-gray-700 leading-relaxed">
-          Malaysia is one of Asia's leading education hubs with global university campuses, affordable costs, and diverse culture. It is known for its infrastructure, safety, and English-medium instruction, making it a great study destination.
+          Malaysia is one of Asia's leading education hubs with global
+          university campuses, affordable costs, and diverse culture. It is
+          known for its infrastructure, safety, and English-medium instruction,
+          making it a great study destination.
         </p>
 
         <div className="bg-white p-6 rounded-xl shadow space-y-6">
-          <h2 className="text-2xl font-semibold text-blue-700">Top Reasons To Study In Malaysia</h2>
+          <h2 className="text-2xl font-semibold text-blue-700">
+            Top Reasons To Study In Malaysia
+          </h2>
           <ul className="grid md:grid-cols-2 gap-4 list-disc pl-5 text-gray-700">
             <li>Affordable education and living</li>
             <li>English as the medium of instruction</li>
@@ -46,7 +72,9 @@ const WhyStudyInM = () => {
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow space-y-4">
-          <h2 className="text-2xl font-semibold text-blue-700">Cost of Studying in Malaysia</h2>
+          <h2 className="text-2xl font-semibold text-blue-700">
+            Cost of Studying in Malaysia
+          </h2>
           <div className="overflow-x-auto">
             <table className="w-full table-auto text-sm border">
               <thead>
@@ -57,27 +85,56 @@ const WhyStudyInM = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr><td className="border p-2">Pre-university</td><td className="border p-2">10 – 24 months</td><td className="border p-2">$3,000 – $10,000</td></tr>
-                <tr><td className="border p-2">Bachelor's Degree</td><td className="border p-2">3 Years</td><td className="border p-2">$10,000 – $20,000</td></tr>
-                <tr><td className="border p-2">International Degree</td><td className="border p-2">3-4 Years</td><td className="border p-2">$40,000 – $100,000</td></tr>
-                <tr><td className="border p-2">Medical Programme</td><td className="border p-2">4-5 Years</td><td className="border p-2">$30,000 – $100,000</td></tr>
-                <tr><td className="border p-2">Post-Graduate</td><td className="border p-2">1-2 Years</td><td className="border p-2">$5,000 – $10,000</td></tr>
+                <tr>
+                  <td className="border p-2">Pre-university</td>
+                  <td className="border p-2">10 – 24 months</td>
+                  <td className="border p-2">$3,000 – $10,000</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Bachelor's Degree</td>
+                  <td className="border p-2">3 Years</td>
+                  <td className="border p-2">$10,000 – $20,000</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">International Degree</td>
+                  <td className="border p-2">3-4 Years</td>
+                  <td className="border p-2">$40,000 – $100,000</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Medical Programme</td>
+                  <td className="border p-2">4-5 Years</td>
+                  <td className="border p-2">$30,000 – $100,000</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Post-Graduate</td>
+                  <td className="border p-2">1-2 Years</td>
+                  <td className="border p-2">$5,000 – $10,000</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow space-y-3">
-          <h2 className="text-2xl font-semibold text-blue-700">Culture, Climate & Connectivity</h2>
+          <h2 className="text-2xl font-semibold text-blue-700">
+            Culture, Climate & Connectivity
+          </h2>
           <p className="text-gray-700">
-            Malaysia's multicultural society offers exposure to global perspectives, tasty cuisines, and friendly communities. With its strategic location, it provides easy access to popular destinations like Bali, Krabi, and Seoul.
+            Malaysia's multicultural society offers exposure to global
+            perspectives, tasty cuisines, and friendly communities. With its
+            strategic location, it provides easy access to popular destinations
+            like Bali, Krabi, and Seoul.
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow space-y-3">
-          <h2 className="text-2xl font-semibold text-blue-700">Top Global Universities in Malaysia</h2>
+          <h2 className="text-2xl font-semibold text-blue-700">
+            Top Global Universities in Malaysia
+          </h2>
           <p className="text-gray-700">
-            Universities like University of Malaya, Monash, Nottingham, and Heriot-Watt have global rankings and offer international degrees at lower cost.
+            Universities like University of Malaya, Monash, Nottingham, and
+            Heriot-Watt have global rankings and offer international degrees at
+            lower cost.
           </p>
         </div>
 
@@ -85,7 +142,9 @@ const WhyStudyInM = () => {
         <div className="lg:hidden bg-white p-6 rounded-xl shadow space-y-6">
           <div className="text-center text-blue-700 font-semibold">
             <OtherFeatures />
-            <div className="mt-8">  {/* Yeh wrapper add karo */}
+            <div className="mt-8">
+              {" "}
+              {/* Yeh wrapper add karo */}
               <FeaturedUniversities />
             </div>
           </div>

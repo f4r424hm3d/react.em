@@ -892,7 +892,7 @@ export default function QualifiedLevelDetail() {
                     <img
                       src={
                         card.thumbnail_path
-                          ? `https://www.educationmalaysia.in/storage/${card.thumbnail_path}`
+                          ? `https://admin.educationmalaysia.in/storage/${card.thumbnail_path}`
                           : "https://via.placeholder.com/300x200?text=Course"
                       }
                       alt={card.name}

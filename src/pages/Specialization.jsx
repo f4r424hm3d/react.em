@@ -1,9 +1,6 @@
-
-
-
 // import React, { useState, useEffect } from "react";
-// import { 
-//   ArrowRight, Layers, BookOpen, GraduationCap, Sparkles, Star, Wrench, 
+// import {
+//   ArrowRight, Layers, BookOpen, GraduationCap, Sparkles, Star, Wrench,
 //   Monitor, Heart, Briefcase, FlaskConical, Palette, Globe, Calculator,
 //   ChevronDown, ChevronUp
 // } from "lucide-react";
@@ -135,10 +132,10 @@
 
 //   // Build category list with "All" at the top
 //   const categoryList = [
-//     { 
-//       id: "all", 
-//       name: "All Specializations", 
-//       icon: BookOpen, 
+//     {
+//       id: "all",
+//       name: "All Specializations",
+//       icon: BookOpen,
 //       count: totalCount,
 //       slug: "all"
 //     },
@@ -160,8 +157,8 @@
 // // Display description - FIXED LOGIC
 // const shouldShowButton = coursesDescription && coursesDescription.length > 200;
 // const displayDescription = coursesDescription || defaultDescription;
-// const descriptionPreview = showMore 
-//   ? displayDescription 
+// const descriptionPreview = showMore
+//   ? displayDescription
 //   : displayDescription.substring(0, 501);
 //   return (
 //     <>
@@ -196,9 +193,9 @@
 //       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
 //         <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm">
 //           <div className="p-6">
-// <div 
-//   className="content-html text-gray-700 
-//    max-h-[300px] overflow-y-auto  
+// <div
+//   className="content-html text-gray-700
+//    max-h-[300px] overflow-y-auto
 
 //     [&>p]:mb-4 [&>p]:leading-relaxed
 //     [&>ul]:my-6 [&>ul]:pl-6 [&>ul]:list-disc
@@ -209,8 +206,8 @@
 //     [&>table]:w-full [&>table]:my-6 [&>table]:border-collapse
 //     [&>table>thead>tr>th]:p-3 [&>table>thead>tr>th]:bg-gray-100 [&>table>thead>tr>th]:border [&>table>thead>tr>th]:border-gray-300 [&>table>thead>tr>th]:text-left [&>table>thead>tr>th]:font-semibold
 //     [&>table>tbody>tr>td]:p-3 [&>table>tbody>tr>td]:border [&>table>tbody>tr>td]:border-gray-300"
-//   dangerouslySetInnerHTML={{ 
-//     __html: showMore ? displayDescription : descriptionPreview 
+//   dangerouslySetInnerHTML={{
+//     __html: showMore ? displayDescription : descriptionPreview
 //   }}
 // />
 // {/* Only show button if content is longer than 200 chars */}
@@ -274,7 +271,7 @@
 
 //               {/* Other Categories - Collapsible on mobile, always visible on desktop */}
 //               <div className={`space-y-1 overflow-hidden transition-all duration-300 categories-scrollable
-//                 lg:max-h-[500px] lg:opacity-100 
+//                 lg:max-h-[500px] lg:opacity-100
 //                 ${isCategoriesExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
 //                 {categoryList.slice(1).map((category) => {
 //                   const IconComponent = category.icon;
@@ -300,8 +297,8 @@
 
 //                       <div className="flex items-center justify-between flex-1">
 //                         <div className="flex items-center gap-3 flex-1 min-w-0">
-//                           <IconComponent 
-//                             size={20} 
+//                           <IconComponent
+//                             size={20}
 //                             className={isSelected ? "text-blue-600" : "text-gray-700"}
 //                           />
 //                           <span className={`font-medium text-sm leading-tight ${
@@ -405,25 +402,34 @@
 
 // export default Specialization;
 
-
 // // // Jab page load hoga: API call jayegi /specialization-content/1 pe
 // // // Agar response mein text hai: Wo automatically show hoga text box mein
 // // // Agar empty hai ya error: Default text show hoga jo abhi hai
 
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import {
-  ArrowRight, Layers, BookOpen, GraduationCap, Sparkles, Star, Wrench,
-  Monitor, Heart, Briefcase, FlaskConical, Palette, Globe, Calculator,
-  ChevronDown, ChevronUp, X
+  ArrowRight,
+  Layers,
+  BookOpen,
+  GraduationCap,
+  Sparkles,
+  Star,
+  Wrench,
+  Monitor,
+  Heart,
+  Briefcase,
+  FlaskConical,
+  Palette,
+  Globe,
+  Calculator,
+  ChevronDown,
+  ChevronUp,
+  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../api";
-import { Helmet } from "react-helmet";
+import SeoHead from "../components/SeoHead";
+import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
 
 const Specialization = () => {
   const [categories, setCategories] = useState([]);
@@ -438,7 +444,8 @@ const Specialization = () => {
   const [coursesDescription, setCoursesDescription] = useState("");
 
   // Default description text
-  const defaultDescription = "Whether you're interested in Engineering, Technology, Medicine, Business, Science, or Arts, our platform offers detailed insights to guide your choices.";
+  const defaultDescription =
+    "Whether you're interested in Engineering, Technology, Medicine, Business, Science, or Arts, our platform offers detailed insights to guide your choices.";
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -461,7 +468,10 @@ const Specialization = () => {
       // Fetch ALL specializations (90 courses)
       const specializationsRes = await api.get("/specializations");
 
-      if (specializationsRes.data.status && Array.isArray(specializationsRes.data.data)) {
+      if (
+        specializationsRes.data.status &&
+        Array.isArray(specializationsRes.data.data)
+      ) {
         setAllSpecializations(specializationsRes.data.data);
         setDisplayedSpecializations(specializationsRes.data.data);
       }
@@ -492,8 +502,8 @@ const Specialization = () => {
     if (categoryId === "all") {
       setDisplayedSpecializations(allSpecializations);
     } else {
-      const filtered = allSpecializations.filter(spec => {
-        const categoryMatch = categories.find(cat => cat.slug === categoryId);
+      const filtered = allSpecializations.filter((spec) => {
+        const categoryMatch = categories.find((cat) => cat.slug === categoryId);
         if (categoryMatch) {
           return spec.course_category_id === categoryMatch.id;
         }
@@ -506,7 +516,10 @@ const Specialization = () => {
   const LoadingSkeleton = () => (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {[...Array(8)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl shadow-md p-5 animate-pulse border border-gray-100">
+        <div
+          key={i}
+          className="bg-white rounded-xl shadow-md p-5 animate-pulse border border-gray-100"
+        >
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <div className="h-3 bg-gray-200 rounded w-16 mb-3"></div>
@@ -521,7 +534,20 @@ const Specialization = () => {
   );
 
   const getSpecializationIcon = (index) => {
-    const icons = [Wrench, Heart, FlaskConical, GraduationCap, Monitor, Briefcase, Palette, Globe, Calculator, BookOpen, Sparkles, Star];
+    const icons = [
+      Wrench,
+      Heart,
+      FlaskConical,
+      GraduationCap,
+      Monitor,
+      Briefcase,
+      Palette,
+      Globe,
+      Calculator,
+      BookOpen,
+      Sparkles,
+      Star,
+    ];
     const IconComponent = icons[index % icons.length];
     return <IconComponent size={22} strokeWidth={2} />;
   };
@@ -529,19 +555,34 @@ const Specialization = () => {
   const getCategoryIcon = (categoryName) => {
     const lowerName = categoryName.toLowerCase();
     if (lowerName.includes("engineering")) return Wrench;
-    if (lowerName.includes("computer") || lowerName.includes("it")) return Monitor;
-    if (lowerName.includes("health") || lowerName.includes("medicine")) return Heart;
-    if (lowerName.includes("business") || lowerName.includes("management") || lowerName.includes("mba")) return Briefcase;
+    if (lowerName.includes("computer") || lowerName.includes("it"))
+      return Monitor;
+    if (lowerName.includes("health") || lowerName.includes("medicine"))
+      return Heart;
+    if (
+      lowerName.includes("business") ||
+      lowerName.includes("management") ||
+      lowerName.includes("mba")
+    )
+      return Briefcase;
     if (lowerName.includes("science")) return FlaskConical;
-    if (lowerName.includes("arts") || lowerName.includes("design")) return Palette;
-    if (lowerName.includes("social") || lowerName.includes("media") || lowerName.includes("law")) return Globe;
+    if (lowerName.includes("arts") || lowerName.includes("design"))
+      return Palette;
+    if (
+      lowerName.includes("social") ||
+      lowerName.includes("media") ||
+      lowerName.includes("law")
+    )
+      return Globe;
     if (lowerName.includes("education")) return GraduationCap;
     return BookOpen;
   };
 
   // Calculate count for each category from allSpecializations
   const getCategoryCount = (categoryId) => {
-    return allSpecializations.filter(spec => spec.course_category_id === categoryId).length;
+    return allSpecializations.filter(
+      (spec) => spec.course_category_id === categoryId,
+    ).length;
   };
 
   // Calculate total count for "All" category
@@ -554,37 +595,57 @@ const Specialization = () => {
       name: "All Specializations",
       icon: BookOpen,
       count: totalCount,
-      slug: "all"
+      slug: "all",
     },
-    ...categories.map(cat => ({
+    ...categories.map((cat) => ({
       id: cat.slug,
       name: cat.name,
       icon: getCategoryIcon(cat.name),
       count: getCategoryCount(cat.id),
       slug: cat.slug,
-      categoryId: cat.id
-    }))
+      categoryId: cat.id,
+    })),
   ];
 
   // Filter displayed specializations based on search
   const filteredSpecializations = displayedSpecializations.filter((spec) =>
-    spec.name.toLowerCase().includes(searchQuery.toLowerCase())
+    spec.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Display description - FIXED LOGIC
-  const shouldShowButton = coursesDescription && coursesDescription.length > 200;
+  const shouldShowButton =
+    coursesDescription && coursesDescription.length > 200;
   const displayDescription = coursesDescription || defaultDescription;
   const descriptionPreview = showMore
     ? displayDescription
     : displayDescription.substring(0, 501);
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title || "Specializations - Education Malaysia"}</title>
-        <meta name="title" content={seo?.meta_title} />
-        <meta name="description" content={seo?.meta_description} />
-        <meta name="keywords" content={seo?.meta_keyword} />
-      </Helmet>
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          title: seo?.meta_title || "Specializations - Education Malaysia",
+          description:
+            seo?.meta_description ||
+            "Explore top courses and fields of study in Malaysia with expert guidance.",
+          keywords:
+            seo?.meta_keyword ||
+            "specializations, courses in malaysia, study fields, education malaysia",
+          image: seo?.og_image_path,
+          url: seo?.page_url,
+          canonicalUrl: seo?.page_url, // Ensure this is passed if available
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "Specializations",
+          slug: "specialization",
+        }}
+      />
 
       {/* Hero Section */}
       <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
@@ -601,14 +662,15 @@ const Specialization = () => {
             </span>
           </h1>
           <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Start your academic journey with the right path. Explore top courses and fields of study in Malaysia with expert guidance.
+            Start your academic journey with the right path. Explore top courses
+            and fields of study in Malaysia with expert guidance.
           </p>
         </div>
       </div>
 
       {/* Informational Text Section - Dynamic Content */}
-      {/* <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">  
-     */}
+      {/* <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
+       */}
       <div className="bg-gradient-to-br from-gray-50 to-blue-50 px-3 sm:px-4 py-4 sm:py-6 md:py-8 md:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm relative">
@@ -627,8 +689,8 @@ const Specialization = () => {
               <div
                 className={`content-html text-gray-700 text-sm sm:text-base
                   transition-all duration-300 ease-in-out
-                  ${showMore ? 'max-h-none pt-8 pr-10 sm:pt-10 sm:pr-12' : 'max-h-[200px] sm:max-h-[250px] md:max-h-[300px]'}
-                  ${!showMore && 'overflow-hidden'}
+                  ${showMore ? "max-h-none pt-8 pr-10 sm:pt-10 sm:pr-12" : "max-h-[200px] sm:max-h-[250px] md:max-h-[300px]"}
+                  ${!showMore && "overflow-hidden"}
                   
                   [&>p]:mb-3 sm:[&>p]:mb-4 [&>p]:leading-relaxed [&>p]:text-sm sm:[&>p]:text-base
                   [&>ul]:my-4 sm:[&>ul]:my-6 [&>ul]:pl-5 sm:[&>ul]:pl-6 [&>ul]:list-disc
@@ -640,7 +702,7 @@ const Specialization = () => {
                   [&>table>thead>tr>th]:p-2 sm:[&>table>thead>tr>th]:p-3 [&>table>thead>tr>th]:bg-gray-100 [&>table>thead>tr>th]:border [&>table>thead>tr>th]:border-gray-300 [&>table>thead>tr>th]:text-left [&>table>thead>tr>th]:font-semibold
                   [&>table>tbody>tr>td]:p-2 sm:[&>table>tbody>tr>td]:p-3 [&>table>tbody>tr>td]:border [&>table>tbody>tr>td]:border-gray-300`}
                 dangerouslySetInnerHTML={{
-                  __html: showMore ? displayDescription : descriptionPreview
+                  __html: showMore ? displayDescription : descriptionPreview,
                 }}
               />
               {/* Only show button if content is longer than 200 chars */}
@@ -650,7 +712,10 @@ const Specialization = () => {
                   className="text-blue-600 font-medium hover:text-blue-800 transition-colors duration-200 flex items-center gap-2 mt-3 sm:mt-4 text-sm sm:text-base cursor-pointer hover:bg-blue-50 px-3 py-1.5 rounded-lg"
                 >
                   Show More
-                  <ChevronDown size={16} className="transition-transform duration-200" />
+                  <ChevronDown
+                    size={16}
+                    className="transition-transform duration-200"
+                  />
                 </button>
               )}
             </div>
@@ -661,11 +726,12 @@ const Specialization = () => {
       {/* Main Content */}
       <section className="bg-gradient-to-br from-gray-50 to-blue-50 px-3 sm:px-4 py-6 sm:py-8 md:py-12 md:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
-
           {/* Categories Sidebar */}
           <div className="w-full lg:w-80 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-md lg:shadow-lg p-3 sm:p-4 lg:p-5 sticky top-20 sm:top-24 lg:top-20 z-40 max-h-[calc(100vh-6rem)] overflow-hidden flex flex-col transition-all duration-300">
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Categories</h3>
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-3 sm:mb-4">
+                Categories
+              </h3>
 
               {/* All Specializations - Always visible with arrow (only on mobile) */}
               <div
@@ -677,7 +743,10 @@ const Specialization = () => {
               >
                 <div className="flex items-center justify-between flex-1">
                   <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                    <BookOpen size={18} className="text-blue-600 flex-shrink-0 sm:w-5 sm:h-5" />
+                    <BookOpen
+                      size={18}
+                      className="text-blue-600 flex-shrink-0 sm:w-5 sm:h-5"
+                    />
                     <span className="font-medium text-xs sm:text-sm leading-tight text-blue-600 truncate">
                       All Specializations
                     </span>
@@ -700,9 +769,11 @@ const Specialization = () => {
               </div>
 
               {/* Other Categories - Collapsible on mobile, always visible on desktop */}
-              <div className={`overflow-y-auto overflow-x-hidden transition-all duration-300 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100
+              <div
+                className={`overflow-y-auto overflow-x-hidden transition-all duration-300 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100
                 lg:!block lg:!max-h-[60vh] lg:!opacity-100 lg:space-y-1
-                ${isCategoriesExpanded ? 'block max-h-[60vh] opacity-100 space-y-1' : 'hidden max-h-0 opacity-0'}`}>
+                ${isCategoriesExpanded ? "block max-h-[60vh] opacity-100 space-y-1" : "hidden max-h-0 opacity-0"}`}
+              >
                 {categoryList.slice(1).map((category) => {
                   const IconComponent = category.icon;
                   const isSelected = selectedCategories.includes(category.id);
@@ -710,10 +781,11 @@ const Specialization = () => {
                   return (
                     <div
                       key={category.id}
-                      className={`w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all duration-200 cursor-pointer ${isSelected
-                        ? "bg-blue-50 border-2 border-blue-200"
-                        : "hover:bg-gray-50 border-2 border-transparent"
-                        }`}
+                      className={`w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all duration-200 cursor-pointer ${
+                        isSelected
+                          ? "bg-blue-50 border-2 border-blue-200"
+                          : "hover:bg-gray-50 border-2 border-transparent"
+                      }`}
                       onClick={() => handleCategoryToggle(category.id)}
                     >
                       <input
@@ -730,17 +802,21 @@ const Specialization = () => {
                             size={16}
                             className={`flex-shrink-0 sm:w-5 sm:h-5 ${isSelected ? "text-blue-600" : "text-gray-700"}`}
                           />
-                          <span className={`font-medium text-xs sm:text-sm leading-tight truncate ${isSelected ? "text-blue-600" : "text-gray-700"
-                            }`}>
+                          <span
+                            className={`font-medium text-xs sm:text-sm leading-tight truncate ${
+                              isSelected ? "text-blue-600" : "text-gray-700"
+                            }`}
+                          >
                             {category.name}
                           </span>
                         </div>
 
                         <span
-                          className={`text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0 ml-1 sm:ml-2 ${isSelected
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 text-gray-600"
-                            }`}
+                          className={`text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0 ml-1 sm:ml-2 ${
+                            isSelected
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-200 text-gray-600"
+                          }`}
                         >
                           {category.count}
                         </span>
@@ -780,14 +856,19 @@ const Specialization = () => {
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <span className="text-gray-700 font-medium text-xs sm:text-sm">Study</span>
+                          <span className="text-gray-700 font-medium text-xs sm:text-sm">
+                            Study
+                          </span>
                           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
                             {getSpecializationIcon(index)}
                           </div>
                         </div>
 
                         <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-orange-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
-                          <ArrowRight size={14} className="text-white sm:w-4 sm:h-4" />
+                          <ArrowRight
+                            size={14}
+                            className="text-white sm:w-4 sm:h-4"
+                          />
                         </div>
                       </div>
 
@@ -828,7 +909,3 @@ const Specialization = () => {
 };
 
 export default Specialization;
-
-
-
-
