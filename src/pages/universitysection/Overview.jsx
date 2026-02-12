@@ -145,6 +145,9 @@ const Overview = ({ universityData }) => {
     if (slug) fetchUniversityOverview();
   }, [slug]);
 
+  // ✅ DEBUG: Log all sections to see what data is coming
+  console.log("🔍 ALL OVERVIEW DATA:", overviewData);
+
   const validSections = overviewData.filter((section) => {
     const hasTitle = section?.title?.trim() !== "";
     const hasDesc = hasValidContent(section?.description);
@@ -156,8 +159,22 @@ const Overview = ({ universityData }) => {
       !section.thumbnail_path.includes("default-image.jpg") &&
       !section.thumbnail_path.includes("default.jpg");
 
-    return hasTitle && (hasDesc || hasValidImage);
+    // ✅ DEBUG: Log each section's validation status
+    console.log(`📊 Section: "${section?.title}"`, {
+      hasTitle,
+      hasDesc,
+      hasValidImage,
+      descriptionLength: section?.description?.length,
+      thumbnailPath: section?.thumbnail_path,
+      willShow: hasTitle && (hasDesc || hasValidImage),
+    });
+
+    // ✅ RELAXED FILTER: Show section if it has a title (less strict)
+    // This ensures all sections with titles appear, even if description is in HTML tables
+    return hasTitle;
   });
+
+  console.log("✅ Valid sections count:", validSections.length);
 
   // Smooth scroll to section with URL hash update
   const scrollToSection = (index, sectionSlug) => {
@@ -262,32 +279,6 @@ const Overview = ({ universityData }) => {
 
   return (
     <div className="space-y-1 px-1 md:px-0 py-4 text-black bg-white">
-      {/* First Section - Introduction */}
-      {validSections[0] && (
-        <div
-          id={createSlug(validSections[0].title)}
-          ref={(el) => (sectionRefs.current[0] = el)}
-          className="space-y-6 scroll-mt-24 mb-8"
-        >
-          <div className="border-l-4 border-blue-600 pl-4">
-            <h2 className="text-2xl font-bold text-blue-900">
-              {validSections[0].title}
-            </h2>
-          </div>
-
-          {renderSectionImage(validSections[0])}
-
-          {hasValidContent(validSections[0].description) && (
-            <div
-              className="space-y-2 text-base leading-relaxed"
-              dangerouslySetInnerHTML={{
-                __html: formatHTML(validSections[0].description),
-              }}
-            />
-          )}
-        </div>
-      )}
-
       {/* Table of Contents - Only show if more than 1 section */}
       {validSections.length > 1 && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 my-3 sm:my-4 shadow-sm border border-blue-100">
@@ -334,6 +325,33 @@ const Overview = ({ universityData }) => {
         </div>
       )}
 
+      {/* First Section - Introduction */}
+      {validSections[0] && (
+        <div
+          id={createSlug(validSections[0].title)}
+          ref={(el) => (sectionRefs.current[0] = el)}
+          className="space-y-6 scroll-mt-24 mb-8"
+        >
+          <div className="border-l-4 border-blue-600 pl-4">
+            <h2 className="text-2xl font-bold text-blue-900">
+              {validSections[0].title}
+            </h2>
+          </div>
+
+          {renderSectionImage(validSections[0])}
+
+          {/* ✅ FIX: Show description if exists (removed strict validation) */}
+          {validSections[0].description && (
+            <div
+              className="space-y-2 text-base leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: formatHTML(validSections[0].description),
+              }}
+            />
+          )}
+        </div>
+      )}
+
       {/* Remaining Content Sections (starting from index 1) */}
       {validSections.length > 1 &&
         validSections.slice(1).map((section, index) => {
@@ -353,7 +371,8 @@ const Overview = ({ universityData }) => {
 
               {renderSectionImage(section)}
 
-              {hasValidContent(section.description) && (
+              {/* ✅ FIX: Show description if exists (removed strict validation) */}
+              {section.description && (
                 <div
                   className="space-y-6 text-base leading-relaxed"
                   dangerouslySetInnerHTML={{
@@ -366,9 +385,9 @@ const Overview = ({ universityData }) => {
         })}
 
       {/* Get in Touch Form - with ref for scrolling */}
-      <div ref={formRef}>
+      {/* <div ref={formRef}>
         <HelpUniversityCourses />
-      </div>
+      </div> */}
 
       {/* Popular Courses */}
       <PopularCourses />

@@ -11,6 +11,7 @@ import {
   CompareUniversitiesForm,
 } from "../../pages/universitysection/universitypopform";
 import { API_URL } from "../../config";
+import NotFound from "../NotFound";
 
 /* ---------------------------
   Enhanced Modal Component
@@ -137,6 +138,7 @@ const UniversitiesList = () => {
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
   const [pageContent, setPageContent] = useState("");
+  const [isInvalidUrl, setIsInvalidUrl] = useState(false);
 
   // Modal states
   const [feeModalOpen, setFeeModalOpen] = useState(false);
@@ -215,15 +217,31 @@ const UniversitiesList = () => {
         const parts = type.split("-in-");
         const typeSlug = parts[0];
         const stateSlug = parts.length > 1 ? parts[1] : null;
+
+        // Validate state slug if present
         if (stateSlug && stateSlug !== "malaysia") {
           const state = dynamicFilters.states.find((s) => s.slug === stateSlug);
-          if (state) newFilters.state = state.name;
+          if (state) {
+            newFilters.state = state.name;
+          } else {
+            // Invalid state slug - trigger 404
+            setIsInvalidUrl(true);
+            return;
+          }
         }
+
+        // Validate institute type slug if present
         if (typeSlug !== "universities") {
           const instituteType = dynamicFilters.institute_types.find(
             (it) => it.slug === typeSlug,
           );
-          if (instituteType) newFilters.instituteType = instituteType.name;
+          if (instituteType) {
+            newFilters.instituteType = instituteType.name;
+          } else {
+            // Invalid institute type slug - trigger 404
+            setIsInvalidUrl(true);
+            return;
+          }
         }
       }
       if (
@@ -437,6 +455,11 @@ const UniversitiesList = () => {
       setPageContent(staticFallback);
     }
   };
+
+  // Show 404 page if URL is invalid
+  if (isInvalidUrl) {
+    return <NotFound />;
+  }
 
   return (
     <>

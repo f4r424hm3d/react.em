@@ -31,6 +31,7 @@ import {
 import { toast } from "react-toastify";
 import PopupForm from "./universitysection/PopupForm";
 import AuthModal from "../components/AuthModal";
+import NotFound from "./NotFound";
 
 const CourseCardSkeleton = () => (
   <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 sm:p-6 animate-pulse">
@@ -107,6 +108,18 @@ const Courses = () => {
   const [dynamicDescription, setDynamicDescription] = useState("");
   const [specializationSearch, setSpecializationSearch] = useState("");
   console.log("🔥 Inside Component - dynamicDescription:", dynamicDescription);
+
+  // ✅ Validate URL - strict check for valid paths
+  const pathname = location.pathname;
+  const isValidPath =
+    pathname === "/courses-in-malaysia" ||
+    pathname === "/courses-in-malaysias" ||
+    /^\/[a-z0-9-]+-courses$/.test(pathname);
+
+  // If path is not exactly one of the above valid patterns, show 404
+  if (!isValidPath) {
+    return <NotFound />;
+  }
 
   // Add selected filters state
   const [selectedFilters, setSelectedFilters] = useState({

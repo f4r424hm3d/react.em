@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -43,11 +41,37 @@ const NewsCardGrid = () => {
   useEffect(() => {
     const fetchAllBlogsForCategories = async () => {
       try {
+        // Step 1: Fetch the latest blogs to get a valid slug
         const res = await api.get("/blog");
         const blogData = res.data.blogs;
 
-        if (blogData?.data) {
-          // Extract unique categories from blogs
+        if (blogData?.data && blogData.data.length > 0) {
+          const firstBlog = blogData.data[0];
+
+          if (firstBlog.slug && firstBlog.get_category) {
+            // Step 2: Fetch details of the first blog to get ALL categories
+            // Format: /blog-details/{category}/{slug}-{id}
+            const detailUrl = `/blog-details/${firstBlog.get_category.category_slug}/${firstBlog.slug}-${firstBlog.id}`;
+
+            try {
+              const detailRes = await api.get(detailUrl);
+              if (
+                detailRes.data.categories &&
+                detailRes.data.categories.length > 0
+              ) {
+                // Success! We have the full list
+                setCategories(detailRes.data.categories);
+                return;
+              }
+            } catch (detailErr) {
+              console.warn(
+                "Failed to fetch blog details for categories, falling back to basic extraction",
+                detailErr,
+              );
+            }
+          }
+
+          // Fallback: Extract unique categories from visible blogs (if detail fetch fails)
           const uniqueCategories = [];
           const categoryMap = new Map();
 
@@ -112,14 +136,14 @@ const NewsCardGrid = () => {
     // Filter by search query
     if (searchQuery.trim()) {
       filtered = filtered.filter((blog) =>
-        blog.headline.toLowerCase().includes(searchQuery.toLowerCase())
+        blog.headline.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
     // Filter by category (only if not already filtered by route)
     if (selectedCategory !== "all" && !category_slug) {
       filtered = filtered.filter(
-        (blog) => blog.get_category?.category_slug === selectedCategory
+        (blog) => blog.get_category?.category_slug === selectedCategory,
       );
     }
 
@@ -164,10 +188,15 @@ const NewsCardGrid = () => {
         <meta property="og:description" content={seo?.meta_description} />
         <meta property="og:image" content={seo?.og_image_path} />
         <meta property="og:url" content={seo?.page_url} />
-        <meta property="og:site_name" content={seo?.site_name || "Study in Malaysia"} />
+        <meta
+          property="og:site_name"
+          content={seo?.site_name || "Study in Malaysia"}
+        />
         <meta property="og:type" content={seo?.og_type || "website"} />
         <meta property="og:locale" content={seo?.og_locale || "en_US"} />
-        {seo?.seo_rating && <meta name="seo:rating" content={seo?.seo_rating} />}
+        {seo?.seo_rating && (
+          <meta name="seo:rating" content={seo?.seo_rating} />
+        )}
         {seo?.seo_rating_schema && (
           <script type="application/ld+json">
             {JSON.stringify(seo.seo_rating_schema)}
@@ -179,7 +208,10 @@ const NewsCardGrid = () => {
       <div className="w-full bg-blue-50 shadow-sm">
         <div className="max-w-screen-xl mx-auto px-4 py-3">
           <div className="flex items-center space-x-3 text-sm text-gray-600">
-            <Link to="/" className="flex items-center gap-1 hover:underline hover:text-blue-500">
+            <Link
+              to="/"
+              className="flex items-center gap-1 hover:underline hover:text-blue-500"
+            >
               <Home size={18} /> Home
             </Link>
             <span>/</span>
@@ -196,7 +228,10 @@ const NewsCardGrid = () => {
           <div className="flex flex-col md:flex-row gap-4 items-center">
             {/* Search Bar */}
             <div className="relative flex-1 w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 placeholder="Search blog by title..."
@@ -242,7 +277,11 @@ const NewsCardGrid = () => {
               )}
               {selectedCategory !== "all" && (
                 <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                  Category: {categories.find((c) => c.category_slug === selectedCategory)?.category_name}
+                  Category:{" "}
+                  {
+                    categories.find((c) => c.category_slug === selectedCategory)
+                      ?.category_name
+                  }
                 </span>
               )}
             </div>
@@ -252,14 +291,17 @@ const NewsCardGrid = () => {
         {/* Results Count - Shown only when filtered */}
         {(searchQuery || selectedCategory !== "all") && (
           <div className="mb-4 text-gray-700 font-semibold">
-            Found <span className="text-blue-600">{filteredBlogs.length}</span> blog{filteredBlogs.length !== 1 ? "s" : ""} matching your criteria.
+            Found <span className="text-blue-600">{filteredBlogs.length}</span>{" "}
+            blog{filteredBlogs.length !== 1 ? "s" : ""} matching your criteria.
           </div>
         )}
 
         {/* Blog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {loading ? (
-            Array.from({ length: 6 }).map((_, index) => <LoadingSkeleton key={index} />)
+            Array.from({ length: 6 }).map((_, index) => (
+              <LoadingSkeleton key={index} />
+            ))
           ) : filteredBlogs.length > 0 ? (
             filteredBlogs.map((item) => {
               const imageUrl = item.imgpath?.startsWith("http")
@@ -284,10 +326,11 @@ const NewsCardGrid = () => {
                         e.preventDefault();
                         handleCategoryChange(catSlug);
                       }}
-                      className={`absolute top-4 left-4 font-semibold text-sm px-3 py-1 rounded shadow-md cursor-pointer transition ${selectedCategory === catSlug
+                      className={`absolute top-4 left-4 font-semibold text-sm px-3 py-1 rounded shadow-md cursor-pointer transition ${
+                        selectedCategory === catSlug
                           ? "bg-blue-600 text-white"
                           : "bg-white text-black hover:bg-blue-100"
-                        }`}
+                      }`}
                     >
                       {item.get_category?.category_name || "General"}
                     </div>
@@ -312,7 +355,9 @@ const NewsCardGrid = () => {
             })
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-gray-500 text-lg">No blogs found matching your search criteria.</p>
+              <p className="text-gray-500 text-lg">
+                No blogs found matching your search criteria.
+              </p>
               <button
                 onClick={handleReset}
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
@@ -329,10 +374,11 @@ const NewsCardGrid = () => {
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className={`px-3 py-2 rounded-full ${currentPage === 1
+              className={`px-3 py-2 rounded-full ${
+                currentPage === 1
                   ? "bg-gray-200 text-gray-500"
                   : "bg-white hover:bg-gray-100"
-                } border`}
+              } border`}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -341,10 +387,11 @@ const NewsCardGrid = () => {
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`px-4 py-2 rounded-full border ${currentPage === page
+                className={`px-4 py-2 rounded-full border ${
+                  currentPage === page
                     ? "bg-blue-600 text-white"
                     : "bg-white hover:bg-gray-100"
-                  }`}
+                }`}
               >
                 {page}
               </button>
@@ -353,10 +400,11 @@ const NewsCardGrid = () => {
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === lastPage}
-              className={`px-3 py-2 rounded-full ${currentPage === lastPage
+              className={`px-3 py-2 rounded-full ${
+                currentPage === lastPage
                   ? "bg-gray-200 text-gray-500"
                   : "bg-white hover:bg-gray-100"
-                } border`}
+              } border`}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
