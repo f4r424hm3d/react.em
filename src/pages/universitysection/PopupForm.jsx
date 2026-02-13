@@ -384,7 +384,7 @@ const PopupForm = ({
           */}
 
           {/* Right Section - Form - NOW FULL WIDTH */}
-          <div className="w-full bg-gray-50 rounded-xl p-4 shadow-inner">
+          <div className="w-full bg-gray-50 rounded-xl  shadow-inner">
             <div className="flex flex-col items-center mb-0">
               {universityData?.logo_path ? (
                 <img

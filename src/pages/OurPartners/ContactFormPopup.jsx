@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../api";
@@ -17,6 +17,21 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [captchaQuestion, setCaptchaQuestion] = useState({
+    num1: 0,
+    num2: 0,
+    answer: 0,
+  });
+
+  // Generate captcha when popup opens
+  useEffect(() => {
+    if (isOpen) {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      setCaptchaQuestion({ num1, num2, answer: num1 + num2 });
+      setFormData((prev) => ({ ...prev, captcha: "" }));
+    }
+  }, [isOpen]);
 
   // Sync Country Name and Code
   const countryMapping = {
@@ -79,8 +94,10 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (parseInt(formData.captcha) !== -1) {
-      toast.error("Incorrect answer! 7 - 8 = -1");
+    if (parseInt(formData.captcha) !== captchaQuestion.answer) {
+      toast.error(
+        `Incorrect answer! ${captchaQuestion.num1} + ${captchaQuestion.num2} = ?`,
+      );
       return;
     }
 
@@ -98,15 +115,17 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
       const payload = {
         name: formData.name,
         email: formData.email,
-        phone: formData.mobile, // Backend expects 'phone' here, not 'mobile'
         country_code: formData.countryCode.replace("+", ""),
-        subject: "Malaysia Scholarship Inquiry - 100% Scholarship",
-        message: detailedMessage,
-        inquiry_type: "admission",
+        mobile: formData.mobile,
+        nationality: formData.country,
+        highest_qualification: formData.qualification,
+        interested_course_category: formData.program,
         source_path: window.location.href,
+        // Optional fields if needed by backend, otherwise removed from older payload
+        // message: detailedMessage,
       };
 
-      const response = await api.post("/inquiry/contact-us", payload);
+      const response = await api.post("/inquiry/modal-form", payload);
 
       if (response.data && response.data.status) {
         setIsSubmitted(true);
@@ -146,7 +165,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full relative mt-8">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full relative mt-8">
           {/* Logo Badge */}
           <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 z-20">
             <div className="bg-white px-6 py-2 rounded-xl shadow-lg border-2 border-blue-900">
@@ -167,14 +186,15 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
 
           {/* Header */}
           <div className="bg-blue-900 text-white p-3 pt-8 text-center rounded-t-2xl">
-            <h2 className="text-md font-bold leading-tight">
+            <p className="text-xl font-bold leading-tight uppercase tracking-wide">
               Malaysia Calling – Up to 100% Scholarships!
-            </h2>
-            <p className="text-md mt-1 text-blue-100">( Limited Time Only! )</p>
+            </p>
+            <p className="text-sm mt-1 text-blue-100">( Limited Time Only! )</p>
           </div>
 
           {/* Form */}
-          <div className="p-8">
+          <div className="p-4 sm:p-5">
+            {" "}
             {isSubmitted ? (
               <div className="text-center py-8">
                 <h4 className="text-2xl font-bold text-green-600 mb-2">
@@ -188,28 +208,28 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Full Name */}
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
-                  placeholder="Full Name"
-                />
-
-                {/* Email */}
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
-                  placeholder="Email Address"
-                />
+              <form onSubmit={handleSubmit} className="space-y-3">
+                {/* Full Name & Email Row */}
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
+                    placeholder="Full Name"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
+                    placeholder="Email"
+                  />
+                </div>
 
                 {/* Country Code + Mobile */}
                 <div className="flex gap-2">
@@ -217,7 +237,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                     name="countryCode"
                     value={formData.countryCode}
                     onChange={handleInputChange}
-                    className="w-32 px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                    className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                     required
                   >
                     <option value="">Code</option>
@@ -243,7 +263,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                     value={formData.mobile}
                     onChange={handleInputChange}
                     required
-                    className="flex-1 px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                     placeholder="Mobile Number"
                   />
                 </div>
@@ -255,7 +275,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                   value={formData.city}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                   placeholder="City"
                 />
 
@@ -265,7 +285,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                   value={formData.country}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                 >
                   <option value="">Select Country</option>
                   {Object.keys(countryMapping).map((countryName) => (
@@ -281,7 +301,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                   value={formData.qualification}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                 >
                   <option value="">Select your qualification</option>
                   {qualifications.map((qual) => (
@@ -297,7 +317,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                   value={formData.program}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                 >
                   <option value="">Select a program</option>
                   {programs.map((prog) => (
@@ -309,8 +329,8 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
 
                 {/* Captcha */}
                 <div>
-                  <label className="block text-blue-600 font-medium mb-2">
-                    What is 7 - 8?
+                  <label className="block text-blue-600 font-medium mb-2 text-sm">
+                    What is {captchaQuestion.num1} + {captchaQuestion.num2}?
                   </label>
                   <input
                     type="number"
@@ -318,7 +338,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                     value={formData.captcha}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-base"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
                     placeholder="Your answer"
                   />
                 </div>
@@ -327,7 +347,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-900 text-white py-4 rounded-full font-semibold hover:bg-blue-800 transition-colors disabled:opacity-50"
+                  className="w-full bg-blue-900 text-white py-3 rounded-full font-semibold hover:bg-blue-800 transition-colors disabled:opacity-50 text-sm"
                 >
                   {isSubmitting ? "Submitting..." : "Submit"}
                 </button>

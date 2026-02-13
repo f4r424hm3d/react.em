@@ -1332,7 +1332,7 @@ const UniversityDetailPage = () => {
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md transition-all flex items-center justify-center gap-2 text-sm font-bold"
               >
                 <FaBookOpen />
-                Book Direct University Counciling
+                Book Direct University Counseling
               </button>
 
               <button
@@ -1819,7 +1819,7 @@ const UniversityDetailPage = () => {
                     className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 text-sm font-bold animate-pulse"
                   >
                     <FaBookOpen className="text-base" />
-                    Book Direct University Counciling
+                    Book Direct University Counseling
                   </button>
 
                   <button
