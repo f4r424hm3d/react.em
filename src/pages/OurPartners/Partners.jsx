@@ -75,6 +75,33 @@ function Partners() {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
 
+  // Auto-open popup after 5 seconds on first visit
+  useEffect(() => {
+    // Check if popup has been shown before in this session
+    const hasShownPopup = sessionStorage.getItem("partnerPopupShown");
+
+    if (!hasShownPopup) {
+      const timer = setTimeout(() => {
+        // Auto-select first partner if available, or create a generic one
+        if (partners.length > 0) {
+          setSelectedPartner(partners[0]);
+        } else {
+          // Generic partner for auto-popup
+          setSelectedPartner({
+            name: "Education Malaysia Team",
+            company: "Education Malaysia",
+            email: "info@educationmalaysia.in",
+            mobile: "+60-123-456-789",
+          });
+        }
+        setShowContactForm(true);
+        sessionStorage.setItem("partnerPopupShown", "true");
+      }, 5000); // 5 seconds delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [partners]);
+
   // Fetch States when Country changes
   useEffect(() => {
     const fetchStates = async () => {
@@ -1189,20 +1216,14 @@ function Partners() {
         </button>
       )}
 
-      {/* Contact Form Popup */}
-      {selectedPartner && (
-        <ContactFormPopup
-          isOpen={showContactForm}
-          onClose={() => {
-            setShowContactForm(false);
-            setSelectedPartner(null);
-          }}
-          partnerName={selectedPartner.name}
-          partnerCompany={selectedPartner.company}
-          partnerEmail={selectedPartner.email}
-          partnerPhone={selectedPartner.mobile}
-        />
-      )}
+      {/* Contact Form Popup - Scholarship Form */}
+      <ContactFormPopup
+        isOpen={showContactForm}
+        onClose={() => {
+          setShowContactForm(false);
+          setSelectedPartner(null);
+        }}
+      />
     </div>
   );
 }

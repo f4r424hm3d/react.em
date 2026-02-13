@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -29,6 +30,7 @@ import TestimonialSlider from "./components/home section/TestimonialSlider";
 import WhatsAppButton from "./components/WhatsAppButton";
 import Login from "./pages/Regstation/StudentRegstation/Login";
 import SignUp from "./pages/Regstation/StudentRegstation/SignUp";
+import ContactFormPopup from "./pages/OurPartners/ContactFormPopup";
 
 import Universities from "./pages/universitysection/Universities";
 import Courses from "./pages/Courses";
@@ -92,7 +94,29 @@ import EmailLogin from "./pages/Regstation/StudentRegstation/EmailLogin";
 import NotFound from "./pages/NotFound";
 
 function App() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    // Check if form already submitted - if so, never show popup
+    const formSubmitted = localStorage.getItem("scholarshipFormSubmitted");
+    if (formSubmitted) return;
+
+    // Check how many times popup has been shown in this session
+    const popupCount = parseInt(
+      sessionStorage.getItem("popupShownCount") || "0",
+    );
+    const SESSION_LIMIT = 3;
+
+    if (popupCount < SESSION_LIMIT) {
+      const timer = setTimeout(() => {
+        setIsPopupOpen(true);
+        sessionStorage.setItem("popupShownCount", (popupCount + 1).toString());
+      }, 5000); // 5 seconds delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname]);
 
   return (
     <>
@@ -226,6 +250,10 @@ function App() {
       </Routes>
 
       <Footer />
+      <ContactFormPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+      />
     </>
   );
 }
