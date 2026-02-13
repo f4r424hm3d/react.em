@@ -79,7 +79,7 @@ const Hero = () => {
   const mainBanner = displayBanners[0];
 
   return (
-    <section className="relative w-full h-screen overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden -mt-[4px]">
       {/* ✅ Swiper Background Slider */}
       <div className="absolute inset-0 z-0">
         <Swiper
