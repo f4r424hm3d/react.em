@@ -17,6 +17,20 @@ const TWITTER_HANDLE = "@educatemalaysia";
 
 class SeoService {
   /**
+   * Clean quotes from strings to prevent them appearing in titles
+   * @param {string} str - String to clean
+   * @returns {string} Cleaned string without quotes
+   */
+  static cleanQuotes(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/^["'\u201C\u201D\u2018\u2019`]+/g, '')
+      .replace(/["'\u201C\u201D\u2018\u2019`]+$/g, '')
+      .replace(/["'\u201C\u201D\u2018\u2019`]/g, '')
+      .trim();
+  }
+
+  /**
    * Generate complete SEO metadata for Course Listing Pages
    * @param {Object} data - { totalCourses, courseName, filters, currentPage, lastPage, seo }
    * @param {Object} location - React Router location object
@@ -51,10 +65,13 @@ class SeoService {
     } else {
       title =
         currentPage === 1
-          ? seo?.meta_title ||
+          ? this.cleanQuotes(seo?.meta_title) ||
             `${totalCourses} Top Courses in Malaysia | Universities, Fees & Admission 2026`
           : `${totalCourses} Top Courses in Malaysia | Page ${currentPage} | Universities, Fees & Admission 2026`;
     }
+
+    // Clean the final title
+    title = this.cleanQuotes(title);
 
     // Build dynamic description
     const description =
@@ -110,9 +127,10 @@ class SeoService {
   static generateUniversityDetailMeta(universityData) {
     const { name, slug, logo_path, city, seo = {} } = universityData;
 
-    const title =
+    const title = this.cleanQuotes(
       seo?.meta_title ||
-      `${name} Malaysia | Courses, Fees, Ranking & Admission 2026`;
+      `${name} Malaysia | Courses, Fees, Ranking & Admission 2026`
+    );
 
     const description =
       seo?.meta_description ||
@@ -158,9 +176,10 @@ class SeoService {
   static generateCourseOverviewMeta(courseData) {
     const { name, slug, seo = {} } = courseData;
 
-    const title =
+    const title = this.cleanQuotes(
       seo?.meta_title ||
-      `${name} in Malaysia | Fees, Eligibility, Top Universities`;
+      `${name} in Malaysia | Fees, Eligibility, Top Universities`
+    );
 
     const description =
       seo?.meta_description ||
@@ -204,9 +223,10 @@ class SeoService {
   static generateRankingMeta(data) {
     const { courseName = "", rankings = [], seo = {} } = data;
 
-    const title =
+    const title = this.cleanQuotes(
       seo?.meta_title ||
-      `Top Ranked ${courseName} Universities in Malaysia 2026`;
+      `Top Ranked ${courseName} Universities in Malaysia 2026`
+    );
 
     const description =
       seo?.meta_description ||
@@ -252,15 +272,21 @@ class SeoService {
   static buildCanonicalUrl(pathname, search, currentPage = 1) {
     const params = new URLSearchParams(search);
     
-    // Remove page param if page 1
-    if (currentPage === 1) {
-      params.delete("page");
-    } else {
-      params.set("page", currentPage);
+    // ✅ Always remove 'page' from query params (we use path-based pagination now)
+    params.delete("page");
+
+    let canonicalPath = pathname;
+
+    // ✅ If page > 1 and path doesn't already have /page-N, append it
+    // This handles legacy URLs (?page=3) by converting them to new format in canonical
+    if (currentPage > 1 && !canonicalPath.match(/\/page-\d+/)) {
+       // Ensure no trailing slash before appending
+       canonicalPath = canonicalPath.replace(/\/$/, "");
+       canonicalPath = `${canonicalPath}/page-${currentPage}`;
     }
 
     const queryString = params.toString();
-    const url = `${BASE_URL}${pathname}${queryString ? `?${queryString}` : ""}`;
+    const url = `${BASE_URL}${canonicalPath}${queryString ? `?${queryString}` : ""}`;
 
     return url;
   }
@@ -276,6 +302,9 @@ class SeoService {
   static buildPaginationLinks(currentPage, lastPage, pathname, search) {
     const params = new URLSearchParams(search);
     params.delete("page"); // Remove existing page param
+    
+    // Clean base path (remove any existing /page-N) to append new one
+    const cleanPath = pathname.replace(/\/page-\d+$/, "").replace(/\/$/, "");
 
     let prev = null;
     let next = null;
@@ -283,19 +312,16 @@ class SeoService {
     if (currentPage > 1) {
       const prevPage = currentPage - 1;
       if (prevPage === 1) {
-        // Page 1 should not have ?page=1
-        prev = `${BASE_URL}${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+        // Page 1 should not have /page-1
+        prev = `${BASE_URL}${cleanPath}${params.toString() ? `?${params.toString()}` : ""}`;
       } else {
-        params.set("page", prevPage);
-        prev = `${BASE_URL}${pathname}?${params.toString()}`;
-        params.delete("page");
+        prev = `${BASE_URL}${cleanPath}/page-${prevPage}${params.toString() ? `?${params.toString()}` : ""}`;
       }
     }
 
     if (currentPage < lastPage) {
       const nextPage = currentPage + 1;
-      params.set("page", nextPage);
-      next = `${BASE_URL}${pathname}?${params.toString()}`;
+      next = `${BASE_URL}${cleanPath}/page-${nextPage}${params.toString() ? `?${params.toString()}` : ""}`;
     }
 
     return { prev, next };

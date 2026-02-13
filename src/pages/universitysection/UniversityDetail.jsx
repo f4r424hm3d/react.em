@@ -1046,7 +1046,9 @@ const UniversityDetailPage = () => {
       <SeoHead
         pageType="university-detail"
         data={{
-          name: universityData?.name,
+          name: universityData?.name
+            ? universityData.name.replace(/^['"]|['"]$/g, "")
+            : "",
           slug: slug,
           description:
             universityData?.short_description || universityData?.description,
@@ -1328,7 +1330,7 @@ const UniversityDetailPage = () => {
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md transition-all flex items-center justify-center gap-2 text-sm font-bold"
               >
                 <FaBookOpen />
-                Book Direct University
+                Book Direct University Counciling
               </button>
 
               <button

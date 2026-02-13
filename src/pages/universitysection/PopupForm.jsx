@@ -317,7 +317,7 @@ const PopupForm = ({
           </button>
         </div>
       ) : (
-        <div className="bg-white w-[90%] max-w-5xl h-[90vh] rounded-2xl shadow-2xl p-6 relative flex flex-col md:flex-row overflow-auto">
+        <div className="bg-white w-[90%] max-w-2xl max-h-[85vh] rounded-2xl shadow-2xl p-4 relative flex flex-col overflow-y-auto">
           {/* Close button */}
           <button
             onClick={onClose}
@@ -326,7 +326,8 @@ const PopupForm = ({
             <FaTimes size={28} />
           </button>
 
-          {/* Left Section */}
+          {/* Left Section - COMMENTED OUT AS PER USER REQUEST */}
+          {/* 
           <div className="w-full md:w-1/3 p-4">
             <h2 className="text-md font-bold mb-6 text-blue-700 text-center md:text-left">
               {formType === "counselling"
@@ -380,9 +381,10 @@ const PopupForm = ({
                   ))}
             </div>
           </div>
+          */}
 
-          {/* Right Section - Form */}
-          <div className="w-full md:w-2/3 bg-gray-50 rounded-xl p-6 shadow-inner">
+          {/* Right Section - Form - NOW FULL WIDTH */}
+          <div className="w-full bg-gray-50 rounded-xl p-4 shadow-inner">
             <div className="flex flex-col items-center mb-0">
               {universityData?.logo_path ? (
                 <img
@@ -422,7 +424,7 @@ const PopupForm = ({
               </p>
             </div>
 
-            <form className="grid grid-cols-2 gap-3" onSubmit={handleSubmit}>
+            <form className="grid grid-cols-2 gap-2" onSubmit={handleSubmit}>
               <input
                 type="hidden"
                 name="requestfor"
@@ -434,7 +436,7 @@ const PopupForm = ({
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Full Name*"
-                className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required
               />
               <input
@@ -443,7 +445,7 @@ const PopupForm = ({
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email*"
-                className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required
               />
 
@@ -452,7 +454,7 @@ const PopupForm = ({
                   name="c_code"
                   value={formData.c_code}
                   onChange={handleCountryCodeChange}
-                  className="border border-gray-300 rounded-l-lg p-3 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-l-lg p-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   required
                 >
                   <option value="">Code</option>
@@ -468,7 +470,7 @@ const PopupForm = ({
                   value={formData.mobile}
                   onChange={handleChange}
                   placeholder="Mobile/WhatsApp No*"
-                  className="border border-gray-300 p-3 rounded-r-lg flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 p-2 rounded-r-lg flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   required
                 />
               </div>
@@ -477,7 +479,7 @@ const PopupForm = ({
                 name="nationality"
                 value={formData.nationality}
                 onChange={handleNationalityChange}
-                className="border border-gray-300 p-3 rounded-lg col-span-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 p-2 rounded-lg col-span-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required
               >
                 <option value="">Nationality*</option>
@@ -492,7 +494,7 @@ const PopupForm = ({
                 name="highest_qualification"
                 value={formData.highest_qualification}
                 onChange={handleChange}
-                className="border border-gray-300 p-3 rounded-lg col-span-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 p-2 rounded-lg col-span-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required
               >
                 <option value="">Highest Qualification*</option>
@@ -511,7 +513,7 @@ const PopupForm = ({
                     name="interested_course_category"
                     value={formData.interested_course_category}
                     onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg col-span-1 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    className="border border-gray-300 p-2 rounded-lg col-span-1 focus:ring-2 focus:ring-green-500 focus:outline-none"
                     required
                   >
                     <option value="">Interested Course Category*</option>
@@ -693,7 +695,7 @@ const PopupForm = ({
                     onChange={handleChange}
                     placeholder="Additional Message (Optional)"
                     rows="3"
-                    className="border border-gray-300 p-3 rounded-lg col-span-2 focus:ring-2 focus:ring-green-500 focus:outline-none resize-none"
+                    className="border border-gray-300 p-2 rounded-lg col-span-2 focus:ring-2 focus:ring-green-500 focus:outline-none resize-none"
                   />
                 </>
               ) : (
@@ -702,7 +704,7 @@ const PopupForm = ({
                   name="interested_course_category"
                   value={formData.interested_course_category}
                   onChange={handleChange}
-                  className="border border-gray-300 p-3 rounded-lg col-span-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 p-2 rounded-lg col-span-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   required
                 >
                   <option value="">Interested Course Category*</option>

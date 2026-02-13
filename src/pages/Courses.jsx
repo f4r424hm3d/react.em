@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation, useParams } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { Home, Layers } from "lucide-react";
 import api from "../api"; // Adjust the import based on your project structure
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import SEO from "../components/SEO";
+import SeoHead from "../components/SeoHead";
 import SeoService from "../utils/SeoService";
 import { Filter, X } from "lucide-react";
 
@@ -85,6 +86,7 @@ const FilterPanelSkeleton = () => (
 const Courses = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { pageSlug } = useParams(); // ✅ Extract pageSlug
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("list");
@@ -109,12 +111,30 @@ const Courses = () => {
   const [specializationSearch, setSpecializationSearch] = useState("");
   console.log("🔥 Inside Component - dynamicDescription:", dynamicDescription);
 
+  // ✅ Extract Page Number from URL (if exists)
+  let pageFromPath = 1;
+  let isValidPageSlug = true;
+
+  if (pageSlug) {
+    const match = pageSlug.match(/^page-(\d+)$/);
+    if (match) {
+      pageFromPath = parseInt(match[1], 10);
+    } else {
+      isValidPageSlug = false; // Invalid format like /page-abc
+    }
+  }
+
   // ✅ Validate URL - strict check for valid paths
   const pathname = location.pathname;
+
+  // Clean path removes /page-N for strict validation check of the base path
+  const basePath = pathname.replace(/\/page-\d+$/, "");
+
   const isValidPath =
-    pathname === "/courses-in-malaysia" ||
-    pathname === "/courses-in-malaysias" ||
-    /^\/[a-z0-9-]+-courses$/.test(pathname);
+    (basePath === "/courses-in-malaysia" ||
+      basePath === "/courses-in-malaysias" ||
+      /^\/[a-z0-9-]+-courses$/.test(basePath)) &&
+    isValidPageSlug;
 
   // If path is not exactly one of the above valid patterns, show 404
   if (!isValidPath) {
@@ -155,7 +175,7 @@ const Courses = () => {
   );
 
   const [coursesData, setCoursesData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pageFromPath || 1);
   const [lastPage, setLastPage] = useState(1);
   const [paginationLinks, setPaginationLinks] = useState([]);
   const [appliedCourses, setAppliedCourses] = useState(new Set());
@@ -616,14 +636,20 @@ const Courses = () => {
 
   // ✅ URL se sirf page number load karo, filters mat override karo
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-
-    // Sirf page number update karo
-    const pageFromURL = params.get("page");
-    if (pageFromURL) {
-      setCurrentPage(parseInt(pageFromURL));
+    // If page is in path (e.g. /page-2), use that
+    if (pageFromPath && pageFromPath > 0) {
+      setCurrentPage(pageFromPath);
+    } else {
+      // Fallback to query param if needed (though we want to move away from this)
+      const params = new URLSearchParams(location.search);
+      const pageFromQuery = params.get("page");
+      if (pageFromQuery) {
+        setCurrentPage(parseInt(pageFromQuery));
+      } else {
+        setCurrentPage(1);
+      }
     }
-  }, [location.search]);
+  }, [location.search, pageFromPath]);
 
   // ✅ Auto-apply after sign-up redirect
   // ✅ Auto-apply after sign-up redirect
@@ -1159,7 +1185,19 @@ const Courses = () => {
   return (
     <>
       {/* ✅ Enhanced SEO Component with all meta tags */}
-      <SEO {...seoData} />
+      <SeoHead
+        pageType="courses-listing"
+        overrides={{
+          title: seoData.title,
+          description: seoData.description,
+          canonical: seoData.canonicalUrl,
+        }}
+        data={{
+          keywords: seoData.keywords,
+          image: seoData.ogImage,
+          name: seoData.title,
+        }}
+      />
 
       <div className="w-full bg-blue-50 shadow-sm">
         <div className="max-w-screen-xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
@@ -2259,15 +2297,32 @@ const Courses = () => {
                               const url = new URL(link.url);
                               const page = url.searchParams.get("page");
                               if (page) {
-                                // ✅ Update URL with new page number
-                                const newParams = new URLSearchParams(
+                                // ✅ NEW NAVIGATION LOGIC: /page-N
+                                const targetPage = parseInt(page, 10);
+                                const currentSearch = new URLSearchParams(
                                   location.search,
                                 );
-                                newParams.set("page", page);
-                                navigate(
-                                  { search: newParams.toString() },
-                                  { replace: false },
+                                currentSearch.delete("page"); // Remove ?page= query param
+
+                                // Get base path without any existing /page-N
+                                const cleanPath = location.pathname.replace(
+                                  /\/page-\d+$/,
+                                  "",
                                 );
+
+                                // Construct new path
+                                let newPath = "";
+                                if (targetPage > 1) {
+                                  newPath = `${cleanPath}/page-${targetPage}`;
+                                } else {
+                                  newPath = cleanPath; // Page 1 is just key path
+                                }
+
+                                const finalUrl = currentSearch.toString()
+                                  ? `${newPath}?${currentSearch.toString()}`
+                                  : newPath;
+
+                                navigate(finalUrl);
 
                                 // ✅ Scroll to top of course list
                                 const contentWrapper = document.querySelector(
@@ -2280,7 +2335,8 @@ const Courses = () => {
                                   });
                                 }
 
-                                setCurrentPage(parseInt(page, 10));
+                                // Update local state immediately for responsiveness
+                                setCurrentPage(targetPage);
                               }
                             }
                           }}

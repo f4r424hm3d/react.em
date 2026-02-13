@@ -27,7 +27,12 @@ const SeoHead = ({
 
   // Parse URL
   const urlData = seoEngine.parseUrl(location);
-  const { page, isPaginated } = seoEngine.getPagination(urlData.searchParams);
+  const { page, isPaginated } = seoEngine.getPagination(
+    urlData.searchParams,
+    urlData.pathname,
+  );
+
+  // ... existing code ...
 
   // Detect page type (use manual if provided, otherwise auto-detect)
   const pageType = manualPageType || seoEngine.detectPageType(urlData.pathname);
@@ -35,10 +40,23 @@ const SeoHead = ({
   // Extract slug if needed
   const slug = data.slug || seoEngine.extractSlug(urlData.pathname, pageType);
 
-  // Build SEO data
-  const pageData = { ...data, slug };
-  const title =
-    overrides.title || seoEngine.buildTitle(pageType, pageData, page);
+  // Build SEO data - AGGRESSIVELY CLEAN ALL INPUTS
+  const pageData = {
+    ...data,
+    slug,
+    name: seoEngine.cleanQuotes(data.name || data.title || ""), // Clean name first!
+    title: seoEngine.cleanQuotes(data.title || ""),
+    category: seoEngine.cleanQuotes(data.category || ""),
+    description: data.description, // Keep HTML as-is for now
+  };
+
+  let title = overrides.title || seoEngine.buildTitle(pageType, pageData, page);
+
+  // Ensure title is clean of surrounding quotes - Force clean even if overridden
+  if (seoEngine.cleanQuotes) {
+    title = seoEngine.cleanQuotes(title);
+  }
+
   const description =
     overrides.description ||
     seoEngine.buildDescription(pageType, pageData, page);
@@ -59,18 +77,34 @@ const SeoHead = ({
   );
 
   // Pagination links (for rel="prev" and rel="next")
+  const searchParams = new URLSearchParams(location.search);
+  searchParams.delete("page");
+  const queryString = searchParams.toString()
+    ? `?${searchParams.toString()}`
+    : "";
+  const cleanPath = urlData.pathname
+    .replace(/\/page-\d+$/, "")
+    .replace(/\/$/, "");
+
   const prevPage =
     page > 2
-      ? `${seoEngine.SITE_URL}${urlData.pathname}?page=${page - 1}`
+      ? `${seoEngine.SITE_URL}${cleanPath}/page-${page - 1}${queryString}`
       : page === 2
-        ? `${seoEngine.SITE_URL}${urlData.pathname}`
+        ? `${seoEngine.SITE_URL}${cleanPath}${queryString}`
         : null;
-  const nextPage = `${seoEngine.SITE_URL}${urlData.pathname}?page=${page + 1}`;
+
+  const nextPage = `${seoEngine.SITE_URL}${cleanPath}/page-${page + 1}${queryString}`;
 
   return (
     <Helmet>
       {/* Basic Meta Tags */}
-      <title>{title}</title>
+      <title>
+        {String(title || "")
+          .replace(/^["'\u201C\u201D\u2018\u2019`]+/g, "")
+          .replace(/["'\u201C\u201D\u2018\u2019`]+$/g, "")
+          .replace(/["'\u201C\u201D\u2018\u2019`]/g, "")
+          .trim()}
+      </title>
       <meta name="description" content={description} />
       <meta name="keywords" content={data.keywords || ""} />
 

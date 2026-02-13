@@ -106,6 +106,12 @@ const BlogDetail = () => {
         const res = await api.get(`/blog-details/${category}/${slugWithId}`);
         setBlog(res.data.blog);
         setRelatedBlogs(res.data.related_blogs || []);
+
+        // Debug: Check what fields are available in related blogs
+        if (res.data.related_blogs && res.data.related_blogs.length > 0) {
+          console.log("🔍 Related Blog Sample:", res.data.related_blogs[0]);
+        }
+
         setCategories(res.data.categories || []);
         setSeo(res.data.seo || {});
         setCourses(res.data.specializations || []);
@@ -130,7 +136,7 @@ const BlogDetail = () => {
       <SeoHead
         pageType="blog-detail"
         data={{
-          title: seo?.meta_title || blog.headline,
+          name: seo?.meta_title || blog.headline,
           description: seo?.meta_description || blog.short_description,
           keywords: seo?.meta_keyword,
           image: blog.thumbnail_path
@@ -415,39 +421,50 @@ const BlogDetail = () => {
                   Related Blogs
                 </h3>
                 <div className="space-y-3 md:space-y-4">
-                  {relatedBlogs.map((item) => (
-                    <a
-                      key={item.id}
-                      href={`/blog/${category}/${item.slug}-${item.id}`}
-                      className="flex items-center gap-2 md:gap-3 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition group"
-                    >
-                      {item.thumbnail_path && (
-                        <img
-                          src={`https://admin.educationmalaysia.in/storage/${item.thumbnail_path}`}
-                          alt={item.headline}
-                          className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
-                        />
-                      )}
+                  {relatedBlogs.map((item) => {
+                    // Generate slug from headline if not provided by API
+                    const blogSlug =
+                      item.slug ||
+                      item.headline
+                        ?.toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-|-$/g, "") ||
+                      "blog"; // Fallback if slug is empty
 
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600">
-                          {item.headline}
-                        </h4>
+                    return (
+                      <Link
+                        key={item.id}
+                        to={`/blog/${category}/${blogSlug}-${item.id}`}
+                        className="flex items-center gap-2 md:gap-3 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition group"
+                      >
+                        {item.thumbnail_path && (
+                          <img
+                            src={`https://admin.educationmalaysia.in/storage/${item.thumbnail_path}`}
+                            alt={item.headline}
+                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
+                          />
+                        )}
 
-                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                          <CalendarDays className="w-3 h-3" />
-                          {new Date(item.created_at).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600">
+                            {item.headline}
+                          </h4>
+
+                          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            <CalendarDays className="w-3 h-3" />
+                            {new Date(item.created_at).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}

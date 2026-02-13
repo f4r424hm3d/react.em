@@ -84,14 +84,82 @@ export function extractSlug(pathname, pageType) {
 }
 
 /**
- * Get pagination info from search params
+ * Get pagination info from search params and pathname
  */
-export function getPagination(searchParams) {
+export function getPagination(searchParams, pathname = '') {
+  // Check path for /page-N pattern first
+  const pathMatch = pathname.match(/\/page-(\d+)/);
+  if (pathMatch) {
+    const page = parseInt(pathMatch[1], 10);
+    return {
+      page,
+      isPaginated: page > 1,
+    };
+  }
+  
+  // Fallback to query param
   const page = parseInt(searchParams.get('page')) || 1;
   return {
     page,
     isPaginated: page > 1,
   };
+}
+
+// ... existing code ...
+
+/**
+ * Build canonical URL from current location
+ * CRITICAL: Must match EXACT current URL - no reconstruction with slugs!
+ */
+export function buildCanonical(location, options = {}) {
+  const { removePageOne = true } = options;
+  
+  // Use window.location as fallback if location prop is incomplete
+  const currentLocation = location || window.location;
+  
+  // Build from actual pathname (NO slug reconstruction!)
+  let canonicalPath = currentLocation.pathname;
+  
+  // Get search params for pagination
+  const searchParams = new URLSearchParams(currentLocation.search);
+  
+  // Check for path-based pagination
+  const pathMatch = canonicalPath.match(/\/page-(\d+)/);
+  let page = 1;
+
+  if (pathMatch) {
+     page = parseInt(pathMatch[1], 10);
+  } else {
+     page = parseInt(searchParams.get('page')) || 1;
+  }
+  
+  // Always remove 'page' from query params for canonical
+  searchParams.delete('page');
+
+  // If page > 1 and not in path, append it (for legacy URLs)
+  if (page > 1 && !pathMatch) {
+      canonicalPath = canonicalPath.replace(/\/$/, "");
+      canonicalPath += `/page-${page}`;
+  }
+  
+  let canonical = SITE_URL + canonicalPath;
+  
+  // Remove any trailing slashes
+  canonical = canonical.replace(/\/$/, '');
+  
+  // Append remaining search params
+  const queryString = searchParams.toString();
+  if (queryString) {
+    canonical += `?${queryString}`;
+  }
+  
+  // Validate: ensure no "undefined" in URL
+  if (canonical.includes('undefined')) {
+    console.warn('⚠️ Canonical URL contains "undefined". Using window.location as fallback.');
+    canonical = window.location.origin + window.location.pathname; // Fallback might be wrong if we rely on path manip, but safest immediate fallback
+  }
+  
+  return canonical;
 }
 
 /**
@@ -109,11 +177,58 @@ export function formatSlugForDisplay(slug) {
 /**
  * Remove surrounding quotes from strings (if API returns quoted values)
  */
-function cleanQuotes(str) {
-  if (!str) return str;
-  if (typeof str !== 'string') return str;
-  // Remove surrounding double quotes
-  return str.replace(/^["'](.*)["']$/, '$1');
+/**
+ * Remove surrounding quotes from strings (if API returns quoted values)
+ * Handles both double, single, and smart Unicode quotes.
+ * Recursively removes layers of quotes and trims whitespace.
+ */
+export function cleanQuotes(str) {
+  if (!str) return "";
+  if (typeof str !== 'string') return String(str);
+  
+  let cleaned = str.trim();
+
+  // Decode HTML entities (extended)
+  cleaned = cleaned
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&#34;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+
+  // Remove JSON stringified quotes (e.g., "\"Name\"")
+  cleaned = cleaned.replace(/^"|"$/g, ''); 
+  
+  // Recursively remove specific quote characters from start and end
+  // This handles unbalanced quotes too, e.g. '"Name' -> 'Name'
+  const quotes = ['"', "'", '\u201C', '\u201D', '\u2018', '\u2019', '`'];
+  
+  while (true) {
+    const original = cleaned;
+    let changed = false;
+    
+    // Remove from start
+    for (const q of quotes) {
+      if (cleaned.startsWith(q)) {
+        cleaned = cleaned.substring(1).trim();
+        changed = true;
+      }
+    }
+    
+    // Remove from end
+    for (const q of quotes) {
+      if (cleaned.endsWith(q)) {
+        cleaned = cleaned.substring(0, cleaned.length - 1).trim();
+        changed = true;
+      }
+    }
+    
+    if (!changed || cleaned === original) break;
+  }
+  
+  return cleaned;
 }
 
 /**
@@ -165,6 +280,11 @@ export function buildTitle(pageType, data = {}, page = 1) {
     // Qualification detail
     case 'qualification-detail':
       title = `${name || formatSlugForDisplay(slug)} | Courses & Universities`;
+      break;
+
+    // Scholarship detail
+    case 'scholarship-detail':
+      title = `${name || formatSlugForDisplay(slug)} | Scholarships in Malaysia 2026`;
       break;
     
     // Universities listing
@@ -235,7 +355,8 @@ export function buildTitle(pageType, data = {}, page = 1) {
     title += ` | ${SITE_NAME}`;
   }
   
-  return title;
+  // Final cleanup: ensure no quotes in the final title
+  return cleanQuotes(title);
 }
 
 /**
@@ -304,43 +425,6 @@ export function buildDescription(pageType, data = {}, page = 1) {
   }
   
   return desc;
-}
-
-/**
- * Build canonical URL from current location
- * CRITICAL: Must match EXACT current URL - no reconstruction with slugs!
- */
-export function buildCanonical(location, options = {}) {
-  const { removePageOne = true } = options;
-  
-  // Use window.location as fallback if location prop is incomplete
-  const currentLocation = location || window.location;
-  
-  // Build from actual pathname (NO slug reconstruction!)
-  let canonical = SITE_URL + currentLocation.pathname;
-  
-  // Remove any trailing slashes
-  canonical = canonical.replace(/\/$/, '');
-  
-  // Get search params for pagination
-  const searchParams = new URLSearchParams(currentLocation.search);
-  const page = parseInt(searchParams.get('page')) || 1;
-  
-  // Add page param if > 1
-  if (page > 1) {
-    canonical += `?page=${page}`;
-  }
-  
-  // Validate: ensure no "undefined" in URL
-  if (canonical.includes('undefined')) {
-    console.warn('⚠️ Canonical URL contains "undefined". Using window.location as fallback.');
-    canonical = window.location.origin + window.location.pathname;
-    if (page > 1) {
-      canonical += `?page=${page}`;
-    }
-  }
-  
-  return canonical;
 }
 
 /**
@@ -457,6 +541,7 @@ export default {
   extractSlug,
   getPagination,
   formatSlugForDisplay,
+  cleanQuotes,
   buildTitle,
   buildDescription,
   buildCanonical,

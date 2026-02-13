@@ -812,15 +812,16 @@ const SpecializationDetail = () => {
   const detectedCategory = detectCategoryFromSlug(slug, categoryData.name);
 
   // ✅ Example with ImgBB URL
-  const heroImage = "/study-in-malaysia.jpg";
+  const heroImage = "/study-in-malaysia.webp";
 
   return (
     <>
       {/* ✅ Dynamic SEO */}
+      {/* ✅ Dynamic SEO */}
       <SeoHead
         pageType="service-detail"
         data={{
-          title:
+          name:
             seo?.meta_title ||
             `${categoryData.name} ${currentLevel.title || ""} Course in Malaysia`,
           description:
@@ -851,6 +852,7 @@ const SpecializationDetail = () => {
               <img
                 src={heroImage}
                 alt={categoryData.name}
+                fetchpriority="high"
                 className="w-full h-full object-cover object-center"
                 onError={(e) => {
                   e.target.src = getCategoryImage("General");
@@ -1150,7 +1152,7 @@ const SpecializationDetail = () => {
                     <div className="bg-gradient-to-br from-white to-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-5 md:p-6 border border-blue-100 shadow-md hover:shadow-lg transition-shadow">
                       {/* ✅ NO h2 heading - Content starts with h3 from formatHTML */}
                       <div
-                        className="prose prose-sm sm:prose prose-blue max-w-none text-gray-700 leading-relaxed"
+                        className="prose prose-sm sm:prose prose-blue max-w-none text-gray-700 leading-relaxed [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline [&_a_span]:!text-blue-600"
                         dangerouslySetInnerHTML={{
                           __html: formatHTML(contentMap[name]),
                         }}
@@ -1197,7 +1199,7 @@ const SpecializationDetail = () => {
                           <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 group-open:rotate-90 transition-transform flex-shrink-0" />
                         </summary>
                         <div
-                          className="px-4 sm:px-6 pb-3 sm:pb-4 text-gray-700 leading-relaxed prose prose-sm max-w-none text-xs sm:text-sm"
+                          className="px-4 sm:px-6 pb-3 sm:pb-4 text-gray-700 leading-relaxed prose prose-sm max-w-none text-xs sm:text-sm [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline [&_a_span]:!text-blue-600"
                           dangerouslySetInnerHTML={{
                             __html: formatHTML(faq.answer),
                           }}

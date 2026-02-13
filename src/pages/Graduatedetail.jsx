@@ -214,7 +214,10 @@ const MqaPage = () => {
         data={{
           name: "MQA - Malaysian Qualifications Agency",
           description:
-            "Ensuring quality and standards in higher education across Malaysia using MQA accreditation.",
+            "Ensuring quality and standards in higher education across Malaysia using MQA accreditation.".replace(
+              /^['"]|['"]$/g,
+              "",
+            ),
           keywords:
             "MQA malaysia, malaysian qualifications agency, accreditation malaysia, MQR check",
         }}

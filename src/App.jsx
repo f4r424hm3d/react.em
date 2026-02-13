@@ -109,6 +109,7 @@ function App() {
         <Route path="/universities" element={<Universities />} />
         {/* ✅ Main Course Route - SINGULAR */}
         <Route path="/courses-in-malaysia" element={<Courses />} />
+        <Route path="/courses-in-malaysia/:pageSlug" element={<Courses />} />
 
         {/* ✅ YE NAYA LINE ADD KARO - Extra 's' wale URL ko redirect karega */}
         <Route
@@ -124,6 +125,7 @@ function App() {
 
         {/* ✅ All Filter Routes - Dynamic Catch-All */}
         <Route path="/:filterSlug-courses" element={<Courses />} />
+        <Route path="/:filterSlug-courses/:pageSlug" element={<Courses />} />
 
         {/* <Route path="/university/:slug/courses/:course_slug" element={<CourseDetail />} /> */}
 
@@ -192,6 +194,10 @@ function App() {
         />
 
         <Route path="/universities/:type" element={<UniversitiesList />} />
+        <Route
+          path="/universities/:type/:pageSlug"
+          element={<UniversitiesList />}
+        />
         <Route path="/write-a-review" element={<WriteReviewPage />} />
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/what-people-say" element={<WhatPepoleSay />} />
