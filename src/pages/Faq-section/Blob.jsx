@@ -99,23 +99,73 @@ const NewsCardGrid = () => {
   const fetchBlogs = async (page = 1, category = "all") => {
     setLoading(true);
     try {
-      let res;
+      let allBlogs = [];
+
       if (category === "all") {
-        res = await api.get(`/blog?page=${page}&per_page=100`);
-        setSeo(res.data.seo);
+        // Fetch blogs from ALL categories to ensure complete results
+        if (categories.length > 0) {
+          // Fetch from each category
+          const categoryPromises = categories.map((cat) =>
+            api
+              .get(
+                `/blog-by-category/${cat.category_slug}?page=1&per_page=1000`,
+              )
+              .catch((err) => {
+                console.warn(`Failed to fetch ${cat.category_name}:`, err);
+                return null;
+              }),
+          );
+
+          const responses = await Promise.all(categoryPromises);
+
+          // Combine all blogs from all categories
+          responses.forEach((res) => {
+            if (res?.data?.blogs?.data) {
+              allBlogs = [...allBlogs, ...res.data.blogs.data];
+            }
+          });
+
+          // Also fetch from main /blog endpoint for any uncategorized blogs
+          const mainRes = await api.get(`/blog?page=1&per_page=1000`);
+          if (mainRes?.data?.blogs?.data) {
+            allBlogs = [...allBlogs, ...mainRes.data.blogs.data];
+          }
+
+          // Remove duplicates based on blog ID
+          const uniqueBlogs = Array.from(
+            new Map(allBlogs.map((blog) => [blog.id, blog])).values(),
+          );
+
+          setBlogs(uniqueBlogs);
+          setFilteredBlogs(uniqueBlogs);
+          setSeo(mainRes.data.seo || {});
+          setCurrentPage(1);
+          setLastPage(1); // Disable pagination for "all" view
+        } else {
+          // Fallback if categories not loaded yet
+          const res = await api.get(`/blog?page=${page}&per_page=1000`);
+          setSeo(res.data.seo);
+          const blogData = res.data.blogs;
+          if (blogData?.data) {
+            setBlogs(blogData.data);
+            setFilteredBlogs(blogData.data);
+            setCurrentPage(blogData.current_page);
+            setLastPage(blogData.last_page);
+          }
+        }
       } else {
-        res = await api.get(
-          `/blog-by-category/${category}?page=${page}&per_page=100`,
+        // Fetch specific category
+        const res = await api.get(
+          `/blog-by-category/${category}?page=${page}&per_page=1000`,
         );
         setSeo(res.data.seo);
-      }
-
-      const blogData = res.data.blogs;
-      if (blogData?.data) {
-        setBlogs(blogData.data);
-        setFilteredBlogs(blogData.data);
-        setCurrentPage(blogData.current_page);
-        setLastPage(blogData.last_page);
+        const blogData = res.data.blogs;
+        if (blogData?.data) {
+          setBlogs(blogData.data);
+          setFilteredBlogs(blogData.data);
+          setCurrentPage(blogData.current_page);
+          setLastPage(blogData.last_page);
+        }
       }
     } catch (err) {
       console.error("Error fetching blogs:", err);
@@ -135,21 +185,22 @@ const NewsCardGrid = () => {
   useEffect(() => {
     let filtered = [...blogs];
 
-    // Filter by search query
-    // Filter by search query
+    // Filter by category FIRST (whether from URL or dropdown)
+    const activeCategory = category_slug || selectedCategory;
+    if (activeCategory && activeCategory !== "all") {
+      filtered = filtered.filter(
+        (blog) => blog.get_category?.category_slug === activeCategory,
+      );
+    }
+
+    // Then filter by search query within the category results
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (blog) =>
-          blog.headline.toLowerCase().includes(query) ||
+          blog.headline?.toLowerCase().includes(query) ||
+          blog.short_description?.toLowerCase().includes(query) ||
           blog.get_category?.category_name?.toLowerCase().includes(query),
-      );
-    }
-
-    // Filter by category (only if not already filtered by route)
-    if (selectedCategory !== "all" && !category_slug) {
-      filtered = filtered.filter(
-        (blog) => blog.get_category?.category_slug === selectedCategory,
       );
     }
 
