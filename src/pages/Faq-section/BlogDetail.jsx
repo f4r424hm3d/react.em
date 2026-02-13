@@ -90,7 +90,14 @@ function formatBlogHTML(html, sectionIndex = null) {
 
 const BlogDetail = () => {
   const { category, slugWithId } = useParams();
-  const [blog, setBlog] = useState(null);
+  const [blog, setBlog] = useState({
+    headline: "Loading...",
+    created_at: new Date().toISOString(),
+    author: { name: "" },
+    description: "",
+    parent_contents: [],
+    categories: [],
+  }); // Init with default object
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -125,10 +132,10 @@ const BlogDetail = () => {
     fetchBlogData();
   }, [category, slugWithId]);
 
-  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  // if (loading) return null;
   if (error) return <div className="p-6 text-center text-red-600">{error}</div>;
-  if (!blog)
-    return <div className="p-6 text-center text-gray-500">Blog not found.</div>;
+  // if (!blog)
+  //   return <div className="p-6 text-center text-gray-500">Blog not found.</div>;
 
   return (
     <>

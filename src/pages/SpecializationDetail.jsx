@@ -358,7 +358,14 @@ const SpecializationDetail = () => {
   const [contentMap, setContentMap] = useState({});
   const [faqs, setFaqs] = useState([]);
   const [seo, setSeo] = useState({});
-  const [categoryData, setCategoryData] = useState(null);
+  // Initialize with default object to render immediately
+  const [categoryData, setCategoryData] = useState({
+    name: formattedName,
+    contents: [],
+    specialization_levels: [],
+    related_universities: [],
+    faqs: [],
+  });
   const [relatedUniversities, setRelatedUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -754,6 +761,7 @@ const SpecializationDetail = () => {
     }
   };
 
+  /*
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
@@ -767,6 +775,7 @@ const SpecializationDetail = () => {
       </div>
     );
   }
+  */
 
   if (error) {
     return (
@@ -804,9 +813,11 @@ const SpecializationDetail = () => {
     );
   }
 
+  /*
   if (!categoryData) {
     return null;
   }
+  */
 
   const currentLevel = educationLevels[selectedLevel] || {};
   const detectedCategory = detectCategoryFromSlug(slug, categoryData.name);
