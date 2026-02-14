@@ -95,14 +95,9 @@ export default function ExpandableCard() {
     fetchContent();
   }, []);
 
-  if (loading)
-    return <p className="text-center py-10 text-gray-500">Loading...</p>;
-  if (!content)
-    return <p className="text-center py-10 text-red-500">No content found</p>;
-
   return (
-    <div className="w-full px-8 py-6 bg-white">
-      {/* ✅ Dynamic SEO */}
+    <div className="w-full bg-white">
+      {/* ✅ Dynamic SEO - Always render */}
       <SeoHead
         pageType="service-detail"
         data={{
@@ -114,7 +109,7 @@ export default function ExpandableCard() {
         }}
       />
 
-      {/* ✅ Dynamic Breadcrumb */}
+      {/* ✅ Dynamic Breadcrumb - Always render */}
       <DynamicBreadcrumb
         pageType="service-detail"
         data={{
@@ -123,38 +118,55 @@ export default function ExpandableCard() {
         }}
       />
 
-      <div className="border border-gray-200 rounded-lg p-6 shadow-sm">
-        {/* Header Section */}
-        <div className="flex items-start gap-4 mb-4">
-          <div className="relative">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 bg-white rounded-full"></div>
+      {/* Main Content Container */}
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="border border-gray-200 rounded-lg p-6 shadow-sm">
+          {/* Header Section - Always Visible */}
+          <div className="flex items-start gap-4 mb-4">
+            <div className="relative">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <div className="w-4 h-4 bg-white rounded-full"></div>
+                </div>
               </div>
+              <CheckCircle className="w-5 h-5 text-green-500 absolute -top-1 -right-1 bg-white rounded-full" />
             </div>
-            <CheckCircle className="w-5 h-5 text-green-500 absolute -top-1 -right-1 bg-white rounded-full" />
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                Team Education Malaysia
+              </h2>
+              <p className="text-sm text-gray-600">Updated on - Mar 26, 2025</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-900 mb-1">
-              Team Education Malaysia
-            </h2>
-            <p className="text-sm text-gray-600">Updated on - Mar 26, 2025</p>
-          </div>
-        </div>
 
-        {/* Dynamic Heading */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          {content.heading}
-        </h1>
+          {/* Dynamic Content - Renders when available (No Spinner) */}
+          {content && (
+            <div className="animate-fadeIn">
+              {/* Dynamic Heading */}
+              {content.heading && (
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                  {content.heading}
+                </h1>
+              )}
 
-        {/* Rich HTML Content - Always Fully Visible */}
-        <div className="text-[15px] leading-relaxed">
-          <div
-            className="custom-html"
-            dangerouslySetInnerHTML={{
-              __html: formatHTML(content.description),
-            }}
-          />
+              {/* Rich HTML Content */}
+              {content.description && (
+                <div className="text-[15px] leading-relaxed">
+                  <div
+                    className="custom-html"
+                    dangerouslySetInnerHTML={{
+                      __html: formatHTML(content.description),
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Optional: Show error only if NOT loading and NO content */}
+          {!loading && !content && (
+            <p className="text-center py-10 text-red-500">No content found</p>
+          )}
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@
  */
 
 const SITE_NAME = "Education Malaysia";
-const SITE_URL = "https://www.educationmalaysia.in";
+const SITE_URL = import.meta.env.VITE_SITE_URL || "https://www.educationmalaysia.in";
 const DEFAULT_IMAGE = `${SITE_URL}/assets/default-og-image.jpg`;
 
 /**

@@ -11,7 +11,7 @@
  * - Pagination links (rel="next", rel="prev")
  */
 
-const BASE_URL = "https://www.educationmalaysia.in";
+const BASE_URL = import.meta.env.VITE_SITE_URL || "https://www.educationmalaysia.in";
 const SITE_NAME = "Education Malaysia";
 const TWITTER_HANDLE = "@educatemalaysia";
 

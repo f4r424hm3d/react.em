@@ -175,6 +175,9 @@ export default function UniversityCardsSlider() {
                         <img
                           src={logoFor(uni)}
                           alt={uni.name || "University Logo"}
+                          loading="lazy"
+                          width="800"
+                          height="480"
                           onError={(e) => {
                             e.target.src =
                               "https://via.placeholder.com/200x200?text=No+Logo";

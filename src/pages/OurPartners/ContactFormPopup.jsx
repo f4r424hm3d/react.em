@@ -261,7 +261,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 z-[9999] overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full relative mt-8">
           {/* Logo Badge */}
