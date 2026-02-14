@@ -24,7 +24,7 @@ const initialTestimonials = [
     date: "2 months ago",
   },
   {
-    name: "Neha",
+    name: "Rohit",
     role: "Student",
     country: "INDIA",
     rating: 5,

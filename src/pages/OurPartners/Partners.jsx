@@ -816,7 +816,7 @@ function Partners() {
       </section>
 
       {/* Who Can Partner with Us Section */}
-      <section className="pb-16 bg-white">
+      <section className=" bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center px-4 py-2 bg-cyan-100 text-cyan-800 rounded-full text-sm font-semibold mb-6">
@@ -891,16 +891,6 @@ function Partners() {
                 </p>
               </div>
             ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-100">
-              <span className="font-semibold text-blue-800">
-                Whether you are an individual counselor or a large recruitment
-                organization
-              </span>
-              , our partner program is designed to grow with you.
-            </p>
           </div>
         </div>
       </section>
@@ -1094,83 +1084,6 @@ function Partners() {
         </div>
       </section>
 
-      {/* Partnership Benefits */}
-      <section className="py-10 bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Why Partner With Us?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join our network of successful education consultants and help
-              students achieve their medical education dreams
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: TrendingUp,
-                title: "High Success Rate",
-                description:
-                  "Our partners achieve 95%+ admission success rate with comprehensive support and guidance",
-                color: "bg-green-500",
-              },
-              {
-                icon: Handshake,
-                title: "Trusted Network",
-                description:
-                  "Join a network of verified, experienced professionals with proven track records",
-                color: "bg-blue-500",
-              },
-              {
-                icon: Target,
-                title: "Quality Leads",
-                description:
-                  "Receive pre-qualified student leads matching your expertise and location",
-                color: "bg-indigo-500",
-              },
-              {
-                icon: Award,
-                title: "Recognition & Rewards",
-                description:
-                  "Get recognized for your achievements with awards and performance-based incentives",
-                color: "bg-amber-500",
-              },
-              {
-                icon: Shield,
-                title: "Complete Support",
-                description:
-                  "Access to training, marketing materials, and ongoing support from our team",
-                color: "bg-blue-600",
-              },
-              {
-                icon: Globe,
-                title: "Global Opportunities",
-                description:
-                  "Connect students with top medical universities across multiple countries",
-                color: "bg-cyan-500",
-              },
-            ].map((benefit, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
-              >
-                <div
-                  className={`w-16 h-16 ${benefit.color} rounded-2xl flex items-center justify-center mb-6`}
-                >
-                  <benefit.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  {benefit.title}
-                </h3>
-                <p className="text-gray-600">{benefit.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Call to Action */}
       <section className="py-10 bg-gradient-to-r from-blue-800 via-blue-900 to-cyan-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1181,7 +1094,7 @@ function Partners() {
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
               Become a trusted partner and help students achieve their dreams of
-              studying medicine abroad. Join our growing network of successful
+              Study in Malaysia. Join our growing network of successful
               education consultants across India.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

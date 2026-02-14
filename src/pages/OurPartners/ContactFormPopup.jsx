@@ -17,11 +17,64 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState({}); // ✅ Validation errors
+  const [qualifications, setQualifications] = useState([]); // ✅ Dynamic qualifications
+  const [programs, setPrograms] = useState([]); // ✅ Dynamic programs
   const [captchaQuestion, setCaptchaQuestion] = useState({
     num1: 0,
     num2: 0,
     answer: 0,
   });
+
+  // Fetch dynamic qualifications and programs
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const response = await api.get("/courses-in-malaysia");
+
+        // Extract qualifications (levels)
+        if (response.data?.filters?.levels) {
+          const levelOptions = response.data.filters.levels.map((level) => ({
+            value: level.level || level.name || level.slug,
+            label: level.name || level.level || level.slug,
+          }));
+          setQualifications(levelOptions);
+        }
+
+        // Extract programs (categories)
+        if (response.data?.filters?.categories) {
+          const categoryOptions = response.data.filters.categories.map(
+            (cat) => ({
+              value: cat.slug || cat.name,
+              label: cat.name || cat.slug,
+            }),
+          );
+          setPrograms(categoryOptions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dropdown data:", error);
+        // Fallback data if API fails
+        setQualifications([
+          { value: "High School", label: "High School" },
+          { value: "12th Pass", label: "12th Pass" },
+          { value: "Diploma", label: "Diploma" },
+          { value: "Bachelor", label: "Bachelor" },
+          { value: "Master", label: "Master" },
+          { value: "PhD", label: "PhD" },
+        ]);
+        setPrograms([
+          { value: "Engineering", label: "Engineering" },
+          { value: "Business", label: "Business" },
+          { value: "Medicine", label: "Medicine" },
+          { value: "IT", label: "IT" },
+          { value: "Arts", label: "Arts" },
+          { value: "Science", label: "Science" },
+        ]);
+      }
+    };
+
+    fetchDropdownData();
+  }, []);
 
   // Generate captcha when popup opens
   useEffect(() => {
@@ -30,6 +83,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
       const num2 = Math.floor(Math.random() * 10) + 1;
       setCaptchaQuestion({ num1, num2, answer: num1 + num2 });
       setFormData((prev) => ({ ...prev, captcha: "" }));
+      setErrors({}); // Clear errors when popup opens
     }
   }, [isOpen]);
 
@@ -44,25 +98,68 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
     Other: "",
   };
 
-  const qualifications = [
-    "High School",
-    "12th Pass",
-    "Diploma",
-    "Bachelor",
-    "Master",
-    "PhD",
-  ];
-  const programs = [
-    "Engineering",
-    "Business",
-    "Medicine",
-    "IT",
-    "Arts",
-    "Science",
-  ];
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.country) {
+      newErrors.country = "Please select your country";
+    }
+
+    if (!formData.countryCode) {
+      newErrors.countryCode = "Country code is required";
+    }
+
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = "Mobile number is required";
+    } else if (!/^\d{7,15}$/.test(formData.mobile.replace(/\s/g, ""))) {
+      newErrors.mobile = "Please enter a valid mobile number (7-15 digits)";
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
+    }
+
+    if (!formData.qualification) {
+      newErrors.qualification = "Please select your highest qualification";
+    }
+
+    if (!formData.program) {
+      newErrors.program = "Please select a program level";
+    }
+
+    if (!formData.captcha.trim()) {
+      newErrors.captcha = "Please answer the security question";
+    } else if (parseInt(formData.captcha) !== captchaQuestion.answer) {
+      newErrors.captcha = `Incorrect! ${captchaQuestion.num1} + ${captchaQuestion.num2} = ?`;
+    }
+
+    return newErrors;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Clear error for this field when user types
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
 
     setFormData((prev) => {
       let updates = { [name]: value };
@@ -94,10 +191,11 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (parseInt(formData.captcha) !== captchaQuestion.answer) {
-      toast.error(
-        `Incorrect answer! ${captchaQuestion.num1} + ${captchaQuestion.num2} = ?`,
-      );
+    // Validate all fields
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fix the errors in the form");
       return;
     }
 
@@ -211,121 +309,190 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
               <form onSubmit={handleSubmit} className="space-y-3">
                 {/* Full Name & Email Row */}
                 <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                    placeholder="Full Name"
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                    placeholder="Email"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.name
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                      placeholder="Full Name"
+                    />
+                    {errors.name && (
+                      <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.email
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                      placeholder="Email"
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Country Code + Mobile */}
-                <div className="flex gap-2">
-                  <select
-                    name="countryCode"
-                    value={formData.countryCode}
-                    onChange={handleInputChange}
-                    className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                    required
-                  >
-                    <option value="">Code</option>
-                    {[...new Set(Object.values(countryMapping))]
-                      .filter(Boolean)
-                      .map((code) => (
-                        <option key={code} value={code}>
-                          {code}
-                        </option>
-                      ))}
-                    {["+1", "+44", "+971", "+65", "+86", "+81"].map(
-                      (code) =>
-                        !Object.values(countryMapping).includes(code) && (
+                <div>
+                  <div className="flex gap-2">
+                    <select
+                      name="countryCode"
+                      value={formData.countryCode}
+                      onChange={handleInputChange}
+                      className={`w-24 px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.countryCode
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                    >
+                      <option value="">Code</option>
+                      {[...new Set(Object.values(countryMapping))]
+                        .filter(Boolean)
+                        .map((code) => (
                           <option key={code} value={code}>
                             {code}
                           </option>
-                        ),
-                    )}
-                  </select>
-                  <input
-                    type="text"
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={handleInputChange}
-                    required
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                    placeholder="Mobile Number"
-                  />
+                        ))}
+                      {["+1", "+44", "+971", "+65", "+86", "+81"].map(
+                        (code) =>
+                          !Object.values(countryMapping).includes(code) && (
+                            <option key={code} value={code}>
+                              {code}
+                            </option>
+                          ),
+                      )}
+                    </select>
+                    <input
+                      type="text"
+                      name="mobile"
+                      value={formData.mobile}
+                      onChange={handleInputChange}
+                      className={`flex-1 px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.mobile
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                      placeholder="Mobile Number"
+                    />
+                  </div>
+                  {(errors.countryCode || errors.mobile) && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.countryCode || errors.mobile}
+                    </p>
+                  )}
                 </div>
 
                 {/* City */}
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                  placeholder="City"
-                />
+                <div>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.city
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                    placeholder="City"
+                  />
+                  {errors.city && (
+                    <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+                  )}
+                </div>
 
                 {/* Country */}
-                <select
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                >
-                  <option value="">Select Country</option>
-                  {Object.keys(countryMapping).map((countryName) => (
-                    <option key={countryName} value={countryName}>
-                      {countryName}
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.country
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                  >
+                    <option value="">Select Country</option>
+                    {Object.keys(countryMapping).map((countryName) => (
+                      <option key={countryName} value={countryName}>
+                        {countryName}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.country && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.country}
+                    </p>
+                  )}
+                </div>
 
                 {/* Qualification */}
-                <select
-                  name="qualification"
-                  value={formData.qualification}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                >
-                  <option value="">Select your qualification</option>
-                  {qualifications.map((qual) => (
-                    <option key={qual} value={qual}>
-                      {qual}
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <select
+                    name="qualification"
+                    value={formData.qualification}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.qualification
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                  >
+                    <option value="">Select your qualification</option>
+                    {qualifications.map((qual) => (
+                      <option key={qual.value} value={qual.value}>
+                        {qual.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.qualification && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.qualification}
+                    </p>
+                  )}
+                </div>
 
                 {/* Program */}
-                <select
-                  name="program"
-                  value={formData.program}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
-                >
-                  <option value="">Select a program</option>
-                  {programs.map((prog) => (
-                    <option key={prog} value={prog}>
-                      {prog}
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <select
+                    name="program"
+                    value={formData.program}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.program
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                  >
+                    <option value="">Select a program level</option>
+                    {programs.map((prog) => (
+                      <option key={prog.value} value={prog.value}>
+                        {prog.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.program && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.program}
+                    </p>
+                  )}
+                </div>
 
                 {/* Captcha */}
                 <div>
@@ -337,10 +504,18 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                     name="captcha"
                     value={formData.captcha}
                     onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 text-gray-700 text-sm"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.captcha
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
                     placeholder="Your answer"
                   />
+                  {errors.captcha && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.captcha}
+                    </p>
+                  )}
                 </div>
 
                 {/* Submit Button */}
