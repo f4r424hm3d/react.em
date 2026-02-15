@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
-import PartnerApplicationForm from "./PartnerApplicationForm";
+import { useNavigate } from "react-router-dom";
 import ContactTeam from "./ContactTeam";
 import ContactFormPopup from "./ContactFormPopup";
+import PartnerCard from "./PartnerCard";
 import {
   MapPin,
   Users,
@@ -33,12 +34,12 @@ import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 function Partners() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
   const [selectedState, setSelectedState] = useState("All States");
   const [selectedCity, setSelectedCity] = useState("All Cities");
   const [viewMode, setViewMode] = useState("grid");
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [showContactTeam, setShowContactTeam] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
@@ -311,10 +312,6 @@ function Partners() {
     setShowContactForm(true);
   };
 
-  if (showApplicationForm) {
-    return <PartnerApplicationForm />;
-  }
-
   if (showContactTeam) {
     return <ContactTeam />;
   }
@@ -368,7 +365,7 @@ function Partners() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <button
-                onClick={() => setShowApplicationForm(true)}
+                onClick={() => navigate("/become-a-partner")}
                 className="px-8 py-4 bg-white text-blue-800 font-bold rounded-xl hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
                 Become a Partner
@@ -594,37 +591,73 @@ function Partners() {
                       : "space-y-6"
                   }
                 >
-                  {statePartners.map((partner) => (
-                    <div
-                      key={partner.id}
-                      className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
-                        viewMode === "list"
-                          ? "flex items-center p-6"
-                          : "transform hover:-translate-y-2"
-                      }`}
-                    >
-                      {viewMode === "grid" ? (
-                        <>
+                  {statePartners
+                    .filter((p) => p && p.id)
+                    .map((partner) => {
+                      // Direct field extraction with fallbacks
+                      const phone =
+                        partner.phone ||
+                        partner.mobile ||
+                        partner.contact_number ||
+                        "Not Available";
+                      const students =
+                        partner.students_placed !== undefined
+                          ? partner.students_placed
+                          : 0;
+                      const experience =
+                        partner.experience_years !== undefined
+                          ? partner.experience_years
+                          : "N/A";
+                      const rating =
+                        partner.rating || partner.average_rating || 0;
+                      const isVerified = partner.is_verified === true;
+                      // Construct full image URL from backend
+                      const backendURL =
+                        import.meta.env.VITE_API_BASE_URL ||
+                        "http://localhost:8000";
+                      let partnerImage;
+                      if (partner.profile_image) {
+                        // Laravel storage: add /storage/ prefix if path starts with 'uploads/'
+                        const imagePath = partner.profile_image.startsWith(
+                          "uploads/",
+                        )
+                          ? `storage/${partner.profile_image}`
+                          : partner.profile_image;
+                        partnerImage = `${backendURL}/${imagePath}`;
+                      } else {
+                        partnerImage =
+                          "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=";
+                      }
+
+                      // DEBUG
+                      console.log(`🖼️ ${partner.name}: ${partnerImage}`);
+
+                      return viewMode === "grid" ? (
+                        <div
+                          key={partner.id}
+                          className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2"
+                        >
                           <div className="relative">
                             <img
-                              src={
-                                partner.image ||
-                                "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="
-                              }
+                              src={partnerImage}
                               alt={partner.name}
                               className="w-full h-48 object-cover"
+                              onError={(e) => {
+                                e.target.src =
+                                  "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=";
+                              }}
                             />
                             <div className="absolute top-4 right-4 flex space-x-2">
-                              {partner.verified !== false && (
+                              {isVerified && (
                                 <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
                                   <CheckCircle className="w-3 h-3 mr-1" />
                                   Verified
                                 </div>
                               )}
-                              {partner.rating > 0 && (
+                              {rating > 0 && (
                                 <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
                                   <Star className="w-3 h-3 mr-1 fill-current" />
-                                  {partner.rating}
+                                  {rating}
                                 </div>
                               )}
                             </div>
@@ -645,18 +678,14 @@ function Partners() {
                               </div>
                             </div>
 
-                            <div className="space-y-3 mb-4">
+                            <div className="space-y-2 mb-4">
                               <div className="flex items-center text-gray-600">
                                 <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                                <span className="text-sm">
-                                  {partner.city}, {partner.state}
-                                </span>
+                                <span className="text-sm">{partner.city}</span>
                               </div>
                               <div className="flex items-center text-gray-600">
                                 <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                                <span className="text-sm">
-                                  {partner.mobile}
-                                </span>
+                                <span className="text-sm">{phone}</span>
                               </div>
                               <div className="flex items-center text-gray-600">
                                 <Mail className="w-4 h-4 mr-2 text-gray-400" />
@@ -669,7 +698,7 @@ function Partners() {
                             <div className="grid grid-cols-2 gap-4 mb-4 text-center">
                               <div className="bg-blue-50 rounded-lg p-3">
                                 <div className="text-2xl font-bold text-blue-600">
-                                  {partner.studentsPlaced || 0}
+                                  {students}
                                 </div>
                                 <div className="text-xs text-gray-600">
                                   Students Placed
@@ -677,40 +706,13 @@ function Partners() {
                               </div>
                               <div className="bg-green-50 rounded-lg p-3">
                                 <div className="text-2xl font-bold text-green-600">
-                                  {partner.experience || "N/A"}
+                                  {experience}
                                 </div>
                                 <div className="text-xs text-gray-600">
                                   Experience
                                 </div>
                               </div>
                             </div>
-
-                            {partner.specialization &&
-                              partner.specialization.length > 0 && (
-                                <div className="mb-4">
-                                  <div className="text-sm font-medium text-gray-700 mb-2">
-                                    Specializations:
-                                  </div>
-                                  <div className="flex flex-wrap gap-1">
-                                    {partner.specialization
-                                      .slice(0, 2)
-                                      .map((spec, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
-                                        >
-                                          {spec}
-                                        </span>
-                                      ))}
-                                    {partner.specialization.length > 2 && (
-                                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
-                                        +{partner.specialization.length - 2}
-                                        more
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
 
                             <div className="flex space-x-2">
                               <button
@@ -719,23 +721,29 @@ function Partners() {
                               >
                                 Contact Now
                               </button>
-                              <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                                <ExternalLink className="w-4 h-4" />
-                              </button>
                             </div>
                           </div>
-                        </>
+                        </div>
                       ) : (
-                        <>
-                          <div className="flex-shrink-0 mr-6">
+                        <div
+                          key={partner.id}
+                          className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex items-center p-6"
+                        >
+                          <div className="flex-shrink-0 mr-6 relative">
                             <img
-                              src={
-                                partner.image ||
-                                "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="
-                              }
+                              src={partnerImage}
                               alt={partner.name}
                               className="w-24 h-24 rounded-xl object-cover"
+                              onError={(e) => {
+                                e.target.src =
+                                  "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=";
+                              }}
                             />
+                            {isVerified && (
+                              <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1">
+                                <CheckCircle className="w-4 h-4 text-white" />
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
@@ -758,9 +766,7 @@ function Partners() {
                               </div>
                               <div className="flex items-center text-gray-600">
                                 <Phone className="w-3 h-3 mr-1" />
-                                <span className="text-sm">
-                                  {partner.mobile}
-                                </span>
+                                <span className="text-sm">{phone}</span>
                               </div>
                               <div className="flex items-center text-gray-600">
                                 <Mail className="w-3 h-3 mr-1" />
@@ -770,7 +776,7 @@ function Partners() {
 
                             <div className="text-center">
                               <div className="text-lg font-bold text-blue-600">
-                                {partner.studentsPlaced || 0}
+                                {students}
                               </div>
                               <div className="text-xs text-gray-600">
                                 Students Placed
@@ -778,8 +784,17 @@ function Partners() {
                               <div className="flex items-center justify-center mt-1">
                                 <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
                                 <span className="text-sm font-medium">
-                                  {partner.rating || "N/A"}
+                                  {rating || "N/A"}
                                 </span>
+                              </div>
+                            </div>
+
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-green-600">
+                                {experience}
+                              </div>
+                              <div className="text-xs text-gray-600">
+                                Experience
                               </div>
                             </div>
 
@@ -792,10 +807,9 @@ function Partners() {
                               </button>
                             </div>
                           </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             ))
@@ -1073,7 +1087,7 @@ function Partners() {
 
             <div className="text-center mt-12">
               <button
-                onClick={() => setShowApplicationForm(true)}
+                onClick={() => navigate("/become-a-partner")}
                 className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-lg rounded-2xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 transform hover:scale-105 shadow-xl hover:shadow-2xl"
               >
                 <Handshake className="w-6 h-6 mr-3" />
@@ -1099,7 +1113,7 @@ function Partners() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => setShowApplicationForm(true)}
+                onClick={() => navigate("/become-a-partner")}
                 className="px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-gray-100 transition-all duration-200 transform hover:scale-105"
               >
                 Become a Partner
@@ -1114,20 +1128,6 @@ function Partners() {
           </div>
         </div>
       </section>
-
-      {/* Back to Partners Button - Fixed Position */}
-      {(showApplicationForm || showContactTeam) && (
-        <button
-          onClick={() => {
-            setShowApplicationForm(false);
-            setShowContactTeam(false);
-          }}
-          className="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50"
-          title="Back to Partners Directory"
-        >
-          <Users className="w-6 h-6" />
-        </button>
-      )}
 
       {/* Contact Form Popup - Scholarship Form */}
       <ContactFormPopup

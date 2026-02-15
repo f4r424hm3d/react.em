@@ -20,16 +20,21 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
   const [errors, setErrors] = useState({}); // ✅ Validation errors
   const [qualifications, setQualifications] = useState([]); // ✅ Dynamic qualifications
   const [programs, setPrograms] = useState([]); // ✅ Dynamic programs
+  const [countriesData, setCountriesData] = useState([]); // ✅ Dynamic countries
+  const [phonecodesData, setPhonecodesData] = useState([]); // ✅ Dynamic phone codes
+  const [loading, setLoading] = useState(true); // ✅ Loading state
   const [captchaQuestion, setCaptchaQuestion] = useState({
     num1: 0,
     num2: 0,
     answer: 0,
   });
 
-  // Fetch dynamic qualifications and programs
+  // Fetch dynamic qualifications, programs, countries, and phone codes
   useEffect(() => {
     const fetchDropdownData = async () => {
+      setLoading(true);
       try {
+        // Fetch courses data
         const response = await api.get("/courses-in-malaysia");
 
         // Extract qualifications (levels)
@@ -51,6 +56,26 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
           );
           setPrograms(categoryOptions);
         }
+
+        // Fetch countries
+        const countriesResponse = await api.get("/countries");
+        if (countriesResponse.data?.data) {
+          setCountriesData(countriesResponse.data.data);
+          console.log(
+            "🌍 Countries loaded:",
+            countriesResponse.data.data.length,
+          );
+        }
+
+        // Fetch phone codes
+        const phonecodesResponse = await api.get("/phonecodes");
+        if (phonecodesResponse.data?.data) {
+          setPhonecodesData(phonecodesResponse.data.data);
+          console.log(
+            "📞 Phone codes loaded:",
+            phonecodesResponse.data.data.length,
+          );
+        }
       } catch (error) {
         console.error("Failed to fetch dropdown data:", error);
         // Fallback data if API fails
@@ -70,6 +95,8 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
           { value: "Arts", label: "Arts" },
           { value: "Science", label: "Science" },
         ]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -87,16 +114,16 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Sync Country Name and Code
-  const countryMapping = {
-    India: "+91",
-    Malaysia: "+60",
-    Bangladesh: "+880",
-    Pakistan: "+92",
-    Nepal: "+977",
-    "Sri Lanka": "+94",
-    Other: "",
-  };
+  // Build dynamic country mapping from phonecodes data
+  const countryMapping = React.useMemo(() => {
+    const mapping = {};
+    phonecodesData.forEach((country) => {
+      if (country.nicename && country.phonecode) {
+        mapping[country.nicename] = `+${country.phonecode}`;
+      }
+    });
+    return mapping;
+  }, [phonecodesData]);
 
   // Validate form
   const validateForm = () => {
@@ -285,7 +312,7 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
           {/* Header */}
           <div className="bg-blue-900 text-white p-3 pt-8 text-center rounded-t-2xl">
             <p className="text-xl font-bold leading-tight uppercase tracking-wide">
-              Malaysia Calling – Up to 100% Scholarships!
+              MALAYSIA CALLING – SCHOLARSHIPS AVAILABLE!
             </p>
             <p className="text-sm mt-1 text-blue-100">( Limited Time Only! )</p>
           </div>
@@ -354,28 +381,23 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                       name="countryCode"
                       value={formData.countryCode}
                       onChange={handleInputChange}
-                      className={`w-24 px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      disabled={loading}
+                      className={`w-24 px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm disabled:bg-gray-100 ${
                         errors.countryCode
                           ? "border-red-500 focus:border-red-600"
                           : "border-gray-300 focus:border-blue-600"
                       }`}
                     >
-                      <option value="">Code</option>
-                      {[...new Set(Object.values(countryMapping))]
-                        .filter(Boolean)
-                        .map((code) => (
-                          <option key={code} value={code}>
-                            {code}
+                      <option value="">{loading ? "..." : "Code"}</option>
+                      {!loading &&
+                        phonecodesData.map((country) => (
+                          <option
+                            key={country.id}
+                            value={`+${country.phonecode}`}
+                          >
+                            +{country.phonecode}
                           </option>
                         ))}
-                      {["+1", "+44", "+971", "+65", "+86", "+81"].map(
-                        (code) =>
-                          !Object.values(countryMapping).includes(code) && (
-                            <option key={code} value={code}>
-                              {code}
-                            </option>
-                          ),
-                      )}
                     </select>
                     <input
                       type="text"
@@ -422,18 +444,25 @@ const ContactFormPopup = ({ isOpen, onClose }) => {
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                    disabled={loading}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm disabled:bg-gray-100 ${
                       errors.country
                         ? "border-red-500 focus:border-red-600"
                         : "border-gray-300 focus:border-blue-600"
                     }`}
                   >
-                    <option value="">Select Country</option>
-                    {Object.keys(countryMapping).map((countryName) => (
-                      <option key={countryName} value={countryName}>
-                        {countryName}
-                      </option>
-                    ))}
+                    <option value="">
+                      {loading ? "Loading countries..." : "Select Country"}
+                    </option>
+                    {!loading &&
+                      countriesData.map((country) => (
+                        <option
+                          key={country.id}
+                          value={country.nicename || country.name}
+                        >
+                          {country.nicename || country.name}
+                        </option>
+                      ))}
                   </select>
                   {errors.country && (
                     <p className="text-red-500 text-xs mt-1">

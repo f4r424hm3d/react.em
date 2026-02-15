@@ -62,6 +62,9 @@ const WhoWeAre = lazy(() => import("./pages/about-us/WhoWeAre"));
 const WhatStudentSay = lazy(() => import("./pages/about-us/WhatStudentSay"));
 const WhyStudyInM = lazy(() => import("./pages/about-us/WhyStudyInM"));
 const Partners = lazy(() => import("./pages/OurPartners/Partners"));
+const PartnerApplicationForm = lazy(
+  () => import("./pages/OurPartners/PartnerApplicationForm"),
+);
 const UniversityDetail = lazy(
   () => import("./pages/universitysection/UniversityDetail"),
 );
@@ -215,6 +218,10 @@ function App() {
           <Route path="/students-say" element={<WhatStudentSay />} />
           <Route path="/why-study" element={<WhyStudyInM />} />
           <Route path="/view-our-partners" element={<Partners />} />
+          <Route
+            path="/become-a-partner"
+            element={<PartnerApplicationForm />}
+          />
           <Route path="/courses/:slug" element={<QualifiedLevelDetail />} />
 
           <Route path="/university/:slug" element={<UniversityDetail />} />
