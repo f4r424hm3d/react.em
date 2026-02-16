@@ -1,16 +1,20 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, EffectFade, Autoplay } from "swiper/modules";
+import { Autoplay, Pagination, Navigation, EffectFade } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/effect-fade";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css/effect-fade";
 import api from "../../api";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Hero = () => {
   const [isDesktop, setIsDesktop] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,8 +28,16 @@ const Hero = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(false); // ✅ Changed to false initially
+  // ✅ React Query - Intelligent caching, deduplication
+  const { data: banners = [], isLoading } = useQuery({
+    queryKey: ["banners", "home"],
+    queryFn: async () => {
+      const res = await api.get("/banners/home");
+      return res.data?.data?.banners || [];
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   // ✅ Default content - immediately visible
   const defaultBanner = {
@@ -34,24 +46,6 @@ const Hero = () => {
       "Begin your study journey in Malaysia with expert guidance for admissions, course selection, and fast-track visa processing.",
     banner_path: "/default-banner.jpg",
     alt_text: "Education Malaysia",
-  };
-
-  useEffect(() => {
-    fetchBanners();
-  }, []);
-
-  const fetchBanners = async () => {
-    try {
-      // ✅ No setLoading(true) - avoid showing spinner
-      const res = await api.get("/banners/home");
-
-      if (res.data?.status && res.data?.data?.banners) {
-        setBanners(res.data.data.banners);
-      }
-    } catch (error) {
-      console.error("Error fetching banners:", error);
-      // ✅ On error, keep default banner visible
-    }
   };
 
   const containerVariants = {
@@ -79,7 +73,7 @@ const Hero = () => {
   const mainBanner = displayBanners[0];
 
   return (
-    <section className="relative w-full h-screen overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden -mt-[4px]">
       {/* ✅ Swiper Background Slider */}
       <div className="absolute inset-0 z-0">
         <Swiper
@@ -104,6 +98,12 @@ const Hero = () => {
                 }
                 alt={banner.alt_text || `Banner ${i + 1}`}
                 className="w-full h-full object-cover"
+                // ✅ Performance optimizations for LCP
+                fetchPriority={i === 0 ? "high" : "auto"}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+                width="1920"
+                height="1080"
                 onError={(e) => {
                   // ✅ Fallback to placeholder gradient
                   e.target.style.display = "none";
@@ -247,4 +247,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default React.memo(Hero);

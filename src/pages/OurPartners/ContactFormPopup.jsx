@@ -1,213 +1,572 @@
-import React, { useState } from 'react';
-import { X, User, Mail, Phone, MessageSquare, Send } from 'lucide-react';
-import api from '../../api';
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { toast } from "react-toastify";
+import api from "../../api";
 
-const ContactFormPopup = ({ isOpen, onClose, partnerName, partnerCompany }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-        preferredContact: 'email'
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+const ContactFormPopup = ({ isOpen, onClose }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    countryCode: "+91",
+    city: "",
+    mobile: "",
+    country: "",
+    qualification: "",
+    program: "",
+    captcha: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState({}); // ✅ Validation errors
+  const [qualifications, setQualifications] = useState([]); // ✅ Dynamic qualifications
+  const [programs, setPrograms] = useState([]); // ✅ Dynamic programs
+  const [countriesData, setCountriesData] = useState([]); // ✅ Dynamic countries
+  const [phonecodesData, setPhonecodesData] = useState([]); // ✅ Dynamic phone codes
+  const [loading, setLoading] = useState(true); // ✅ Loading state
+  const [captchaQuestion, setCaptchaQuestion] = useState({
+    num1: 0,
+    num2: 0,
+    answer: 0,
+  });
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+  // Fetch dynamic qualifications, programs, countries, and phone codes
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      setLoading(true);
+      try {
+        // Fetch courses data
+        const response = await api.get("/courses-in-malaysia");
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        try {
-            const response = await api.post('/inquiry/contact-us', {
-                ...formData,
-                subject: `Contact Partner: ${partnerName} (${partnerCompany})`,
-                source_path: window.location.href
-            });
-
-            if (response.data && response.data.status) {
-                setIsSubmitted(true);
-                // Reset form after 3 seconds
-                setTimeout(() => {
-                    setIsSubmitted(false);
-                    setFormData({
-                        name: '',
-                        email: '',
-                        phone: '',
-                        message: '',
-                        preferredContact: 'email'
-                    });
-                    onClose();
-                }, 3000);
-            } else {
-                alert(response.data?.message || 'Submission failed.');
-            }
-        } catch (error) {
-            console.error("Submission error:", error);
-            alert(error.response?.data?.message || 'Submission failed. Please try again.');
-        } finally {
-            setIsSubmitting(false);
+        // Extract qualifications (levels)
+        if (response.data?.filters?.levels) {
+          const levelOptions = response.data.filters.levels.map((level) => ({
+            value: level.level || level.name || level.slug,
+            label: level.name || level.level || level.slug,
+          }));
+          setQualifications(levelOptions);
         }
+
+        // Extract programs (categories)
+        if (response.data?.filters?.categories) {
+          const categoryOptions = response.data.filters.categories.map(
+            (cat) => ({
+              value: cat.slug || cat.name,
+              label: cat.name || cat.slug,
+            }),
+          );
+          setPrograms(categoryOptions);
+        }
+
+        // Fetch countries
+        const countriesResponse = await api.get("/countries");
+        if (countriesResponse.data?.data) {
+          setCountriesData(countriesResponse.data.data);
+          console.log(
+            "🌍 Countries loaded:",
+            countriesResponse.data.data.length,
+          );
+        }
+
+        // Fetch phone codes
+        const phonecodesResponse = await api.get("/phonecodes");
+        if (phonecodesResponse.data?.data) {
+          setPhonecodesData(phonecodesResponse.data.data);
+          console.log(
+            "📞 Phone codes loaded:",
+            phonecodesResponse.data.data.length,
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch dropdown data:", error);
+        // Fallback data if API fails
+        setQualifications([
+          { value: "High School", label: "High School" },
+          { value: "12th Pass", label: "12th Pass" },
+          { value: "Diploma", label: "Diploma" },
+          { value: "Bachelor", label: "Bachelor" },
+          { value: "Master", label: "Master" },
+          { value: "PhD", label: "PhD" },
+        ]);
+        setPrograms([
+          { value: "Engineering", label: "Engineering" },
+          { value: "Business", label: "Business" },
+          { value: "Medicine", label: "Medicine" },
+          { value: "IT", label: "IT" },
+          { value: "Arts", label: "Arts" },
+          { value: "Science", label: "Science" },
+        ]);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    if (!isOpen) return null;
+    fetchDropdownData();
+  }, []);
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 rounded-t-2xl">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-xl font-bold">Contact {partnerName}</h3>
-                            <p className="text-blue-100 text-sm">{partnerCompany}</p>
-                        </div>
-                        <button
-                            onClick={onClose}
-                            className="text-white hover:text-blue-200 transition-colors"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
-                    </div>
-                </div>
+  // Generate captcha when popup opens
+  useEffect(() => {
+    if (isOpen) {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      setCaptchaQuestion({ num1, num2, answer: num1 + num2 });
+      setFormData((prev) => ({ ...prev, captcha: "" }));
+      setErrors({}); // Clear errors when popup opens
+    }
+  }, [isOpen]);
 
-                {/* Form */}
-                <div className="p-6">
-                    {isSubmitted ? (
-                        <div className="text-center py-8">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Send className="w-8 h-8 text-green-600" />
-                            </div>
-                            <h4 className="text-xl font-bold text-gray-900 mb-2">Message Sent!</h4>
-                            <p className="text-gray-600">We'll get back to you within 24 hours.</p>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Name Field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Your Name *
-                                </label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="Enter your full name"
-                                    />
-                                </div>
-                            </div>
+  // Build dynamic country mapping from phonecodes data
+  const countryMapping = React.useMemo(() => {
+    const mapping = {};
+    phonecodesData.forEach((country) => {
+      if (country.nicename && country.phonecode) {
+        mapping[country.nicename] = `+${country.phonecode}`;
+      }
+    });
+    return mapping;
+  }, [phonecodesData]);
 
-                            {/* Email Field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Email Address *
-                                </label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="your.email@example.com"
-                                    />
-                                </div>
-                            </div>
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
 
-                            {/* Phone Field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Phone Number *
-                                </label>
-                                <div className="relative">
-                                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="+91 98765 43210"
-                                    />
-                                </div>
-                            </div>
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
 
-                            {/* Preferred Contact Method */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Preferred Contact Method
-                                </label>
-                                <select
-                                    name="preferredContact"
-                                    value={formData.preferredContact}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="email">Email</option>
-                                    <option value="phone">Phone Call</option>
-                                    <option value="whatsapp">WhatsApp</option>
-                                </select>
-                            </div>
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
 
-                            {/* Message Field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Message *
-                                </label>
-                                <div className="relative">
-                                    <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                                    <textarea
-                                        name="message"
-                                        value={formData.message}
-                                        onChange={handleInputChange}
-                                        required
-                                        rows={3}
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                        placeholder="Tell us about your requirements..."
-                                    />
-                                </div>
-                            </div>
+    if (!formData.country) {
+      newErrors.country = "Please select your country";
+    }
 
+    if (!formData.countryCode) {
+      newErrors.countryCode = "Country code is required";
+    }
 
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-6 rounded-xl font-medium hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                            >
-                                {isSubmitting ? (
-                                    <div className="flex items-center justify-center">
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                                        Sending...
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center justify-center">
-                                        <Send className="w-5 h-5 mr-2" />
-                                        Send Message
-                                    </div>
-                                )}
-                            </button>
-                        </form>
-                    )}
-                </div>
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = "Mobile number is required";
+    } else if (!/^\d{7,15}$/.test(formData.mobile.replace(/\s/g, ""))) {
+      newErrors.mobile = "Please enter a valid mobile number (7-15 digits)";
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
+    }
+
+    if (!formData.qualification) {
+      newErrors.qualification = "Please select your highest qualification";
+    }
+
+    if (!formData.program) {
+      newErrors.program = "Please select a program level";
+    }
+
+    if (!formData.captcha.trim()) {
+      newErrors.captcha = "Please answer the security question";
+    } else if (parseInt(formData.captcha) !== captchaQuestion.answer) {
+      newErrors.captcha = `Incorrect! ${captchaQuestion.num1} + ${captchaQuestion.num2} = ?`;
+    }
+
+    return newErrors;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Clear error for this field when user types
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+
+    setFormData((prev) => {
+      let updates = { [name]: value };
+
+      // Sync logic
+      if (name === "country") {
+        if (countryMapping[value]) {
+          updates.countryCode = countryMapping[value];
+        } else if (value === "Other") {
+          updates.countryCode = "";
+        }
+      } else if (name === "countryCode") {
+        // Find country by code
+        const matchingCountry = Object.keys(countryMapping).find(
+          (key) => countryMapping[key] === value,
+        );
+        if (matchingCountry) {
+          updates.country = matchingCountry;
+        }
+      }
+
+      return {
+        ...prev,
+        ...updates,
+      };
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validate all fields
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fix the errors in the form");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const detailedMessage = `
+        Scholarship Inquiry from Popup:
+        Nationality: ${formData.country}
+        City: ${formData.city}
+        Qualification: ${formData.qualification}
+        Program: ${formData.program}
+      `;
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        country_code: formData.countryCode.replace("+", ""),
+        mobile: formData.mobile,
+        nationality: formData.country,
+        highest_qualification: formData.qualification,
+        interested_course_category: formData.program,
+        source_path: window.location.href,
+        // Optional fields if needed by backend, otherwise removed from older payload
+        // message: detailedMessage,
+      };
+
+      const response = await api.post("/inquiry/modal-form", payload);
+
+      if (response.data && response.data.status) {
+        setIsSubmitted(true);
+        localStorage.setItem("scholarshipFormSubmitted", "true");
+        toast.success("Application Received! We will contact you soon.");
+
+        setTimeout(() => {
+          onClose();
+        }, 3000);
+      } else {
+        toast.error(response.data?.message || "Submission failed.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(
+        error.response?.data?.message || "Submission failed. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Prevent background scrolling when popup is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[9999] overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full relative mt-8">
+          {/* Logo Badge */}
+          <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-white px-6 py-2 rounded-xl shadow-lg border-2 border-blue-900">
+              <img
+                src="/logo (2).png"
+                alt="Education Malaysia"
+                className="h-10 w-auto"
+              />
             </div>
+          </div>
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-blue-100 hover:text-white cursor-pointer"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Header */}
+          <div className="bg-blue-900 text-white p-3 pt-8 text-center rounded-t-2xl">
+            <p className="text-xl font-bold leading-tight uppercase tracking-wide">
+              MALAYSIA CALLING – SCHOLARSHIPS AVAILABLE!
+            </p>
+            <p className="text-sm mt-1 text-blue-100">( Limited Time Only! )</p>
+          </div>
+
+          {/* Form */}
+          <div className="p-4 sm:p-5">
+            {" "}
+            {isSubmitted ? (
+              <div className="text-center py-8">
+                <h4 className="text-2xl font-bold text-green-600 mb-2">
+                  ✓ Application Received!
+                </h4>
+                <p className="text-gray-600">
+                  Our team will contact you within 24 hours.
+                </p>
+                <p className="text-sm text-gray-500 mt-4">
+                  ( SUBMIT ONCE – NO MORE POPUPS AFTER THAT! )
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-3">
+                {/* Full Name & Email Row */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.name
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                      placeholder="Full Name"
+                    />
+                    {errors.name && (
+                      <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.email
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                      placeholder="Email"
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Country Code + Mobile */}
+                <div>
+                  <div className="flex gap-2">
+                    <select
+                      name="countryCode"
+                      value={formData.countryCode}
+                      onChange={handleInputChange}
+                      disabled={loading}
+                      className={`w-24 px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm disabled:bg-gray-100 ${
+                        errors.countryCode
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                    >
+                      <option value="">{loading ? "..." : "Code"}</option>
+                      {!loading &&
+                        phonecodesData.map((country) => (
+                          <option
+                            key={country.id}
+                            value={`+${country.phonecode}`}
+                          >
+                            +{country.phonecode}
+                          </option>
+                        ))}
+                    </select>
+                    <input
+                      type="text"
+                      name="mobile"
+                      value={formData.mobile}
+                      onChange={handleInputChange}
+                      className={`flex-1 px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                        errors.mobile
+                          ? "border-red-500 focus:border-red-600"
+                          : "border-gray-300 focus:border-blue-600"
+                      }`}
+                      placeholder="Mobile Number"
+                    />
+                  </div>
+                  {(errors.countryCode || errors.mobile) && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.countryCode || errors.mobile}
+                    </p>
+                  )}
+                </div>
+
+                {/* City */}
+                <div>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.city
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                    placeholder="City"
+                  />
+                  {errors.city && (
+                    <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+                  )}
+                </div>
+
+                {/* Country */}
+                <div>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm disabled:bg-gray-100 ${
+                      errors.country
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                  >
+                    <option value="">
+                      {loading ? "Loading countries..." : "Select Country"}
+                    </option>
+                    {!loading &&
+                      countriesData.map((country) => (
+                        <option
+                          key={country.id}
+                          value={country.nicename || country.name}
+                        >
+                          {country.nicename || country.name}
+                        </option>
+                      ))}
+                  </select>
+                  {errors.country && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.country}
+                    </p>
+                  )}
+                </div>
+
+                {/* Qualification */}
+                <div>
+                  <select
+                    name="qualification"
+                    value={formData.qualification}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.qualification
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                  >
+                    <option value="">Select your qualification</option>
+                    {qualifications.map((qual) => (
+                      <option key={qual.value} value={qual.value}>
+                        {qual.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.qualification && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.qualification}
+                    </p>
+                  )}
+                </div>
+
+                {/* Program */}
+                <div>
+                  <select
+                    name="program"
+                    value={formData.program}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.program
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                  >
+                    <option value="">Select a program level</option>
+                    {programs.map((prog) => (
+                      <option key={prog.value} value={prog.value}>
+                        {prog.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.program && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.program}
+                    </p>
+                  )}
+                </div>
+
+                {/* Captcha */}
+                <div>
+                  <label className="block text-blue-600 font-medium mb-2 text-sm">
+                    What is {captchaQuestion.num1} + {captchaQuestion.num2}?
+                  </label>
+                  <input
+                    type="number"
+                    name="captcha"
+                    value={formData.captcha}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none text-gray-700 text-sm ${
+                      errors.captcha
+                        ? "border-red-500 focus:border-red-600"
+                        : "border-gray-300 focus:border-blue-600"
+                    }`}
+                    placeholder="Your answer"
+                  />
+                  {errors.captcha && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.captcha}
+                    </p>
+                  )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-blue-900 text-white py-3 rounded-full font-semibold hover:bg-blue-800 transition-colors disabled:opacity-50 text-sm"
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </button>
+
+                {/* Note */}
+                <p className="text-center text-[12px] text-gray-600">
+                  ( SUBMIT ONCE – NO MORE POPUPS AFTER THAT! )
+                </p>
+              </form>
+            )}
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default ContactFormPopup;

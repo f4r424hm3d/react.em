@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -7,9 +8,6 @@ import { GraduationCap, MapPin } from "lucide-react";
 import api from "../../api";
 
 const TestimonialSlider = () => {
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const professionalPhotos = [
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
@@ -21,39 +19,33 @@ const TestimonialSlider = () => {
     "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop",
   ];
 
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const res = await api.get("/home");
-        const apiTestimonials =
-          res?.data?.data?.testimonials?.filter((t) => t.name && t.review) ||
-          [];
+  // ✅ React Query - Intelligent caching, deduplication
+  const { data: testimonials = [], isLoading } = useQuery({
+    queryKey: ["testimonials", "home"],
+    queryFn: async () => {
+      const res = await api.get("/home");
+      const apiTestimonials =
+        res?.data?.data?.testimonials?.filter((t) => t.name && t.review) || [];
 
-        let updated = apiTestimonials.map((t, i) => ({
-          ...t,
-          image: professionalPhotos[i % professionalPhotos.length],
-        }));
+      let updated = apiTestimonials.map((t, i) => ({
+        ...t,
+        image: professionalPhotos[i % professionalPhotos.length],
+      }));
 
-        // Duplicate data to ensure seamless infinite loop
-        if (updated.length > 0) {
-          while (updated.length < 9) {
-            updated = [...updated, ...updated];
-          }
-          // Limit to avoid excessive length if it grew too much in the loop
-          if (updated.length > 20) updated = updated.slice(0, 20);
+      // Duplicate data to ensure seamless infinite loop
+      if (updated.length > 0) {
+        while (updated.length < 9) {
+          updated = [...updated, ...updated];
         }
-
-        setTestimonials(updated);
-      } catch (error) {
-        console.error("Failed to load testimonials:", error);
-        setTestimonials([]);
-      } finally {
-        setLoading(false);
+        // Limit to avoid excessive length
+        if (updated.length > 20) updated = updated.slice(0, 20);
       }
-    };
 
-    fetchTestimonials();
-  }, []);
+      return updated;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   return (
     <section className="bg-gradient-to-b from-white to-blue-50 px-4 sm:px-8 lg:px-20 py-8">
@@ -65,7 +57,7 @@ const TestimonialSlider = () => {
       </h2>
 
       {/* Skeleton */}
-      {loading ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <div
@@ -128,6 +120,9 @@ const TestimonialSlider = () => {
                     <img
                       src={t.image}
                       alt={t.name}
+                      width="48"
+                      height="48"
+                      loading="lazy"
                       className={`
                         w-12 h-12 rounded-full object-cover border-2 shadow-sm
                         ${isActive ? "border-white" : "border-slate-300"}
@@ -220,4 +215,4 @@ const TestimonialSlider = () => {
   );
 };
 
-export default TestimonialSlider;
+export default React.memo(TestimonialSlider);

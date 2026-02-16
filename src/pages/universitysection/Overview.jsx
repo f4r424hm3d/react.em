@@ -9,6 +9,7 @@ import PopularCourses from "./PopularCourses";
 import PopupForm from "./PopupForm";
 import GetinTouchUiversity from "../../components/GetinTouchUiversity";
 import { FaTimes } from "react-icons/fa";
+import SeoHead from "../../components/SeoHead";
 
 /* ============================================================
     FINAL CLEAN HTML FORMATTER (NO BLANK SPACE + FIXED TABLES)
@@ -279,6 +280,22 @@ const Overview = ({ universityData }) => {
 
   return (
     <div className="space-y-1 px-1 md:px-0 py-4 text-black bg-white">
+      {/* Dynamic SEO */}
+      <SeoHead
+        pageType="university-detail"
+        data={{
+          name: universityData?.univ_name
+            ? universityData.univ_name.replace(/^['"]|['"]$/g, "")
+            : "",
+          description:
+            universityData?.description ||
+            `Study at ${universityData?.univ_name}, Malaysia`,
+          image: universityData?.university_logo
+            ? `https://admin.educationmalaysia.in/storage/${universityData.university_logo}`
+            : null,
+          slug: slug,
+        }}
+      />
       {/* Table of Contents - Only show if more than 1 section */}
       {validSections.length > 1 && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 my-3 sm:my-4 shadow-sm border border-blue-100">
@@ -343,7 +360,7 @@ const Overview = ({ universityData }) => {
           {/* ✅ FIX: Show description if exists (removed strict validation) */}
           {validSections[0].description && (
             <div
-              className="space-y-2 text-base leading-relaxed"
+              className="space-y-2 text-base leading-relaxed [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline [&_a_span]:!text-blue-600"
               dangerouslySetInnerHTML={{
                 __html: formatHTML(validSections[0].description),
               }}
@@ -374,7 +391,7 @@ const Overview = ({ universityData }) => {
               {/* ✅ FIX: Show description if exists (removed strict validation) */}
               {section.description && (
                 <div
-                  className="space-y-6 text-base leading-relaxed"
+                  className="space-y-6 text-base leading-relaxed [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline [&_a_span]:!text-blue-600"
                   dangerouslySetInnerHTML={{
                     __html: formatHTML(section.description),
                   }}

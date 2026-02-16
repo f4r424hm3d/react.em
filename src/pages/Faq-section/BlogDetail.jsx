@@ -10,8 +10,10 @@ import {
   Home,
   Layers,
 } from "lucide-react";
-import { Helmet } from "react-helmet";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 import { Link } from "react-router-dom";
+import { BlogDetailSkeleton } from "../../components/Skeleton";
 
 function formatBlogHTML(html, sectionIndex = null) {
   if (!html) return "";
@@ -89,7 +91,14 @@ function formatBlogHTML(html, sectionIndex = null) {
 
 const BlogDetail = () => {
   const { category, slugWithId } = useParams();
-  const [blog, setBlog] = useState(null);
+  const [blog, setBlog] = useState({
+    headline: "Loading...",
+    created_at: new Date().toISOString(),
+    author: { name: "" },
+    description: "",
+    parent_contents: [],
+    categories: [],
+  }); // Init with default object
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -105,6 +114,12 @@ const BlogDetail = () => {
         const res = await api.get(`/blog-details/${category}/${slugWithId}`);
         setBlog(res.data.blog);
         setRelatedBlogs(res.data.related_blogs || []);
+
+        // Debug: Check what fields are available in related blogs
+        if (res.data.related_blogs && res.data.related_blogs.length > 0) {
+          console.log("🔍 Related Blog Sample:", res.data.related_blogs[0]);
+        }
+
         setCategories(res.data.categories || []);
         setSeo(res.data.seo || {});
         setCourses(res.data.specializations || []);
@@ -118,14 +133,40 @@ const BlogDetail = () => {
     fetchBlogData();
   }, [category, slugWithId]);
 
-  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  if (loading) return <BlogDetailSkeleton />;
   if (error) return <div className="p-6 text-center text-red-600">{error}</div>;
-  if (!blog)
-    return <div className="p-6 text-center text-gray-500">Blog not found.</div>;
 
   return (
     <>
-      <Helmet>{/* ... helmet content ... */}</Helmet>
+      {/* ✅ Dynamic SEO with SeoHead */}
+      <SeoHead
+        pageType="blog-detail"
+        data={{
+          name: seo?.meta_title || blog.headline,
+          description: seo?.meta_description || blog.short_description,
+          keywords: seo?.meta_keyword,
+          image: blog.thumbnail_path
+            ? `https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`
+            : null,
+          slug: `${category}/${slugWithId}`,
+          publishedTime: blog.created_at,
+          author: blog.author?.name,
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="blog-detail"
+        data={{
+          name:
+            blog.headline !== "Loading..."
+              ? blog.headline
+              : slugWithId.replace(/^\d+-/, "").replace(/-/g, " "),
+          title: blog.headline,
+          category: category,
+          slug: `${category}/${slugWithId}`,
+        }}
+      />
 
       {/* ✅ RESPONSIVE IMAGE & TABLE RESET STYLES */}
       <style>{`
@@ -155,37 +196,6 @@ const BlogDetail = () => {
           display: block !important;
         }
       `}</style>
-
-      <div className="w-full bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center flex-wrap gap-2 text-sm text-gray-600">
-            <Link
-              to="/"
-              className="flex items-center gap-1 hover:text-blue-600 transition font-medium"
-            >
-              <Home size={16} /> Home
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link
-              to="/blog"
-              className="flex items-center gap-1 hover:text-blue-600 transition font-medium"
-            >
-              <Layers size={16} /> Blog
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link
-              to={`/blog/category/${category}`}
-              className="hover:text-blue-600 transition font-medium capitalize"
-            >
-              {category.replace(/-/g, " ")}
-            </Link>
-            <span className="text-gray-300">•</span>
-            <span className="text-gray-900 font-semibold line-clamp-1">
-              {blog.headline}
-            </span>
-          </div>
-        </div>
-      </div>
 
       <div className="bg-gray-50 py-4 md:py-8">
         <div className="max-w-7xl mx-auto px-3 md:px-4 flex flex-col lg:flex-row gap-6 md:gap-8">
@@ -221,7 +231,7 @@ const BlogDetail = () => {
 
             {blog.thumbnail_path && (
               <img
-                src={`https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`}
+                src={`https://www.educationmalaysia.in/storage/${blog.thumbnail_path}`}
                 alt={blog.headline}
                 className="w-full rounded-xl shadow-md"
               />
@@ -397,7 +407,7 @@ const BlogDetail = () => {
                   {categories.map((cat) => (
                     <li key={cat.id}>
                       <a
-                        href={`/blog/category/${cat.category_slug}`}
+                        href={`/blog/${cat.category_slug}`}
                         className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 rounded-lg hover:bg-blue-50 transition group"
                       >
                         <span className="text-gray-700 group-hover:text-blue-600 font-medium text-sm md:text-base">
@@ -429,31 +439,32 @@ const BlogDetail = () => {
                     >
                       {item.thumbnail_path && (
                         <img
-                          src={`https://admin.educationmalaysia.in/storage/${item.thumbnail_path}`}
+                          src={`https://www.educationmalaysia.in/storage/${item.thumbnail_path}`}
                           alt={item.headline}
                           className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
                         />
                       )}
 
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600">
-                          {item.headline}
-                        </h4>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600">
+                            {item.headline}
+                          </h4>
 
-                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                          <CalendarDays className="w-3 h-3" />
-                          {new Date(item.created_at).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
+                          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            <CalendarDays className="w-3 h-3" />
+                            {new Date(item.created_at).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}

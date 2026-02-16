@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../api";
-import { Helmet } from "react-helmet";
-import { Home, Layers } from "lucide-react";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 const LoadingSkeleton = () => {
   return (
@@ -99,21 +99,73 @@ const NewsCardGrid = () => {
   const fetchBlogs = async (page = 1, category = "all") => {
     setLoading(true);
     try {
-      let res;
-      if (category === "all") {
-        res = await api.get(`/blog?page=${page}`);
-        setSeo(res.data.seo);
-      } else {
-        res = await api.get(`/blog-by-category/${category}?page=${page}`);
-        setSeo(res.data.seo);
-      }
+      let allBlogs = [];
 
-      const blogData = res.data.blogs;
-      if (blogData?.data) {
-        setBlogs(blogData.data);
-        setFilteredBlogs(blogData.data);
-        setCurrentPage(blogData.current_page);
-        setLastPage(blogData.last_page);
+      if (category === "all") {
+        // Fetch blogs from ALL categories to ensure complete results
+        if (categories.length > 0) {
+          // Fetch from each category
+          const categoryPromises = categories.map((cat) =>
+            api
+              .get(
+                `/blog-by-category/${cat.category_slug}?page=1&per_page=1000`,
+              )
+              .catch((err) => {
+                console.warn(`Failed to fetch ${cat.category_name}:`, err);
+                return null;
+              }),
+          );
+
+          const responses = await Promise.all(categoryPromises);
+
+          // Combine all blogs from all categories
+          responses.forEach((res) => {
+            if (res?.data?.blogs?.data) {
+              allBlogs = [...allBlogs, ...res.data.blogs.data];
+            }
+          });
+
+          // Also fetch from main /blog endpoint for any uncategorized blogs
+          const mainRes = await api.get(`/blog?page=1&per_page=1000`);
+          if (mainRes?.data?.blogs?.data) {
+            allBlogs = [...allBlogs, ...mainRes.data.blogs.data];
+          }
+
+          // Remove duplicates based on blog ID
+          const uniqueBlogs = Array.from(
+            new Map(allBlogs.map((blog) => [blog.id, blog])).values(),
+          );
+
+          setBlogs(uniqueBlogs);
+          setFilteredBlogs(uniqueBlogs);
+          setSeo(mainRes.data.seo || {});
+          setCurrentPage(1);
+          setLastPage(1); // Disable pagination for "all" view
+        } else {
+          // Fallback if categories not loaded yet
+          const res = await api.get(`/blog?page=${page}&per_page=1000`);
+          setSeo(res.data.seo);
+          const blogData = res.data.blogs;
+          if (blogData?.data) {
+            setBlogs(blogData.data);
+            setFilteredBlogs(blogData.data);
+            setCurrentPage(blogData.current_page);
+            setLastPage(blogData.last_page);
+          }
+        }
+      } else {
+        // Fetch specific category
+        const res = await api.get(
+          `/blog-by-category/${category}?page=${page}&per_page=1000`,
+        );
+        setSeo(res.data.seo);
+        const blogData = res.data.blogs;
+        if (blogData?.data) {
+          setBlogs(blogData.data);
+          setFilteredBlogs(blogData.data);
+          setCurrentPage(blogData.current_page);
+          setLastPage(blogData.last_page);
+        }
       }
     } catch (err) {
       console.error("Error fetching blogs:", err);
@@ -133,17 +185,22 @@ const NewsCardGrid = () => {
   useEffect(() => {
     let filtered = [...blogs];
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter((blog) =>
-        blog.headline.toLowerCase().includes(searchQuery.toLowerCase()),
+    // Filter by category FIRST (whether from URL or dropdown)
+    const activeCategory = category_slug || selectedCategory;
+    if (activeCategory && activeCategory !== "all") {
+      filtered = filtered.filter(
+        (blog) => blog.get_category?.category_slug === activeCategory,
       );
     }
 
-    // Filter by category (only if not already filtered by route)
-    if (selectedCategory !== "all" && !category_slug) {
+    // Then filter by search query within the category results
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (blog) => blog.get_category?.category_slug === selectedCategory,
+        (blog) =>
+          blog.headline?.toLowerCase().includes(query) ||
+          blog.short_description?.toLowerCase().includes(query) ||
+          blog.get_category?.category_name?.toLowerCase().includes(query),
       );
     }
 
@@ -158,7 +215,7 @@ const NewsCardGrid = () => {
     if (slug === "all") {
       navigate("/blog");
     } else {
-      navigate(`/blog/category/${slug}`);
+      navigate(`/blog/${slug}`);
     }
   };
 
@@ -177,50 +234,21 @@ const NewsCardGrid = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title}</title>
-        <meta name="title" content={seo?.meta_title} />
-        <meta name="description" content={seo?.meta_description} />
-        <meta name="keywords" content={seo?.meta_keyword} />
-        <meta name="robots" content={seo?.robots || "index, follow"} />
-        {seo?.page_url && <link rel="canonical" href={seo?.page_url} />}
-        <meta property="og:title" content={seo?.meta_title} />
-        <meta property="og:description" content={seo?.meta_description} />
-        <meta property="og:image" content={seo?.og_image_path} />
-        <meta property="og:url" content={seo?.page_url} />
-        <meta
-          property="og:site_name"
-          content={seo?.site_name || "Study in Malaysia"}
-        />
-        <meta property="og:type" content={seo?.og_type || "website"} />
-        <meta property="og:locale" content={seo?.og_locale || "en_US"} />
-        {seo?.seo_rating && (
-          <meta name="seo:rating" content={seo?.seo_rating} />
-        )}
-        {seo?.seo_rating_schema && (
-          <script type="application/ld+json">
-            {JSON.stringify(seo.seo_rating_schema)}
-          </script>
-        )}
-      </Helmet>
+      {/* ✅ NEW: Dynamic SEO - Auto-generates unique meta tags based on URL, category, and pagination */}
+      <SeoHead
+        data={{
+          category: category_slug,
+          keywords: seo?.meta_keyword,
+          image: seo?.og_image_path,
+        }}
+      />
 
-      {/* Breadcrumb */}
-      <div className="w-full bg-blue-50 shadow-sm">
-        <div className="max-w-screen-xl mx-auto px-4 py-3">
-          <div className="flex items-center space-x-3 text-sm text-gray-600">
-            <Link
-              to="/"
-              className="flex items-center gap-1 hover:underline hover:text-blue-500"
-            >
-              <Home size={18} /> Home
-            </Link>
-            <span>/</span>
-            <h1 className="flex items-center gap-1">
-              <Layers size={18} /> Blog
-            </h1>
-          </div>
-        </div>
-      </div>
+      {/* ✅ NEW: Dynamic Breadcrumb - Auto-updates based on URL and pagination */}
+      <DynamicBreadcrumb
+        data={{
+          category: category_slug,
+        }}
+      />
 
       <div className="p-6 lg:p-10">
         {/* Search and Filter Section */}

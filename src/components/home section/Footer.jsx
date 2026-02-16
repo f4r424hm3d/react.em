@@ -19,12 +19,24 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const courses = [
-    { to: "/courses-in-malaysia/accounting-finance", label: "Accounting & Finance" },
-    { to: "/courses-in-malaysia/business-management", label: "Business Management" },
-    { to: "/courses-in-malaysia/computer-engineering", label: "Computer Engineering" },
+    {
+      to: "/courses-in-malaysia/accounting-finance",
+      label: "Accounting & Finance",
+    },
+    {
+      to: "/courses-in-malaysia/business-management",
+      label: "Business Management",
+    },
+    {
+      to: "/courses-in-malaysia/computer-engineering",
+      label: "Computer Engineering",
+    },
     { to: "/courses-in-malaysia/medicine", label: "Medicine" },
     { to: "/courses-in-malaysia/hospitality", label: "Hospitality" },
-    { to: "/courses-in-malaysia/civil-engineering", label: "Civil Engineering" },
+    {
+      to: "/courses-in-malaysia/civil-engineering",
+      label: "Civil Engineering",
+    },
   ];
 
   const levels = [
@@ -43,11 +55,31 @@ const Footer = () => {
   ];
 
   const socials = [
-    { icon: FaFacebook, url: "https://www.facebook.com/educationmalaysia.in", color: "hover:bg-blue-600" },
-    { icon: FaInstagram, url: "https://www.instagram.com/educationmalaysia.in/", color: "hover:bg-pink-500" },
-    { icon: FaLinkedin, url: "https://www.linkedin.com/company/educationmalaysia/", color: "hover:bg-blue-700" },
-    { icon: FaYoutube, url: "https://www.youtube.com/@educationmalaysia6986", color: "hover:bg-red-600" },
-    { icon: FaTwitter, url: "https://twitter.com/educatemalaysia/", color: "hover:bg-sky-500" },
+    {
+      icon: FaFacebook,
+      url: "https://www.facebook.com/educationmalaysia.in",
+      color: "hover:bg-blue-600",
+    },
+    {
+      icon: FaInstagram,
+      url: "https://www.instagram.com/educationmalaysia.in/",
+      color: "hover:bg-pink-500",
+    },
+    {
+      icon: FaLinkedin,
+      url: "https://www.linkedin.com/company/educationmalaysia/",
+      color: "hover:bg-blue-700",
+    },
+    {
+      icon: FaYoutube,
+      url: "https://www.youtube.com/@educationmalaysia6986",
+      color: "hover:bg-red-600",
+    },
+    {
+      icon: FaTwitter,
+      url: "https://twitter.com/educatemalaysia/",
+      color: "hover:bg-sky-500",
+    },
   ];
 
   return (
@@ -55,17 +87,20 @@ const Footer = () => {
       {/* Main Footer */}
       <div className="bg-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-
           {/* Top Section */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 pb-8 mb-8 border-b border-gray-200">
             <div className="flex-1">
               <img
                 src={logo}
                 alt="Education Malaysia"
+                width="256"
+                height="64"
                 className="w-56 sm:w-64 mb-3 brightness-125 drop-shadow-lg"
               />
               <p className="text-gray-600 text-sm max-w-md leading-relaxed">
-                Guiding students with trusted counseling, scholarships, and admission support to build successful careers through Malaysian education.
+                Guiding students with trusted counseling, scholarships, and
+                admission support to build successful careers through Malaysian
+                education.
               </p>
             </div>
 
@@ -95,23 +130,31 @@ const Footer = () => {
 
           {/* Links Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-
             {/* Office */}
             <div className="col-span-2 sm:col-span-1">
               <div className="flex items-center gap-2">
                 <FaMapMarkerAlt className="text-[#003893] w-8 h-8" />
-                <h3 className="text-gray-800 text-2xl font-bold leading-none">Our Office</h3>
+                <h3 className="text-gray-800 text-2xl font-bold leading-none">
+                  Our Office
+                </h3>
               </div>
 
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                B-16 Ground Floor, Mayfield Garden, Sector 50, Gurugram, Haryana 122002
+                B-16 Ground Floor, Mayfield Garden, Sector 50, Gurugram, Haryana
+                122002
               </p>
 
               <div className="space-y-2 text-sm">
-                <a href="tel:+919818560331" className="flex items-center gap-2 text-gray-600 hover:text-[#003893] transition-colors">
-                  <MdPhone  className="text-xs" /> +91-98185-60331
+                <a
+                  href="tel:+919818560331"
+                  className="flex items-center gap-2 text-gray-600 hover:text-[#003893] transition-colors"
+                >
+                  <MdPhone className="text-xs" /> +91-98185-60331
                 </a>
-                <a href="mailto:info@educationmalaysia.in" className="flex items-center gap-2 text-gray-600 hover:text-[#003893] transition-colors">
+                <a
+                  href="mailto:info@educationmalaysia.in"
+                  className="flex items-center gap-2 text-gray-600 hover:text-[#003893] transition-colors"
+                >
                   <FaEnvelope className="text-xs" /> info@educationmalaysia.in
                 </a>
               </div>
@@ -119,7 +162,9 @@ const Footer = () => {
 
             {/* Top Courses */}
             <div>
-              <h3 className="text-gray-800 text-2xl font-bold mb-4">Top Courses</h3>
+              <h3 className="text-gray-800 text-2xl font-bold mb-4">
+                Top Courses
+              </h3>
               <ul className="space-y-2">
                 {courses.map((item) => (
                   <li key={item.to} className="group">
@@ -137,7 +182,9 @@ const Footer = () => {
 
             {/* Study Levels */}
             <div>
-              <h3 className="text-gray-800 text-2xl font-bold mb-4">Study Levels</h3>
+              <h3 className="text-gray-800 text-2xl font-bold mb-4">
+                Study Levels
+              </h3>
               <ul className="space-y-2">
                 {levels.map((item) => (
                   <li key={item.label} className="group">
@@ -155,7 +202,9 @@ const Footer = () => {
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-gray-800 text-2xl font-bold mb-4">Quick Links</h3>
+              <h3 className="text-gray-800 text-2xl font-bold mb-4">
+                Quick Links
+              </h3>
               <ul className="space-y-2">
                 {support.map((item) => (
                   <li key={item.to} className="group">
@@ -170,7 +219,8 @@ const Footer = () => {
                 ))}
 
                 <li className="group">
-                  <Link to="/privacy-policy"
+                  <Link
+                    to="/privacy-policy"
                     className="inline-flex items-center gap-1 text-gray-600 text-sm transition-all group-hover:text-[#003893] group-hover:translate-x-1"
                   >
                     <FaArrowRight className="text-[8px] opacity-0 group-hover:opacity-100 transition-all" />
@@ -179,7 +229,8 @@ const Footer = () => {
                 </li>
 
                 <li className="group">
-                  <Link to="/terms-and-conditions"
+                  <Link
+                    to="/terms-and-conditions"
                     className="inline-flex items-center gap-1 text-gray-600 text-sm transition-all group-hover:text-[#003893] group-hover:translate-x-1"
                   >
                     <FaArrowRight className="text-[8px] opacity-0 group-hover:opacity-100 transition-all" />
@@ -188,7 +239,6 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-
           </div>
         </div>
       </div>
@@ -214,7 +264,6 @@ const Footer = () => {
                 </a>
               ))}
             </div>
-
           </div>
         </div>
       </div>

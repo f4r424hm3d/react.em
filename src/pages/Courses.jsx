@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation, useParams } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { Home, Layers } from "lucide-react";
 import api from "../api"; // Adjust the import based on your project structure
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import SEO from "../components/SEO";
+import SeoHead from "../components/SeoHead";
 import SeoService from "../utils/SeoService";
 import { Filter, X } from "lucide-react";
 
@@ -85,6 +86,7 @@ const FilterPanelSkeleton = () => (
 const Courses = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { pageSlug } = useParams(); // ✅ Extract pageSlug
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("list");
@@ -109,12 +111,30 @@ const Courses = () => {
   const [specializationSearch, setSpecializationSearch] = useState("");
   console.log("🔥 Inside Component - dynamicDescription:", dynamicDescription);
 
+  // ✅ Extract Page Number from URL (if exists)
+  let pageFromPath = 1;
+  let isValidPageSlug = true;
+
+  if (pageSlug) {
+    const match = pageSlug.match(/^page-(\d+)$/);
+    if (match) {
+      pageFromPath = parseInt(match[1], 10);
+    } else {
+      isValidPageSlug = false; // Invalid format like /page-abc
+    }
+  }
+
   // ✅ Validate URL - strict check for valid paths
   const pathname = location.pathname;
+
+  // Clean path removes /page-N for strict validation check of the base path
+  const basePath = pathname.replace(/\/page-\d+$/, "");
+
   const isValidPath =
-    pathname === "/courses-in-malaysia" ||
-    pathname === "/courses-in-malaysias" ||
-    /^\/[a-z0-9-]+-courses$/.test(pathname);
+    (basePath === "/courses-in-malaysia" ||
+      basePath === "/courses-in-malaysias" ||
+      /^\/[a-z0-9-]+-courses$/.test(basePath)) &&
+    isValidPageSlug;
 
   // If path is not exactly one of the above valid patterns, show 404
   if (!isValidPath) {
@@ -155,7 +175,7 @@ const Courses = () => {
   );
 
   const [coursesData, setCoursesData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pageFromPath || 1);
   const [lastPage, setLastPage] = useState(1);
   const [paginationLinks, setPaginationLinks] = useState([]);
   const [appliedCourses, setAppliedCourses] = useState(new Set());
@@ -616,14 +636,20 @@ const Courses = () => {
 
   // ✅ URL se sirf page number load karo, filters mat override karo
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-
-    // Sirf page number update karo
-    const pageFromURL = params.get("page");
-    if (pageFromURL) {
-      setCurrentPage(parseInt(pageFromURL));
+    // If page is in path (e.g. /page-2), use that
+    if (pageFromPath && pageFromPath > 0) {
+      setCurrentPage(pageFromPath);
+    } else {
+      // Fallback to query param if needed (though we want to move away from this)
+      const params = new URLSearchParams(location.search);
+      const pageFromQuery = params.get("page");
+      if (pageFromQuery) {
+        setCurrentPage(parseInt(pageFromQuery));
+      } else {
+        setCurrentPage(1);
+      }
     }
-  }, [location.search]);
+  }, [location.search, pageFromPath]);
 
   // ✅ Auto-apply after sign-up redirect
   // ✅ Auto-apply after sign-up redirect
@@ -1159,7 +1185,19 @@ const Courses = () => {
   return (
     <>
       {/* ✅ Enhanced SEO Component with all meta tags */}
-      <SEO {...seoData} />
+      <SeoHead
+        pageType="courses-listing"
+        overrides={{
+          title: seoData.title,
+          description: seoData.description,
+          canonical: seoData.canonicalUrl,
+        }}
+        data={{
+          keywords: seoData.keywords,
+          image: seoData.ogImage,
+          name: seoData.title,
+        }}
+      />
 
       <div className="w-full bg-blue-50 shadow-sm">
         <div className="max-w-screen-xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
@@ -2133,7 +2171,7 @@ const Courses = () => {
                             return (
                               <div
                                 key={i}
-                                className={`relative rounded-xl border p-3 flex items-center h-auto sm:h-28 lg:h-24 transition-all duration-300 group ${
+                                className={`relative rounded-xl border p-3 flex items-center min-h-[96px] lg:min-h-[88px] overflow-hidden transition-all duration-300 group ${
                                   course
                                     ? "bg-gradient-to-br from-blue-50/50 to-white border-blue-200 shadow-sm"
                                     : "bg-gray-50/50 border-dashed border-gray-300 justify-center hover:bg-gray-100/50"
@@ -2142,20 +2180,22 @@ const Courses = () => {
                                 {course ? (
                                   <div className="min-w-0 pr-6 w-full">
                                     <div className="flex items-center gap-1.5 mb-1.5">
-                                      <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider line-clamp-1 w-fit">
+                                      <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider truncate max-w-[80px]">
                                         {course.university?.inst_type ||
                                           "Course"}
                                       </span>
                                     </div>
                                     <h4
-                                      className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-0.5"
+                                      className="text-xs sm:text-sm font-bold text-gray-900 truncate leading-tight mb-0.5"
                                       title={course.course_name}
                                     >
                                       {course.course_name}
                                     </h4>
                                     <p className="text-[10px] sm:text-xs text-gray-500 truncate flex items-center gap-1">
-                                      <Building className="w-3 h-3" />{" "}
-                                      {course.university?.name}
+                                      <Building className="w-3 h-3 flex-shrink-0" />{" "}
+                                      <span className="truncate">
+                                        {course.university?.name}
+                                      </span>
                                     </p>
                                     <button
                                       onClick={() =>
@@ -2259,15 +2299,32 @@ const Courses = () => {
                               const url = new URL(link.url);
                               const page = url.searchParams.get("page");
                               if (page) {
-                                // ✅ Update URL with new page number
-                                const newParams = new URLSearchParams(
+                                // ✅ NEW NAVIGATION LOGIC: /page-N
+                                const targetPage = parseInt(page, 10);
+                                const currentSearch = new URLSearchParams(
                                   location.search,
                                 );
-                                newParams.set("page", page);
-                                navigate(
-                                  { search: newParams.toString() },
-                                  { replace: false },
+                                currentSearch.delete("page"); // Remove ?page= query param
+
+                                // Get base path without any existing /page-N
+                                const cleanPath = location.pathname.replace(
+                                  /\/page-\d+$/,
+                                  "",
                                 );
+
+                                // Construct new path
+                                let newPath = "";
+                                if (targetPage > 1) {
+                                  newPath = `${cleanPath}/page-${targetPage}`;
+                                } else {
+                                  newPath = cleanPath; // Page 1 is just key path
+                                }
+
+                                const finalUrl = currentSearch.toString()
+                                  ? `${newPath}?${currentSearch.toString()}`
+                                  : newPath;
+
+                                navigate(finalUrl);
 
                                 // ✅ Scroll to top of course list
                                 const contentWrapper = document.querySelector(
@@ -2280,7 +2337,8 @@ const Courses = () => {
                                   });
                                 }
 
-                                setCurrentPage(parseInt(page, 10));
+                                // Update local state immediately for responsiveness
+                                setCurrentPage(targetPage);
                               }
                             }
                           }}
@@ -2308,8 +2366,8 @@ const Courses = () => {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl flex flex-col max-h-[90vh] animate-fadeInScale">
             {/* Modal Title Bar */}
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white flex-shrink-0">
-              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-white flex-shrink-0">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <LayoutGrid className="w-5 h-5 text-blue-600" />
                 Comparison Result
               </h3>
@@ -2321,339 +2379,345 @@ const Courses = () => {
               </button>
             </div>
 
-            <div className="overflow-auto flex-1 p-6 bg-gray-50/50">
+            <div className="overflow-auto flex-1">
               {/* Mobile Comparison View */}
-              <div className="sm:hidden">
-                <div className="bg-white rounded-xl border border-gray-200 shadow-lg">
-                  {/* Course Headers */}
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3 rounded-t-xl">
-                    <div className="grid grid-cols-3 gap-2">
-                      {comparisonCourses.map((course, index) => (
-                        <div key={course.id} className="text-center">
-                          <div className="bg-white/20 backdrop-blur rounded-lg p-2">
-                            <div className="text-[9px] uppercase font-bold text-blue-100 mb-1">
-                              {course.university?.inst_type || "University"}
-                            </div>
-                            <div className="text-xs font-bold leading-tight mb-1 line-clamp-2">
-                              {course.course_name}
-                            </div>
-                            <div className="text-[9px] text-blue-100 opacity-90">
-                              {course.university?.name?.length > 12
-                                ? course.university?.name.substring(0, 12) +
-                                  "..."
-                                : course.university?.name}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+              <div className="sm:hidden p-3">
+                <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+                  {/* Scroll Hint */}
+                  <div className="bg-blue-600 text-white text-center py-1.5 text-[10px] font-medium">
+                    ← Swipe left/right to compare courses →
                   </div>
 
-                  {/* Scrollable Comparison Content */}
-                  <div className="max-h-96 overflow-y-auto">
-                    <div className="p-3 space-y-2">
-                      {/* Study Mode */}
-                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">
-                          Study Mode
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
+                  {/* Horizontally Scrollable Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[600px]">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                          <th className="p-3 font-bold text-[10px] uppercase sticky left-0 bg-blue-600 z-10 min-w-[90px] border-r border-blue-500 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                            CRITERIA
+                          </th>
                           {comparisonCourses.map((course) => (
-                            <div
+                            <th
                               key={course.id}
-                              className="bg-white rounded p-2 text-center border border-gray-100"
+                              className="p-2.5 min-w-[180px] align-top border-r border-blue-500 last:border-0"
                             >
-                              <div className="text-xs text-gray-800">
-                                {course.study_mode || "N/A"}
+                              <div className="flex flex-col gap-1">
+                                <span className="text-[8px] uppercase font-bold text-blue-100 bg-white/20 rounded px-1.5 py-0.5 w-fit">
+                                  UNIVERSITY
+                                </span>
+                                <div className="text-xs font-bold leading-tight line-clamp-2 mb-0.5">
+                                  {course.course_name}
+                                </div>
+                                <div className="text-[9px] font-medium text-blue-100/90 flex items-start gap-1">
+                                  <Building className="w-2.5 h-2.5 flex-shrink-0 mt-0.5" />
+                                  <span className="line-clamp-2">
+                                    {course.university?.name}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
+                            </th>
                           ))}
-                        </div>
-                      </div>
-
-                      {/* Duration */}
-                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">
-                          Duration
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          {comparisonCourses.map((course) => (
-                            <div
-                              key={course.id}
-                              className="bg-white rounded p-2 text-center border border-blue-100"
-                            >
-                              <div className="text-xs text-gray-800">
-                                {course.duration || "N/A"}
-                              </div>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {/* Study Mode */}
+                        <tr className="bg-white">
+                          <td className="p-3 text-xs font-semibold text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-1.5">
+                              <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
+                              Study Mode
                             </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Tuition Fee */}
-                      <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">
-                          Tuition Fee
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
+                          </td>
                           {comparisonCourses.map((course) => (
-                            <div
+                            <td
                               key={course.id}
-                              className="bg-white rounded p-2 text-center border border-green-100"
+                              className="p-3 text-xs text-gray-800 border-r border-gray-100 last:border-0"
                             >
-                              <div className="text-xs font-bold text-green-700">
-                                {course.fee || "N/A"}
-                              </div>
+                              {course.study_mode || "N/A"}
+                            </td>
+                          ))}
+                        </tr>
+
+                        {/* Duration */}
+                        <tr className="bg-gray-50/50">
+                          <td className="p-3 text-xs font-semibold text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-blue-500" />
+                              Duration
                             </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Intake */}
-                      <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">
-                          Intake
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
+                          </td>
                           {comparisonCourses.map((course) => (
-                            <div
+                            <td
                               key={course.id}
-                              className="bg-white rounded p-2 text-center border border-purple-100"
+                              className="p-3 text-xs text-gray-800 border-r border-gray-100 last:border-0"
                             >
-                              <div className="text-xs text-gray-800">
-                                {course.intake
-                                  ? course.intake.replace(/,/g, ", ")
-                                  : "N/A"}
-                              </div>
+                              {course.duration || "N/A"}
+                            </td>
+                          ))}
+                        </tr>
+
+                        {/* Tuition Fee */}
+                        <tr className="bg-white">
+                          <td className="p-3 text-xs font-semibold text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-1.5">
+                              <DollarSign className="w-3.5 h-3.5 text-green-500" />
+                              Tuition Fee
                             </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Location */}
-                      <div className="bg-red-50 rounded-lg p-3 border border-red-200">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">
-                          Location
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
+                          </td>
                           {comparisonCourses.map((course) => (
-                            <div
+                            <td
                               key={course.id}
-                              className="bg-white rounded p-2 text-center border border-red-100"
+                              className="p-3 text-xs font-bold text-green-700 border-r border-gray-100 last:border-0"
                             >
-                              <div className="text-xs text-gray-800">
-                                {course.university?.city || "N/A"}
-                              </div>
+                              {course.fee || "N/A"}
+                            </td>
+                          ))}
+                        </tr>
+
+                        {/* Intake */}
+                        <tr className="bg-gray-50/50">
+                          <td className="p-3 text-xs font-semibold text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5 text-purple-500" />
+                              Intake
                             </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Rating */}
-                      <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">
-                          Rating
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
+                          </td>
                           {comparisonCourses.map((course) => (
-                            <div
+                            <td
                               key={course.id}
-                              className="bg-white rounded p-2 text-center border border-yellow-100"
+                              className="p-3 text-xs text-gray-800 border-r border-gray-100 last:border-0"
                             >
-                              <div className="text-xs font-bold text-yellow-700 flex items-center justify-center gap-1">
+                              {course.intake
+                                ? course.intake.replace(/,/g, ", ")
+                                : "N/A"}
+                            </td>
+                          ))}
+                        </tr>
+
+                        {/* Location */}
+                        <tr className="bg-white">
+                          <td className="p-3 text-xs font-semibold text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-red-500" />
+                              Location
+                            </div>
+                          </td>
+                          {comparisonCourses.map((course) => (
+                            <td
+                              key={course.id}
+                              className="p-3 text-xs text-gray-800 border-r border-gray-100 last:border-0"
+                            >
+                              {course.university?.city || "N/A"}
+                            </td>
+                          ))}
+                        </tr>
+
+                        {/* Rating */}
+                        <tr className="bg-gray-50/50">
+                          <td className="p-3 text-xs font-semibold text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-1.5">
+                              <Star className="w-3.5 h-3.5 text-yellow-500" />
+                              Rating
+                            </div>
+                          </td>
+                          {comparisonCourses.map((course) => (
+                            <td
+                              key={course.id}
+                              className="p-3 text-xs border-r border-gray-100 last:border-0"
+                            >
+                              <div className="font-semibold text-yellow-700 flex items-center gap-1">
                                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
                                 {course.university?.rating || "N/A"}
                               </div>
-                            </div>
+                            </td>
                           ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                        </tr>
 
-                  {/* Apply Buttons */}
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-b-xl border-t border-blue-700">
-                    <div className="grid grid-cols-3 gap-2">
-                      {comparisonCourses.map((course) => (
-                        <div key={course.id} className="text-center">
-                          <button
-                            onClick={() => {
-                              handleApplyNow(course);
-                            }}
-                            disabled={appliedCourses.has(course.id)}
-                            className={`w-full py-2 px-2 text-xs rounded-lg font-bold transition-all ${
-                              appliedCourses.has(course.id)
-                                ? "bg-white/20 text-white cursor-not-allowed"
-                                : "bg-white text-blue-700 hover:bg-blue-50"
-                            }`}
-                          >
-                            {appliedCourses.has(course.id)
-                              ? "Applied ✓"
-                              : "Apply Now"}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                        {/* Apply Action Row */}
+                        <tr className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                          <td className="p-3 text-xs font-bold text-gray-700 sticky left-0 bg-blue-100 z-10 border-r border-gray-200">
+                            Apply
+                          </td>
+                          {comparisonCourses.map((course) => (
+                            <td
+                              key={course.id}
+                              className="p-3 border-r border-gray-100 last:border-0"
+                            >
+                              <button
+                                onClick={() => handleApplyNow(course)}
+                                disabled={appliedCourses.has(course.id)}
+                                className={`w-full py-2.5 px-3 text-xs rounded-lg font-bold transition-all ${
+                                  appliedCourses.has(course.id)
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg"
+                                }`}
+                              >
+                                {appliedCourses.has(course.id)
+                                  ? "Applied ✓"
+                                  : "Apply Now"}
+                              </button>
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
-
               {/* Desktop/Table View */}
-              <div className="rounded-xl overflow-hidden shadow-md border border-gray-200 bg-white hidden sm:block">
-                <div className="overflow-auto">
-                  <table className="w-full text-left border-collapse min-w-[800px]">
-                    <thead>
-                      {/* PRIMARY HEADER - BLUE */}
-                      <tr className="bg-blue-700 text-white">
-                        <th className="p-5 font-semibold text-sm uppercase tracking-wider w-1/4 sticky left-0 bg-blue-700 z-10 border-r border-blue-600 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
-                          Criteria
-                        </th>
-                        {comparisonCourses.map((course) => (
-                          <th
-                            key={course.id}
-                            className="p-5 min-w-[280px] align-top border-r border-blue-600 last:border-0"
-                          >
-                            <div className="flex flex-col gap-2">
-                              <span className="text-[10px] uppercase font-bold text-blue-100 bg-blue-800/60 rounded px-2 py-0.5 w-fit backdrop-blur-sm border border-blue-600">
-                                {course.university?.inst_type || "University"}
-                              </span>
-                              <div
-                                className="text-lg font-bold leading-tight line-clamp-2"
-                                title={course.course_name}
-                              >
-                                {course.course_name}
-                              </div>
-                              <div className="text-xs font-medium text-blue-200 flex items-center gap-1">
-                                <Building className="w-3 h-3 opacity-70" />{" "}
-                                {course.university?.name}
-                              </div>
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-gray-100">
-                      {/* Study Mode */}
-                      <tr className="hover:bg-blue-50/30 transition-colors bg-white group">
-                        <td className="p-4 font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="w-4 h-4 text-indigo-500" />{" "}
-                            Study Mode
-                          </div>
-                        </td>
-                        {comparisonCourses.map((c) => (
-                          <td
-                            key={c.id}
-                            className="p-4 text-gray-700 border-r border-gray-100 last:border-0 font-medium"
-                          >
-                            {c.study_mode || "N/A"}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Duration */}
-                      <tr className="hover:bg-blue-50/30 transition-colors bg-gray-50/40 group">
-                        <td className="p-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-blue-500" /> Duration
-                          </div>
-                        </td>
-                        {comparisonCourses.map((c) => (
-                          <td
-                            key={c.id}
-                            className="p-4 text-gray-700 border-r border-gray-100 last:border-0"
-                          >
-                            {c.duration || "N/A"}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Fee */}
-                      <tr className="hover:bg-blue-50/30 transition-colors bg-white group">
-                        <td className="p-4 font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="w-4 h-4 text-green-500" />{" "}
-                            Tuition Fee
-                          </div>
-                        </td>
-                        {comparisonCourses.map((c) => (
-                          <td
-                            key={c.id}
-                            className="p-4 text-gray-900 font-bold border-r border-gray-100 last:border-0"
-                          >
-                            {c.fee || "N/A"}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Intake */}
-                      <tr className="hover:bg-blue-50/30 transition-colors bg-gray-50/40 group">
-                        <td className="p-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-purple-500" />{" "}
-                            Intake
-                          </div>
-                        </td>
-                        {comparisonCourses.map((c) => (
-                          <td
-                            key={c.id}
-                            className="p-4 text-gray-700 border-r border-gray-100 last:border-0 text-sm"
-                          >
-                            {c.intake ? c.intake.replace(/,/g, ", ") : "N/A"}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Location */}
-                      <tr className="hover:bg-blue-50/30 transition-colors bg-white group">
-                        <td className="p-4 font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-red-500" /> Location
-                          </div>
-                        </td>
-                        {comparisonCourses.map((c) => (
-                          <td
-                            key={c.id}
-                            className="p-4 text-gray-700 border-r border-gray-100 last:border-0 text-sm"
-                          >
-                            {c.university?.city}, {c.university?.state}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Actions */}
-                      <tr className="bg-gray-50 border-t border-gray-200">
-                        <td className="p-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                          Actions
-                        </td>
-                        {comparisonCourses.map((c) => (
-                          <td
-                            key={c.id}
-                            className="p-4 border-r border-gray-200 last:border-0"
-                          >
-                            <button
-                              onClick={() => {
-                                handleApplyNow(c);
-                              }}
-                              disabled={appliedCourses.has(c.id)}
-                              className={`w-full py-2.5 px-4 text-white text-sm rounded-lg font-bold shadow-md transition-all active:scale-95 ${appliedCourses.has(c.id) ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg"}`}
+              <div className="bg-white hidden sm:block -mt-10 pt-0">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                  <thead>
+                    {/* PRIMARY HEADER - BLUE */}
+                    <tr className="bg-blue-700 text-white">
+                      <th className="p-3 font-semibold text-xs uppercase tracking-wider w-1/4 sticky left-0 top-0 bg-blue-700 z-30 border-r border-blue-600 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                        Criteria
+                      </th>
+                      {comparisonCourses.map((course) => (
+                        <th
+                          key={course.id}
+                          className="p-3 min-w-[260px] align-top border-r border-blue-600 last:border-0 sticky top-0 bg-blue-700 z-20"
+                        >
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-[10px] uppercase font-bold text-blue-100 bg-blue-800/60 rounded px-2 py-0.5 w-fit backdrop-blur-sm border border-blue-600">
+                              {course.university?.inst_type || "University"}
+                            </span>
+                            <div
+                              className="text-base font-bold leading-tight line-clamp-2"
+                              title={course.course_name}
                             >
-                              {appliedCourses.has(c.id)
-                                ? "Applied"
-                                : "Apply Now"}
-                            </button>
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                              {course.course_name}
+                            </div>
+                            <div className="text-xs font-medium text-blue-200 flex items-center gap-1">
+                              <Building className="w-3 h-3 opacity-70" />{" "}
+                              {course.university?.name}
+                            </div>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+
+                  <tbody className="divide-y divide-gray-100">
+                    {/* Study Mode */}
+                    <tr className="hover:bg-blue-50/30 transition-colors bg-white group">
+                      <td className="p-2.5 font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-indigo-500" /> Study
+                          Mode
+                        </div>
+                      </td>
+                      {comparisonCourses.map((c) => (
+                        <td
+                          key={c.id}
+                          className="p-2.5 text-gray-700 border-r border-gray-100 last:border-0 font-medium"
+                        >
+                          {c.study_mode || "N/A"}
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Duration */}
+                    <tr className="hover:bg-blue-50/30 transition-colors bg-gray-50/40 group">
+                      <td className="p-2.5 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-blue-500" /> Duration
+                        </div>
+                      </td>
+                      {comparisonCourses.map((c) => (
+                        <td
+                          key={c.id}
+                          className="p-2.5 text-gray-700 border-r border-gray-100 last:border-0"
+                        >
+                          {c.duration || "N/A"}
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Fee */}
+                    <tr className="hover:bg-blue-50/30 transition-colors bg-white group">
+                      <td className="p-2.5 font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="w-4 h-4 text-green-500" />{" "}
+                          Tuition Fee
+                        </div>
+                      </td>
+                      {comparisonCourses.map((c) => (
+                        <td
+                          key={c.id}
+                          className="p-2.5 text-gray-900 font-bold border-r border-gray-100 last:border-0"
+                        >
+                          {c.fee || "N/A"}
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Intake */}
+                    <tr className="hover:bg-blue-50/30 transition-colors bg-gray-50/40 group">
+                      <td className="p-2.5 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-purple-500" />{" "}
+                          Intake
+                        </div>
+                      </td>
+                      {comparisonCourses.map((c) => (
+                        <td
+                          key={c.id}
+                          className="p-2.5 text-gray-700 border-r border-gray-100 last:border-0 text-sm"
+                        >
+                          {c.intake ? c.intake.replace(/,/g, ", ") : "N/A"}
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Location */}
+                    <tr className="hover:bg-blue-50/30 transition-colors bg-white group">
+                      <td className="p-2.5 font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover:bg-blue-50/30">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-red-500" /> Location
+                        </div>
+                      </td>
+                      {comparisonCourses.map((c) => (
+                        <td
+                          key={c.id}
+                          className="p-2.5 text-gray-700 border-r border-gray-100 last:border-0 text-sm"
+                        >
+                          {c.university?.city}, {c.university?.state}
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Actions */}
+                    <tr className="bg-gray-50 border-t border-gray-200">
+                      <td className="p-2.5 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10 border-r border-gray-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                        Actions
+                      </td>
+                      {comparisonCourses.map((c) => (
+                        <td
+                          key={c.id}
+                          className="p-2.5 border-r border-gray-200 last:border-0"
+                        >
+                          <button
+                            onClick={() => {
+                              handleApplyNow(c);
+                            }}
+                            disabled={appliedCourses.has(c.id)}
+                            className={`w-full py-2.5 px-4 text-white text-sm rounded-lg font-bold shadow-md transition-all active:scale-95 ${appliedCourses.has(c.id) ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg"}`}
+                          >
+                            {appliedCourses.has(c.id)
+                              ? "Applied ✓"
+                              : "Apply Now"}
+                          </button>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 bg-white border-t border-gray-100 flex justify-end">
+            <div className="p-3 bg-white border-t border-gray-100 flex justify-end rounded-b-xl">
               <button
                 onClick={() => setShowComparisonModal(false)}
                 className="px-8 py-2.5 bg-gray-800 text-white rounded-lg font-bold hover:bg-gray-900 transition-colors shadow-lg"

@@ -111,7 +111,10 @@ const UniversityDetailStatic = () => {
                 "https://images.unsplash.com/photo-1567168544813-cc03465b4fa8?w=300&h=200&fit=crop",
                 "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=300&h=200&fit=crop",
               ].map((photo, index) => (
-                <div key={index} className="relative h-[120px] sm:h-[140px] md:h-[168px]">
+                <div
+                  key={index}
+                  className="relative h-[120px] sm:h-[140px] md:h-[168px]"
+                >
                   <img
                     src={photo}
                     alt={`Campus ${index + 1}`}
@@ -145,7 +148,9 @@ const UniversityDetailStatic = () => {
               <div className="mt-4 bg-gray-200 px-4 py-2 rounded-md text-sm text-gray-700 w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-gray-800">#457</span>
+                    <span className="text-2xl font-bold text-gray-800">
+                      #457
+                    </span>
                     <span className="text-gray-600 text-base">in World</span>
                   </div>
                   <span className="hidden sm:block text-gray-400">•</span>

@@ -10,9 +10,19 @@ const SEO = ({
   noIndex = false,
 }) => {
   useEffect(() => {
-    // Update document title
+    // Helper function to clean quotes from strings
+    const cleanQuotes = (str) => {
+      if (!str) return "";
+      return String(str)
+        .replace(/^["'\u201C\u201D\u2018\u2019`]+/g, "")
+        .replace(/["'\u201C\u201D\u2018\u2019`]+$/g, "")
+        .replace(/["'\u201C\u201D\u2018\u2019`]/g, "")
+        .trim();
+    };
+
+    // Update document title - CLEAN QUOTES
     if (title) {
-      document.title = title;
+      document.title = cleanQuotes(title);
     }
 
     // Update or create meta tags

@@ -254,7 +254,7 @@ const DocumentUpload = () => {
 
                     // If the path already contains 'storage/', remove it from source or path to avoid duplicate
                     if (path.startsWith("storage/")) {
-                      source = "https://www.educationmalaysia.in/";
+                      source = "https://admin.educationmalaysia.in/";
                     } else if (
                       doc.upload_source &&
                       doc.upload_source.startsWith("http")
@@ -330,11 +330,11 @@ const DocumentUpload = () => {
                                     let downloadUrl = fullUrl;
                                     if (
                                       fullUrl.startsWith(
-                                        "https://www.educationmalaysia.in/",
+                                        "https://admin.educationmalaysia.in/",
                                       )
                                     ) {
                                       downloadUrl = fullUrl.replace(
-                                        "https://www.educationmalaysia.in",
+                                        "https://admin.educationmalaysia.in",
                                         "",
                                       );
                                     }

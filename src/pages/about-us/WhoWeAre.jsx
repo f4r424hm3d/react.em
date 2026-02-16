@@ -7,9 +7,20 @@ import {
   FaCogs,
   FaGlobeAsia,
   FaUsers,
-  FaEye
+  FaEye,
 } from "react-icons/fa";
-import { GraduationCap, FileText, Shield, DollarSign, Globe, Plane, Check, ArrowRight } from 'lucide-react';
+import {
+  GraduationCap,
+  FileText,
+  Shield,
+  DollarSign,
+  Globe,
+  Plane,
+  Check,
+  ArrowRight,
+} from "lucide-react";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 const WhoWeAre = () => {
   const [activeTab, setActiveTab] = useState("universities");
@@ -18,39 +29,45 @@ const WhoWeAre = () => {
     {
       icon: GraduationCap,
       title: "University & Course Selection",
-      description: "Personalized guidance to help students choose the right university and program aligned with career goals and budget.",
-      cta: "Explore Universities"
+      description:
+        "Personalized guidance to help students choose the right university and program aligned with career goals and budget.",
+      cta: "Explore Universities",
     },
     {
       icon: FileText,
       title: "Application & Admission Support",
-      description: "Complete assistance with documentation, application submission, and follow-up to ensure smooth admission process.",
-      cta: "Start Application"
+      description:
+        "Complete assistance with documentation, application submission, and follow-up to ensure smooth admission process.",
+      cta: "Start Application",
     },
     {
       icon: Shield,
       title: "Student Visa & EMGS Guidance",
-      description: "Expert support for visa applications and EMGS approval process, ensuring high success rates for international students.",
-      cta: "Visa Assistance"
+      description:
+        "Expert support for visa applications and EMGS approval process, ensuring high success rates for international students.",
+      cta: "Visa Assistance",
     },
     {
       icon: DollarSign,
       title: "Scholarship & Fee Advisory",
-      description: "Access exclusive scholarships and financial planning support to make quality education affordable for every student.",
-      cta: "Find Scholarships"
+      description:
+        "Access exclusive scholarships and financial planning support to make quality education affordable for every student.",
+      cta: "Find Scholarships",
     },
     {
       icon: Globe,
       title: "International Student & Agent Support",
-      description: "Dedicated support for students from 185+ countries and partnerships with education agents worldwide.",
-      cta: "Partner With Us"
+      description:
+        "Dedicated support for students from 185+ countries and partnerships with education agents worldwide.",
+      cta: "Partner With Us",
     },
     {
       icon: Plane,
       title: "Pre-Departure & Arrival Assistance",
-      description: "Comprehensive support from travel planning to airport pickup, accommodation, and settling in Malaysia.",
-      cta: "Learn More"
-    }
+      description:
+        "Comprehensive support from travel planning to airport pickup, accommodation, and settling in Malaysia.",
+      cta: "Learn More",
+    },
   ];
 
   const cardData = [
@@ -58,165 +75,223 @@ const WhoWeAre = () => {
       icon: <FaUniversity className="mx-auto text-3xl text-blue-500 mb-4" />,
       title: "Establish an India Office",
       description:
-        "We will guide you in setting up your India office, including legal aspects like RBI license handling."
+        "We will guide you in setting up your India office, including legal aspects like RBI license handling.",
     },
     {
       icon: <FaCogs className="mx-auto text-3xl text-blue-500 mb-4" />,
       title: "Market Research and Analysis",
       description:
-        "We analyze markets and build effective strategies tailored to your institution's goals."
+        "We analyze markets and build effective strategies tailored to your institution's goals.",
     },
     {
       icon: <FaGlobeAsia className="mx-auto text-3xl text-blue-500 mb-4" />,
       title: "Marketing and Branding",
       description:
-        "Expand your international reach and attract global candidates through education fairs and branding."
+        "Expand your international reach and attract global candidates through education fairs and branding.",
     },
     {
       icon: <FaCogs className="mx-auto text-3xl text-blue-500 mb-4" />,
       title: "We Understand Business",
       description:
-        "Our industry experience helps us understand and cater to the diverse needs of the education sector."
+        "Our industry experience helps us understand and cater to the diverse needs of the education sector.",
     },
     {
       icon: <FaUsers className="mx-auto text-3xl text-blue-500 mb-4" />,
       title: "We Are Good At What We Do",
       description:
-        "A skilled and experienced team providing cost-effective marketing solutions that deliver."
+        "A skilled and experienced team providing cost-effective marketing solutions that deliver.",
     },
     {
       icon: <FaHandshake className="mx-auto text-3xl text-blue-500 mb-4" />,
       title: "An Accomplished Team",
       description:
-        "Our team works closely with clients to provide guidance and strategic planning throughout the process."
-    }
+        "Our team works closely with clients to provide guidance and strategic planning throughout the process.",
+    },
   ];
 
   return (
     <div className="px-6 md:px-12 py-10 max-w-screen-xl mx-auto bg-gray-50">
+      {/* ✅ Dynamic SEO */}
+      <SeoHead
+        pageType="service-detail"
+        data={{
+          name: "Who We Are - Education Malaysia",
+          description:
+            "Learn about Education Malaysia, our vision, mission, and how we help students study in Malaysia.",
+          keywords:
+            "about education malaysia, who we are, study abroad consultants, malaysia education services",
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="service-detail"
+        data={{
+          title: "Who We Are",
+          slug: "who-we-are",
+        }}
+      />
+
       <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">
         About <span className="text-blue-600">Education Malaysia</span>
       </h2>
 
-
-    {/* ABOUT SECTION */}
-    <div className="mb-20">
-
-      {/* Center Heading */}
-      <div className="text-center mb-8">
-        <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-          About <span className="text-blue-600">Us</span>
-        </h3>
-        <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full mx-auto mt-4"></div>
-      </div>
-
-      <div className="grid lg:grid-cols-12 gap-10 items-start">
-
-        {/* LEFT SIDE - MAIN BOX (7 Columns) */}
-        <div className="lg:col-span-7 bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-xl shadow-blue-50 relative overflow-hidden">
-          {/* Subtle decoration */}
-          <div className="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
-          
-          <div className="mb-8 p-6 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-            <p className="text-lg md:text-xl font-bold text-blue-800 italic leading-relaxed">
-              "The Achievement of Perfection is our goal but Excellence is Guarantee!"
-            </p>
-          </div>
-
-          <div className="space-y-6 text-gray-700 leading-relaxed text-base md:text-[17px]">
-            <p>
-              <strong>Britannica Overseas</strong> is the cutting edge of higher education’s Recruitment, Marketing and student enrollment. We have been a well founded solutions specialist to our partner institutions since 2015.
-            </p>
-
-            <p>
-              Britannica Overseas has been providing services for higher education marketing to over <span className="font-semibold text-blue-600">100 partner schools</span> across the globe. We have also launched multiple websites for different overseas study destinations like Malaysia, Germany, Canada, Australia and UK; hence, we receive millions of visitors every month. Prospective candidates, who are looking to get admission in any university and course program of their liking, can find information through our multiple portals dedicated for overseas education.
-            </p>
-
-            <p>
-              With more to come in the near future, we are currently representing multiple individual education brands which cover everything under one roof from <span className="font-semibold text-gray-900">Admission to Marketing</span> and every section of an education system. This evolution of ours has helped connect potential candidates from around the globe to our partner Universities/Institutions/Colleges and is now recognized to an international team in Malaysia and India. Britannica Overseas, has stepped into an era within the education industry by introducing software and marketing solutions.
-            </p>
-          </div>
+      {/* ABOUT SECTION */}
+      <div className="mb-20">
+        {/* Center Heading */}
+        <div className="text-center mb-8">
+          <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+            About <span className="text-blue-600">Us</span>
+          </h3>
+          <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full mx-auto mt-4"></div>
         </div>
 
-        {/* RIGHT SIDE - 4 BOXES (5 Columns) */}
-        <div className="lg:col-span-5 grid gap-6 content-start">
+        <div className="grid lg:grid-cols-12 gap-10 items-start">
+          {/* LEFT SIDE - MAIN BOX (7 Columns) */}
+          <div className="lg:col-span-7 bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-xl shadow-blue-50 relative overflow-hidden">
+            {/* Subtle decoration */}
+            <div className="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
 
-          {/* Vision */}
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                 <span className="text-lg">👁️</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">Vision</h3>
-            </div>
-            <p className="text-gray-600 text-sm leading-relaxed pl-1">
-              Our vision is to make a transformative impact on the Study Abroad Service Sector through continual innovation in student services by connecting institutions, recruiters, and students across the globe.
-            </p>
-          </div>
-
-          {/* Mission */}
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                 <span className="text-lg">🚀</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">Mission</h3>
-            </div>
-            <ul className="space-y-2 text-sm text-gray-600 pl-1">
-              <li className="flex gap-2">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>To simplify the Overseas Education Admission Process & provide World’s Best Education Solutions</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>To render scrupulous services and build robust business relationships</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>To strive to be the world’s most reliable service brand</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-            {/* Core Values */}
-            <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300">
-               <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">💎</span>
-                <h3 className="text-lg font-bold text-gray-900">Core Values</h3>
-              </div>
-              <p className="text-gray-700 text-sm font-medium leading-relaxed">
-                Integrity, Honesty, Commitment, Transparency, Excellence and Value Addition.
+            <div className="mb-8 p-6 bg-blue-50 rounded-xl border-l-4 border-blue-500">
+              <p className="text-lg md:text-xl font-bold text-blue-800 italic leading-relaxed">
+                "The Achievement of Perfection is our goal but Excellence is
+                Guarantee!"
               </p>
             </div>
 
-            {/* Objectives */}
-            <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300">
-               <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">🎯</span>
-                <h3 className="text-lg font-bold text-gray-900">Objectives</h3>
-              </div>
-              <p className="text-gray-700 text-sm font-medium">
-                To Expand the Academic Horizons.
+            <div className="space-y-6 text-gray-700 leading-relaxed text-base md:text-[17px]">
+              <p>
+                <strong>Britannica Overseas</strong> is the cutting edge of
+                higher education’s Recruitment, Marketing and student
+                enrollment. We have been a well founded solutions specialist to
+                our partner institutions since 2015.
+              </p>
+
+              <p>
+                Britannica Overseas has been providing services for higher
+                education marketing to over{" "}
+                <span className="font-semibold text-blue-600">
+                  100 partner schools
+                </span>{" "}
+                across the globe. We have also launched multiple websites for
+                different overseas study destinations like Malaysia, Germany,
+                Canada, Australia and UK; hence, we receive millions of visitors
+                every month. Prospective candidates, who are looking to get
+                admission in any university and course program of their liking,
+                can find information through our multiple portals dedicated for
+                overseas education.
+              </p>
+
+              <p>
+                With more to come in the near future, we are currently
+                representing multiple individual education brands which cover
+                everything under one roof from{" "}
+                <span className="font-semibold text-gray-900">
+                  Admission to Marketing
+                </span>{" "}
+                and every section of an education system. This evolution of ours
+                has helped connect potential candidates from around the globe to
+                our partner Universities/Institutions/Colleges and is now
+                recognized to an international team in Malaysia and India.
+                Britannica Overseas, has stepped into an era within the
+                education industry by introducing software and marketing
+                solutions.
               </p>
             </div>
           </div>
 
+          {/* RIGHT SIDE - 4 BOXES (5 Columns) */}
+          <div className="lg:col-span-5 grid gap-6 content-start">
+            {/* Vision */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <span className="text-lg">👁️</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Vision</h3>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed pl-1">
+                Our vision is to make a transformative impact on the Study
+                Abroad Service Sector through continual innovation in student
+                services by connecting institutions, recruiters, and students
+                across the globe.
+              </p>
+            </div>
+
+            {/* Mission */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <span className="text-lg">🚀</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Mission</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600 pl-1">
+                <li className="flex gap-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span>
+                    To simplify the Overseas Education Admission Process &
+                    provide World’s Best Education Solutions
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span>
+                    To render scrupulous services and build robust business
+                    relationships
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span>
+                    To strive to be the world’s most reliable service brand
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+              {/* Core Values */}
+              <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">💎</span>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Core Values
+                  </h3>
+                </div>
+                <p className="text-gray-700 text-sm font-medium leading-relaxed">
+                  Integrity, Honesty, Commitment, Transparency, Excellence and
+                  Value Addition.
+                </p>
+              </div>
+
+              {/* Objectives */}
+              <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🎯</span>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Objectives
+                  </h3>
+                </div>
+                <p className="text-gray-700 text-sm font-medium">
+                  To Expand the Academic Horizons.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-
       </div>
-    </div>
-
 
       {/* TABS */}
       <div className="flex flex-wrap justify-center gap-4 mb-4">
         {["universities", "students", "partners"].map((tab) => (
           <button
             key={tab}
-            className={`px-6 py-2 rounded-full text-sm font-semibold transition duration-300 flex items-center gap-2 ${activeTab === tab
-              ? "bg-blue-600 text-white shadow-md"
-              : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-              }`}
+            className={`px-6 py-2 rounded-full text-sm font-semibold transition duration-300 flex items-center gap-2 ${
+              activeTab === tab
+                ? "bg-blue-600 text-white shadow-md"
+                : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+            }`}
             onClick={() => setActiveTab(tab)}
           >
             {tab === "universities" && <FaUniversity />}
@@ -243,9 +318,17 @@ const WhoWeAre = () => {
             <ul className="list-disc list-inside text-gray-700 space-y-2">
               <li>Partnered with esteemed institutions globally.</li>
               <li>Recruit highly qualified students via outreach programs.</li>
-              <li>International student recruitment solutions, including marketing and support.</li>
-              <li>Train and manage in-country agents to enhance reach and applications.</li>
-              <li>Pre-screen applications to ensure quality and reduce workload.</li>
+              <li>
+                International student recruitment solutions, including marketing
+                and support.
+              </li>
+              <li>
+                Train and manage in-country agents to enhance reach and
+                applications.
+              </li>
+              <li>
+                Pre-screen applications to ensure quality and reduce workload.
+              </li>
             </ul>
           </>
         )}
@@ -256,9 +339,17 @@ const WhoWeAre = () => {
               <FaUserGraduate className="text-blue-500" /> For Students
             </h3>
             <ul className="list-disc list-inside text-gray-700 space-y-2">
-              <li>Comprehensive services from counseling to visa processing.</li>
-              <li>Smart tech-based search platforms to find best destinations & courses.</li>
-              <li>Support with admissions, loans, test coaching, and allied services.</li>
+              <li>
+                Comprehensive services from counseling to visa processing.
+              </li>
+              <li>
+                Smart tech-based search platforms to find best destinations &
+                courses.
+              </li>
+              <li>
+                Support with admissions, loans, test coaching, and allied
+                services.
+              </li>
             </ul>
           </>
         )}
@@ -271,7 +362,9 @@ const WhoWeAre = () => {
             <ul className="list-disc list-inside text-gray-700 space-y-2">
               <li>Swift, Simple and Rewarding partner services.</li>
               <li>Empowerment through product training & tech platforms.</li>
-              <li>High commissions, fast payments, and transparent practices.</li>
+              <li>
+                High commissions, fast payments, and transparent practices.
+              </li>
               <li>Global presence with 100+ universities in 6+ countries.</li>
             </ul>
           </>
@@ -282,7 +375,9 @@ const WhoWeAre = () => {
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-2">Support</h3>
         <p className="text-gray-700">
-          Our expert team assists students and partners through admission, visa, and post-enrollment processes. We are committed to excellence in global education services.
+          Our expert team assists students and partners through admission, visa,
+          and post-enrollment processes. We are committed to excellence in
+          global education services.
         </p>
       </div>
 
@@ -333,7 +428,8 @@ const WhoWeAre = () => {
               Our Services – Your Pathway to Studying in Malaysia
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              End-to-end guidance for international students — from course selection to arrival in Malaysia.
+              End-to-end guidance for international students — from course
+              selection to arrival in Malaysia.
             </p>
           </div>
 

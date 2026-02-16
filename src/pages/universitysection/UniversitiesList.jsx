@@ -3,7 +3,8 @@ import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { FiChevronDown, FiSearch, FiX } from "react-icons/fi";
 import { FaStar } from "react-icons/fa6";
 import { Clock, MapPin, DollarSign, Users, Eye, Book } from "lucide-react";
-import { Helmet } from "react-helmet";
+import SeoHead from "../../components/SeoHead";
+import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 import api from "../../api";
 import {
   FeeStructureForm,
@@ -104,7 +105,7 @@ const decodeHTMLEntities = (text) => {
   Main Component
 ----------------------------*/
 const UniversitiesList = () => {
-  const { type } = useParams();
+  const { type, pageSlug } = useParams(); // ✅ Extract pageSlug
   const navigate = useNavigate();
   const location = useLocation();
   const getCurrentYearRange = () => {
@@ -113,6 +114,19 @@ const UniversitiesList = () => {
     return `${currentYear}-${nextYear}`;
   };
 
+  // ✅ Extract Page Number from URL (if exists)
+  let pageFromPath = 1;
+  let isValidPageSlug = true;
+
+  if (pageSlug) {
+    const match = pageSlug.match(/^page-(\d+)$/);
+    if (match) {
+      pageFromPath = parseInt(match[1], 10);
+    } else {
+      isValidPageSlug = false; // Invalid format like /page-abc
+    }
+  }
+
   const [title, setTitle] = useState("");
   const [universities, setUniversities] = useState([]);
   const [search, setSearch] = useState("");
@@ -120,9 +134,9 @@ const UniversitiesList = () => {
     instituteType: "",
     state: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pageFromPath || 1);
   const [pagination, setPagination] = useState({
-    current_page: 1,
+    current_page: pageFromPath || 1,
     last_page: 1,
     per_page: 20,
     total: 0,
@@ -138,7 +152,7 @@ const UniversitiesList = () => {
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
   const [pageContent, setPageContent] = useState("");
-  const [isInvalidUrl, setIsInvalidUrl] = useState(false);
+  const [isInvalidUrl, setIsInvalidUrl] = useState(!isValidPageSlug);
 
   // Modal states
   const [feeModalOpen, setFeeModalOpen] = useState(false);
@@ -463,21 +477,27 @@ const UniversitiesList = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seo?.meta_title || "Universities in Malaysia"}</title>
-        <meta name="description" content={seo?.meta_description || ""} />
-      </Helmet>
+      {/* ✅ Dynamic SEO with SeoHead */}
+      <SeoHead
+        pageType="universities-listing"
+        data={{
+          name: title,
+          category: selectedFilters.instituteType || selectedFilters.state,
+          description: seo?.meta_description,
+          keywords: seo?.meta_keyword,
+        }}
+      />
+
+      {/* ✅ Dynamic Breadcrumb */}
+      <DynamicBreadcrumb
+        pageType="universities-listing"
+        data={{
+          name: title,
+          category: selectedFilters.instituteType || selectedFilters.state,
+        }}
+      />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-sm text-gray-500">
-          <Link to="/" className="hover:text-blue-600">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span>Universities</span>
-        </nav>
-
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
@@ -820,7 +840,32 @@ const UniversitiesList = () => {
                   <div className="flex items-center gap-2">
                     {/* Previous Button */}
                     <button
-                      onClick={() => handlePageChange(currentPage - 1)}
+                      onClick={() => {
+                        const targetPage = currentPage - 1;
+                        const currentPath = location.pathname.replace(
+                          /\/page-\d+$/,
+                          "",
+                        );
+                        const searchParams = new URLSearchParams(
+                          location.search,
+                        );
+                        searchParams.delete("page"); // Ensure page is removed from query
+
+                        let newPath = currentPath;
+                        if (targetPage > 1) {
+                          newPath = `${currentPath}/page-${targetPage}`;
+                        } else {
+                          // Page 1: just the base path
+                          newPath = currentPath;
+                        }
+
+                        const finalUrl = searchParams.toString()
+                          ? `${newPath}?${searchParams.toString()}`
+                          : newPath;
+
+                        navigate(finalUrl);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
                       disabled={currentPage === 1}
                       className={`flex items-center gap-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                         currentPage === 1
@@ -858,7 +903,31 @@ const UniversitiesList = () => {
                           return (
                             <button
                               key={pageNum}
-                              onClick={() => handlePageChange(pageNum)}
+                              onClick={() => {
+                                const targetPage = pageNum;
+                                const currentPath = location.pathname.replace(
+                                  /\/page-\d+$/,
+                                  "",
+                                );
+                                const searchParams = new URLSearchParams(
+                                  location.search,
+                                );
+                                searchParams.delete("page");
+
+                                let newPath = currentPath;
+                                if (targetPage > 1) {
+                                  newPath = `${currentPath}/page-${targetPage}`;
+                                } else {
+                                  newPath = currentPath;
+                                }
+
+                                const finalUrl = searchParams.toString()
+                                  ? `${newPath}?${searchParams.toString()}`
+                                  : newPath;
+
+                                navigate(finalUrl);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
                               className={`w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-bold text-sm sm:text-base transition-all duration-200 ${
                                 currentPage === pageNum
                                   ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-110 ring-2 ring-blue-300"
@@ -887,7 +956,29 @@ const UniversitiesList = () => {
 
                     {/* Next Button */}
                     <button
-                      onClick={() => handlePageChange(currentPage + 1)}
+                      onClick={() => {
+                        const targetPage = currentPage + 1;
+                        const currentPath = location.pathname.replace(
+                          /\/page-\d+$/,
+                          "",
+                        );
+                        const searchParams = new URLSearchParams(
+                          location.search,
+                        );
+                        searchParams.delete("page");
+
+                        let newPath = currentPath;
+                        if (targetPage > 1) {
+                          newPath = `${currentPath}/page-${targetPage}`;
+                        }
+
+                        const finalUrl = searchParams.toString()
+                          ? `${newPath}?${searchParams.toString()}`
+                          : newPath;
+
+                        navigate(finalUrl);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
                       disabled={currentPage === pagination.last_page}
                       className={`flex items-center gap-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                         currentPage === pagination.last_page
