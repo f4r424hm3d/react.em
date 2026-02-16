@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Testing /api/static-page-seo</h1>
+    <button onclick="testAPI()">Test API</button>
+    <pre id="output"></pre>
+
+    <script>
+        async function testAPI() {
+            const output = document.getElementById('output');
+            output.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/static-page-seo');
+                const data = await response.json();
+                
+                output.textContent = JSON.stringify(data, null, 2);
+                
+                console.log('Full Response:', data);
+                console.log('Looking for "Visa Guidance"...');
+                
+                // Try to find visa guidance
+                const pages = data.data || data.pages || data || [];
+                const visaPage = pages.find(p => 
+                    p.page_name?.toLowerCase().includes('visa') ||
+                    p.name?.toLowerCase().includes('visa') ||
+                    p.slug?.toLowerCase().includes('visa')
+                );
+                
+                console.log('Visa Page Found:', visaPage);
+            } catch (error) {
+                output.textContent = 'Error: ' + error.message;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

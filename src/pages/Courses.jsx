@@ -5,7 +5,7 @@ import { FaStar } from "react-icons/fa";
 import { Home, Layers } from "lucide-react";
 import api from "../api"; // Adjust the import based on your project structure
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
-import SEO from "../components/SEO";
+// Legacy SEO.jsx removed — SeoHead handles all meta tags
 import SeoHead from "../components/SeoHead";
 import SeoService from "../utils/SeoService";
 import { Filter, X } from "lucide-react";

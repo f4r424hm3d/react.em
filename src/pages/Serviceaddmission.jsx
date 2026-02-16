@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import SeoHead from "../components/SeoHead";
 import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../hooks/useStaticPageSeo";
 
 /* ================= CHECKLIST SECTION ================= */
 function ChecklistSection({ items }) {
@@ -177,6 +178,10 @@ function ProcessStep({
 
 /* ================= MAIN APP ================= */
 export default function App() {
+  const { seo: apiSeo } = useStaticPageSeo(
+    "resources/services/admission-guidance",
+  );
+
   const steps = [
     {
       number: 1,
@@ -259,17 +264,14 @@ export default function App() {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Malaysian Student Visa Process",
-          description:
-            "Complete guide to obtaining your student pass for studying in Malaysia.",
-          keywords:
-            "student visa, malaysia visa, education malaysia visa, student pass",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
-        // FORCE override
         overrides={{
-          title: "Malaysian Student Visa Process | Application Guide",
-          description:
-            "Complete guide to obtaining your student pass for studying in Malaysia.",
+          title: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
         }}
       />
 

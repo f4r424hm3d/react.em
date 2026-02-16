@@ -39,7 +39,7 @@ import UniversityCoursesCard from "./UniversityCoursesCard";
 
 import PopularCourses from "./PopularCourses";
 
-import { Helmet } from "react-helmet";
+// Helmet managed centrally via SeoHead
 import SeoHead from "../../components/SeoHead";
 
 import { VscGitStashApply } from "react-icons/vsc";

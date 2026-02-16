@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import { Home, Layers } from "lucide-react";
 import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../../hooks/useStaticPageSeo";
 
 const TermsAndConditions = () => {
+  const { seo: apiSeo } = useStaticPageSeo("terms-and-conditions");
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -16,11 +19,10 @@ const TermsAndConditions = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Terms & Conditions - Education Malaysia",
-          description:
-            "Read the Terms and Conditions for using Education Malaysia website and services. Understanding your rights and obligations.",
-          keywords:
-            "terms and conditions, education malaysia terms, user agreement, legal policies",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

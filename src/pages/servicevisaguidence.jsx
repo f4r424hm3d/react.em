@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import SeoHead from "../components/SeoHead";
 import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../hooks/useStaticPageSeo";
 
 //===== COMPONENT 1: Hero =====
 
@@ -319,7 +320,7 @@ function InfoCard({ icon, title, color, items }) {
               >
                 <path
                   fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1.414 0z"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clipRule="evenodd"
                 />
               </svg>
@@ -483,23 +484,27 @@ function AdditionalInfo() {
 // Yeh file ka main component hai jo sabko render karta hai
 
 export default function MalaysiaVisaPage() {
+  const { seo: apiSeo, loading } = useStaticPageSeo(
+    "resources/services/visa-guidance",
+  );
+
+  console.log("🔍 [Visa Page] apiSeo:", apiSeo);
+  console.log("🔍 [Visa Page] loading:", loading);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* ✅ Dynamic SEO */}
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Malaysia Student Visa Guidelines",
-          description:
-            "Complete guidance on eligibility, required documents, and application rules for Malaysian Student Visa.",
-          keywords:
-            "student visa rules, malaysia visa guidelines, emgs guidelines, student pass requirements",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
-        // FORCE override
         overrides={{
-          title: "Malaysia Student Visa Guidelines | EMGS Rules 2025",
-          description:
-            "Complete guidance on eligibility, required documents, and application rules for Malaysian Student Visa.",
+          title: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
         }}
       />
 

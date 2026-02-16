@@ -10,25 +10,27 @@ import {
 } from "lucide-react";
 import SeoHead from "../components/SeoHead";
 import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../hooks/useStaticPageSeo";
 
 function App() {
+  const { seo: apiSeo } = useStaticPageSeo(
+    "resources/services/discover-malaysia",
+  );
+
   return (
     <div className="min-h-screen bg-white">
       {/* ✅ Dynamic SEO */}
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Jobs & Career Opportunities in Malaysia",
-          description:
-            "Your complete guide to working in Malaysia as an international student - during studies, after graduation, and beyond.",
-          keywords:
-            "jobs in malaysia, career opportunities, international student jobs, work permit malaysia",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
-        // FORCE override
         overrides={{
-          title: "Jobs & Career Opportunities in Malaysia | Work Permit Guide",
-          description:
-            "Your complete guide to working in Malaysia as an international student - during studies, after graduation, and beyond.",
+          title: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
         }}
       />
 

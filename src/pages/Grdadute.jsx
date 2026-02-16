@@ -14,8 +14,12 @@ import {
 import { useState } from "react";
 import SeoHead from "../components/SeoHead";
 import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../hooks/useStaticPageSeo";
 
 function App() {
+  const { seo: apiSeo } = useStaticPageSeo(
+    "resources/Guidelines/graduate-pass",
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   //   const scrollToSection = (id: string) => {
@@ -33,11 +37,10 @@ function App() {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Graduate Pass Malaysia",
-          description:
-            "Stay, work, and explore opportunities in Malaysia for up to one year after graduation with the Graduate Pass.",
-          keywords:
-            "graduate pass malaysia, post study work visa malaysia, work in malaysia after graduation",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import SeoHead from "../components/SeoHead";
 import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../hooks/useStaticPageSeo";
 import api from "../api";
 
 // ✅ Your formatting function
@@ -74,6 +75,9 @@ const formatHTML = (html) => {
 export default function ExpandableCard() {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { seo: apiSeo } = useStaticPageSeo(
+    "resources/Guidelines/team-education-malaysia",
+  );
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -101,11 +105,10 @@ export default function ExpandableCard() {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Team Education Malaysia",
-          description:
-            "Meet the team behind Education Malaysia. We are committed to providing the best education services.",
-          keywords:
-            "team education malaysia, education malaysia team, study in malaysia staff",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

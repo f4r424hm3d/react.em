@@ -23,8 +23,11 @@ import {
 } from "lucide-react";
 import SeoHead from "../components/SeoHead";
 import DynamicBreadcrumb from "../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../hooks/useStaticPageSeo";
 
 const MqaPage = () => {
+  const { seo: apiSeo } = useStaticPageSeo("resources/Guidelines/MQA");
+
   // --- Roles Section Data ---
   const roles = [
     {
@@ -212,14 +215,10 @@ const MqaPage = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "MQA - Malaysian Qualifications Agency",
-          description:
-            "Ensuring quality and standards in higher education across Malaysia using MQA accreditation.".replace(
-              /^['"]|['"]$/g,
-              "",
-            ),
-          keywords:
-            "MQA malaysia, malaysian qualifications agency, accreditation malaysia, MQR check",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

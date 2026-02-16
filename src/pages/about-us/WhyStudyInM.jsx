@@ -3,8 +3,11 @@ import OtherFeatures from "../../components/OtherFeatures";
 import FeaturedUniversities from "../../components/FeaturedUniversities";
 import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../../hooks/useStaticPageSeo";
 
 const WhyStudyInM = () => {
+  const { seo: apiSeo } = useStaticPageSeo("why-study");
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -15,11 +18,10 @@ const WhyStudyInM = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Why Study in Malaysia?",
-          description:
-            "Discover why Malaysia is a top destination for international students. Affordable education, world-class universities, and diverse culture.",
-          keywords:
-            "why study in malaysia, study in malaysia benefits, malaysia education system, affordable education malaysia",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

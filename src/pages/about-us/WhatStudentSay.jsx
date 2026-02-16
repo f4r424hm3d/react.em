@@ -12,6 +12,7 @@ import api from "../../api";
 import { toast } from "react-toastify";
 import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../../hooks/useStaticPageSeo";
 
 // Pre-filled testimonials
 const initialTestimonials = [
@@ -61,6 +62,7 @@ const WhatStudentsSay = () => {
     rating: 5,
   });
   const [loading, setLoading] = useState(false);
+  const { seo: apiSeo } = useStaticPageSeo("students-say");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -151,11 +153,10 @@ const WhatStudentsSay = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Student Testimonials - Education Malaysia",
-          description:
-            "Read what students say about their experience with Education Malaysia. Real stories from international students.",
-          keywords:
-            "student reviews, education malaysia testimonials, study abroad reviews, student feedback",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import { Home, Layers } from "lucide-react";
 import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../../hooks/useStaticPageSeo";
 
 const PrivacyPolicy = () => {
+  const { seo: apiSeo } = useStaticPageSeo("privacy-policy");
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -16,11 +19,10 @@ const PrivacyPolicy = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Privacy Policy - Education Malaysia",
-          description:
-            "Read our Privacy Policy to understand how Education Malaysia collects, uses, and protects your personal information.",
-          keywords:
-            "privacy policy, data protection, education malaysia privacy, user data safety",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

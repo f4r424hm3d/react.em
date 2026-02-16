@@ -555,7 +555,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import api from "../../api";
-import SEO from "../../components/SEO";
+import SeoHead from "../../components/SeoHead";
 import SeoService from "../../utils/SeoService";
 
 const formatHTML = (html) => {
@@ -790,7 +790,15 @@ export default function QualifiedLevelDetail() {
   return (
     <>
       {/* ✅ Enhanced SEO Component with SeoService */}
-      <SEO {...SeoService.generateCourseOverviewMeta(courseData)} />
+      <SeoHead
+        pageType="course-detail"
+        data={{
+          ...seo,
+          name: pageContent?.heading || slug,
+          description: seo?.meta_description,
+          keywords: seo?.meta_keyword,
+        }}
+      />
 
       <div className="bg-gray-100 min-h-screen py-10 px-4">
         {/* Breadcrumb */}

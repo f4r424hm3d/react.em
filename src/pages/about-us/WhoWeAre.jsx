@@ -21,8 +21,10 @@ import {
 } from "lucide-react";
 import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
+import useStaticPageSeo from "../../hooks/useStaticPageSeo";
 
 const WhoWeAre = () => {
+  const { seo: apiSeo } = useStaticPageSeo("who-we-are");
   const [activeTab, setActiveTab] = useState("universities");
 
   const services = [
@@ -115,11 +117,10 @@ const WhoWeAre = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Who We Are - Education Malaysia",
-          description:
-            "Learn about Education Malaysia, our vision, mission, and how we help students study in Malaysia.",
-          keywords:
-            "about education malaysia, who we are, study abroad consultants, malaysia education services",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 

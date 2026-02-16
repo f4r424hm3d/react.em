@@ -23,6 +23,7 @@ const SeoHead = ({
   preloadImage,
   noindex = false,
   overrides = {},
+  lastPage = null,
 }) => {
   const location = useLocation();
 
@@ -103,7 +104,14 @@ const SeoHead = ({
     backendDescription ||
     seoEngine.buildDescription(pageType, pageData, page);
 
-  const canonical = overrides.canonical || seoEngine.buildCanonical(location);
+  let canonical = overrides.canonical || seoEngine.buildCanonical(location);
+  // Safety: never allow admin domain in canonical
+  if (canonical && canonical.includes("admin.educationmalaysia")) {
+    canonical = canonical.replace(
+      /https?:\/\/admin\.educationmalaysia\.in/,
+      seoEngine.SITE_URL,
+    );
+  }
   const ogImage = image || backendImage || seoEngine.DEFAULT_IMAGE;
 
   // Generate breadcrumbs
@@ -136,7 +144,11 @@ const SeoHead = ({
         ? `${seoEngine.SITE_URL}${cleanPath}${queryString}`
         : null;
 
-  const nextPage = `${seoEngine.SITE_URL}${cleanPath}/page-${page + 1}${queryString}`;
+  // Only show next if we know lastPage and current page is less than it
+  const hasNextPage = lastPage ? page < lastPage : true;
+  const nextPage = hasNextPage
+    ? `${seoEngine.SITE_URL}${cleanPath}/page-${page + 1}${queryString}`
+    : null;
 
   return (
     <Helmet>
@@ -168,20 +180,14 @@ const SeoHead = ({
         />
       )}
 
-      {/* Preconnect to API Origin */}
-      <link
-        rel="preconnect"
-        href="https://admin.educationmalaysia.in"
-        crossOrigin="anonymous"
-      />
-      <link rel="dns-prefetch" href="https://admin.educationmalaysia.in" />
+      {/* Preconnect/dns-prefetch handled in index.html to avoid duplicates */}
 
       {/* Canonical URL */}
       <link rel="canonical" href={canonical} />
 
       {/* Pagination Links */}
       {isPaginated && prevPage && <link rel="prev" href={prevPage} />}
-      {isPaginated && <link rel="next" href={nextPage} />}
+      {isPaginated && nextPage && <link rel="next" href={nextPage} />}
 
       {/* Open Graph Tags */}
       <meta property="og:title" content={title} />
@@ -229,34 +235,36 @@ const SeoHead = ({
         })}
       </script>
 
-      {/* Structured Data - Organization */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "http://schema.org",
-          "@type": "Organization",
-          name: "EducationMalaysia",
-          url: "https://www.educationmalaysia.in/",
-          logo: "https://www.educationmalaysia.in/assets/web/images/education-malaysia-new-logo.png",
-          image:
-            "https://www.educationmalaysia.in/assets/web/images/education-malaysia-new-logo.png",
-          sameAs: [
-            "https://www.facebook.com/educationmalaysia.in",
-            "https://www.pinterest.com/educationmalaysiain/",
-            "https://twitter.com/educatemalaysia/",
-            "https://www.instagram.com/educationmalaysia.in/",
-            "https://www.quora.com/profile/Education-Malaysia-3",
-            "https://www.linkedin.com/company/educationmalaysia/",
-            "https://www.youtube.com/channel/UCK7S9yvQnx08CgcDMMfYAyg",
-          ],
-          contactPoint: [
-            {
-              "@type": "ContactPoint",
-              telephone: "+91 9818560331",
-              contactType: "customer support",
-            },
-          ],
-        })}
-      </script>
+      {/* Structured Data - Organization (Homepage only) */}
+      {pageType === "home" && (
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "http://schema.org",
+            "@type": "Organization",
+            name: "EducationMalaysia",
+            url: "https://www.educationmalaysia.in/",
+            logo: "https://www.educationmalaysia.in/assets/web/images/education-malaysia-new-logo.png",
+            image:
+              "https://www.educationmalaysia.in/assets/web/images/education-malaysia-new-logo.png",
+            sameAs: [
+              "https://www.facebook.com/educationmalaysia.in",
+              "https://www.pinterest.com/educationmalaysiain/",
+              "https://twitter.com/educatemalaysia/",
+              "https://www.instagram.com/educationmalaysia.in/",
+              "https://www.quora.com/profile/Education-Malaysia-3",
+              "https://www.linkedin.com/company/educationmalaysia/",
+              "https://www.youtube.com/channel/UCK7S9yvQnx08CgcDMMfYAyg",
+            ],
+            contactPoint: [
+              {
+                "@type": "ContactPoint",
+                telephone: "+91 9818560331",
+                contactType: "customer support",
+              },
+            ],
+          })}
+        </script>
+      )}
 
       {/* Additional Structured Data (if provided) */}
       {data.structuredData && (

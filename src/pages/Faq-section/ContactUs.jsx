@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { Home, Layers, User, MessageSquare, RefreshCw } from "lucide-react";
 import SeoHead from "../../components/SeoHead";
+import useStaticPageSeo from "../../hooks/useStaticPageSeo";
 
 const locationsData = {
   INDIA: [
@@ -75,6 +76,7 @@ const ContactUs = () => {
   const [captchaQuestion, setCaptchaQuestion] = useState("");
   const [captchaAnswer, setCaptchaAnswer] = useState("");
   const [activeTab, setActiveTab] = useState("INDIA");
+  const { seo: apiSeo } = useStaticPageSeo("contact-us");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -163,11 +165,10 @@ const ContactUs = () => {
       <SeoHead
         pageType="service-detail"
         data={{
-          name: "Contact Us - Education Malaysia",
-          description:
-            "Contact Education Malaysia for expert guidance on studying in Malaysia. Offices in India, Malaysia, Bangladesh, and Pakistan.",
-          keywords:
-            "contact education malaysia, study in malaysia contact, education consultants contact",
+          name: apiSeo?.meta_title,
+          description: apiSeo?.meta_description,
+          keywords: apiSeo?.meta_keyword,
+          image: apiSeo?.og_image_path,
         }}
       />
 
