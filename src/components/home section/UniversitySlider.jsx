@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Star,
   MapPin,
@@ -27,7 +28,6 @@ import "swiper/css/navigation";
 
 export default function UniversityCardsSlider() {
   const navigate = useNavigate();
-  const [universities, setUniversities] = useState([]);
   const [likedUniversities, setLikedUniversities] = useState(new Set());
   const [expandedCards, setExpandedCards] = useState(new Set());
 
@@ -40,20 +40,16 @@ export default function UniversityCardsSlider() {
   const [selectedUniversityForModal, setSelectedUniversityForModal] =
     useState(null);
 
-  // Fetch universities
-  useEffect(() => {
-    const fetchUniversities = async () => {
-      try {
-        const res = await api.get("/home");
-        const data = res.data?.data?.universities || [];
-        setUniversities(data);
-        console.log("✅ Universities fetched:", data);
-      } catch (err) {
-        console.error("Failed to fetch universities:", err);
-      }
-    };
-    fetchUniversities();
-  }, []);
+  // ✅ React Query - Intelligent caching, deduplication
+  const { data: universities = [], isLoading } = useQuery({
+    queryKey: ["universities", "home"],
+    queryFn: async () => {
+      const res = await api.get("/home");
+      return res.data?.data?.universities || [];
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   // Toggle like
   const toggleLike = (universityId) => {

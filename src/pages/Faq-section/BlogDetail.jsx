@@ -13,6 +13,7 @@ import {
 import SeoHead from "../../components/SeoHead";
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 import { Link } from "react-router-dom";
+import { BlogDetailSkeleton } from "../../components/Skeleton";
 
 function formatBlogHTML(html, sectionIndex = null) {
   if (!html) return "";
@@ -132,10 +133,8 @@ const BlogDetail = () => {
     fetchBlogData();
   }, [category, slugWithId]);
 
-  // if (loading) return null;
+  if (loading) return <BlogDetailSkeleton />;
   if (error) return <div className="p-6 text-center text-red-600">{error}</div>;
-  // if (!blog)
-  //   return <div className="p-6 text-center text-gray-500">Blog not found.</div>;
 
   return (
     <>
@@ -159,6 +158,10 @@ const BlogDetail = () => {
       <DynamicBreadcrumb
         pageType="blog-detail"
         data={{
+          name:
+            blog.headline !== "Loading..."
+              ? blog.headline
+              : slugWithId.replace(/^\d+-/, "").replace(/-/g, " "),
           title: blog.headline,
           category: category,
           slug: `${category}/${slugWithId}`,
@@ -227,11 +230,18 @@ const BlogDetail = () => {
             </div>
 
             {blog.thumbnail_path && (
-              <img
-                src={`https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`}
-                alt={blog.headline}
-                className="w-full rounded-xl shadow-md"
-              />
+              <div className="aspect-video w-full rounded-xl shadow-md overflow-hidden bg-gray-100">
+                <img
+                  src={`https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`}
+                  alt={blog.headline}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  width="800"
+                  height="450"
+                />
+              </div>
             )}
 
             {blog.parent_contents?.length > 0 && (

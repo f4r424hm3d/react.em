@@ -287,6 +287,20 @@ const Universities = () => {
         }
       } catch (error) {
         console.error("Error fetching university content:", error);
+        // Set default SEO and content if API fails
+        setSeo({
+          meta_description:
+            "Explore top universities in Malaysia including public, private, and foreign institutions.",
+          meta_keyword:
+            "universities in malaysia, public universities, private universities, foreign universities",
+        });
+        setPageContent({
+          top: "",
+          public: "",
+          private: "",
+          foreign: "",
+        });
+        // Keep default page title
       } finally {
         setLoading(false);
       }

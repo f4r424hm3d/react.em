@@ -19,12 +19,20 @@
       href="https://www.educationmalaysia.in/storage/front/assets/img/favicon.png"
     />
 
-    <!-- Preload hero banner for LCP optimization -->
-    <!-- Note: This is a placeholder - update with actual first banner path from API -->
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="https://admin.educationmalaysia.in" />
     <link rel="preconnect" href="https://admin.educationmalaysia.in" crossorigin />
+    <!-- Note: Hero image preload would go here if we had a static first banner URL -->
+    <!-- <link rel="preload" as="image" href="/path/to/hero.jpg" fetchpriority="high" /> -->
 
-    <!-- Google Tag Manager -->
-    <script>
+    <!-- Title and meta tags will be set dynamically by SeoHead component -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Google Tag Manager (deferred to avoid blocking LCP) -->
+    <script defer>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
@@ -36,10 +44,6 @@
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-WP578P4K");
     </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
     <noscript
       ><iframe
         src="https://www.googletagmanager.com/ns.html?id=GTM-WP578P4K"

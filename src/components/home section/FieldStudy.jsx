@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   Calendar,
@@ -10,137 +11,74 @@ import {
   ChevronRight,
 } from "lucide-react";
 import api from "../../api";
+import { FieldStudySkeleton } from "../../components/Skeleton";
 
 function FieldOfStudyDashboard() {
-  console.log("🎯 [FieldStudy] Component rendering NOW");
-
-  const [years, setYears] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [statsData, setStatsData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [selectedYears, setSelectedYears] = useState([]);
   const [showFilters, setShowFilters] = useState(true);
-  const [error, setError] = useState(null);
   const scrollRef = useRef(null);
 
-  console.log("[FieldStudy] Current state:", {
-    yearsCount: years.length,
-    categoriesCount: categories.length,
-    hasStatsData: !!statsData,
-    loading,
-    error,
+  // ✅ React Query - Fetch years
+  const { data: years = [], isLoading: yearsLoading } = useQuery({
+    queryKey: ["field-study", "years"],
+    queryFn: async () => {
+      const res = await api.get("/malaysia-application-stats/get-years");
+      return res.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 3,
   });
+
+  // ✅ React Query - Fetch categories
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ["field-study", "categories"],
+    queryFn: async () => {
+      const res = await api.get("/malaysia-application-stats/get-categories");
+      return res.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 3,
+  });
+
+  // ✅ React Query - Fetch stats
+  const {
+    data: statsData = null,
+    isLoading: statsLoading,
+    error,
+  } = useQuery({
+    queryKey: ["field-study", "stats"],
+    queryFn: async () => {
+      const res = await api.get("/malaysia-application-stats/stats/years");
+      return res.data || { overall_total: 0, years: [] };
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 3,
+  });
+
+  // Initialize selectedYears when years data loads
+  React.useEffect(() => {
+    if (years.length > 0 && selectedYears.length === 0) {
+      setSelectedYears(years);
+    }
+  }, [years, selectedYears.length]);
 
   const scrollLeft = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -296, behavior: "smooth" }); // 280px card + 16px gap
+      scrollRef.current.scrollBy({ left: -296, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 296, behavior: "smooth" }); // 280px card + 16px gap
+      scrollRef.current.scrollBy({ left: 296, behavior: "smooth" });
     }
   };
 
-  useEffect(() => {
-    console.log("⚡ [FieldStudy] useEffect running - Starting fresh fetch");
-
-    let isMounted = true;
-    const MAX_RETRIES = 3;
-
-    // Retry helper with exponential backoff
-    const fetchWithRetry = async (url, retryDelay = 2000) => {
-      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-          console.log(
-            `[FieldStudy] 🔄 Attempt ${attempt + 1}/${MAX_RETRIES + 1} for ${url}`,
-          );
-          const response = await api.get(url);
-          console.log(`[FieldStudy] ✅ Success for ${url}`);
-          return response;
-        } catch (error) {
-          if (attempt === MAX_RETRIES) {
-            console.error(
-              `[FieldStudy] ❌ All ${MAX_RETRIES + 1} attempts failed for ${url}`,
-            );
-            throw error;
-          }
-          const delay = retryDelay * Math.pow(2, attempt); // 2s, 4s, 8s
-          console.log(`[FieldStudy] ⏳ Retry in ${delay}ms...`);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        console.log("📡 [FieldStudy] Starting data fetch...");
-        setLoading(true);
-        setError(null);
-
-        // Fetch all data in parallel with retry logic
-        const [yearsRes, categoriesRes, statsRes] = await Promise.all([
-          fetchWithRetry("/malaysia-application-stats/get-years"),
-          fetchWithRetry("/malaysia-application-stats/get-categories"),
-          fetchWithRetry("/malaysia-application-stats/stats/years"),
-        ]);
-
-        // Only update if component is still mounted
-        if (!isMounted) {
-          console.log(
-            "[FieldStudy] Component unmounted, skipping state update",
-          );
-          return;
-        }
-
-        // Validate responses
-        if (!yearsRes?.data || !Array.isArray(yearsRes.data)) {
-          throw new Error("Invalid years data");
-        }
-        if (!categoriesRes?.data || !Array.isArray(categoriesRes.data)) {
-          throw new Error("Invalid categories data");
-        }
-        if (!statsRes?.data || !statsRes.data.years) {
-          throw new Error("Invalid stats data");
-        }
-
-        console.log("🎉 [FieldStudy] All data fetched successfully!", {
-          years: yearsRes.data.length,
-          categories: categoriesRes.data.length,
-          stats: statsRes.data.years.length,
-        });
-
-        setYears(yearsRes.data);
-        setCategories(categoriesRes.data);
-        setStatsData(statsRes.data);
-        setSelectedYears(yearsRes.data);
-      } catch (error) {
-        if (!isMounted) return;
-
-        console.error("❌ [FieldStudy] Error fetching data:", error);
-        setError(error.message || "Failed to load data");
-
-        // Set safe defaults
-        setYears([]);
-        setCategories([]);
-        setStatsData({ overall_total: 0, years: [] });
-        setSelectedYears([]);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    // Cleanup function
-    return () => {
-      console.log("[FieldStudy] 🧹 Component unmounting, cleanup");
-      isMounted = false;
-    };
-  }, []);
+  // Combine loading states
+  const loading = yearsLoading || categoriesLoading || statsLoading;
 
   // Filter years based on selection
   const filteredYearsData = useMemo(() => {
@@ -198,14 +136,7 @@ function FieldOfStudyDashboard() {
 
   // Loading State
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600 font-medium">Loading data...</p>
-        </div>
-      </div>
-    );
+    return <FieldStudySkeleton />;
   }
 
   // Error State
@@ -231,7 +162,9 @@ function FieldOfStudyDashboard() {
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Error Loading Data
           </h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-gray-600 mb-4">
+            {error.message || "Failed to load data"}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
@@ -646,4 +579,4 @@ function FieldOfStudyDashboard() {
   );
 }
 
-export default FieldOfStudyDashboard;
+export default React.memo(FieldOfStudyDashboard);

@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useRef, useState } from "react";
 import {
   Play,
@@ -80,7 +78,7 @@ function Counter({ value, suffix, prefix = "" }) {
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     if (counterRef.current) observer.observe(counterRef.current);
@@ -88,13 +86,17 @@ function Counter({ value, suffix, prefix = "" }) {
   }, [value, hasAnimated]);
 
   const formatNumber = (num) => {
-    if (value >= 1000 && value < 1000000) return Math.floor(num).toLocaleString();
+    if (value >= 1000 && value < 1000000)
+      return Math.floor(num).toLocaleString();
     if (value < 10) return num.toFixed(1);
     return Math.floor(num).toString();
   };
 
   return (
-    <div ref={counterRef} className="text-2xl md:text-3xl font-bold text-[#003893]">
+    <div
+      ref={counterRef}
+      className="text-2xl md:text-3xl font-bold text-[#003893]"
+    >
       {prefix}
       {formatNumber(count)}
       {suffix}
@@ -107,13 +109,13 @@ const EducationSystem = () => {
     {
       title: "Early Education",
       icon: BookOpen,
-      color: 'from-[#003893] to-[#003893]',
+      color: "from-[#003893] to-[#003893]",
       items: ["Government", "Private", "Special Needs", "Assistance"],
     },
     {
       title: "Primary Education",
       icon: School,
-      color: 'from-[#003893] to-[#003893]',
+      color: "from-[#003893] to-[#003893]",
       items: [
         "Government",
         "Religious",
@@ -127,7 +129,7 @@ const EducationSystem = () => {
     {
       title: "Secondary Education",
       icon: Building2,
-      color: 'from-[#003893] to-[#003893]',
+      color: "from-[#003893] to-[#003893]",
       items: [
         "Government",
         "Vocational College",
@@ -140,17 +142,23 @@ const EducationSystem = () => {
     {
       title: "Post Secondary",
       icon: Award,
-      color: 'from-[#003893] to-[#003893]',
+      color: "from-[#003893] to-[#003893]",
       items: ["Form 6", "Matriculation", "Examinations", "Assistance"],
     },
     {
       title: "Higher Education",
       icon: GraduationCap,
-      color: 'from-[#003893] to-[#003893]',
+      color: "from-[#003893] to-[#003893]",
       sections: [
         {
           title: "Citizen",
-          items: ["Local IPTA", "Local IPTS", "Study Abroad", "Accreditation", "Assistance"],
+          items: [
+            "Local IPTA",
+            "Local IPTS",
+            "Study Abroad",
+            "Accreditation",
+            "Assistance",
+          ],
         },
         {
           title: "Non-Citizen",
@@ -169,7 +177,13 @@ const EducationSystem = () => {
             Education System in Malaysia
           </h1>
           <p className="text-slate-600 text-sm sm:text-base max-w-6xl mx-auto leading-relaxed px-2 sm:px-4 text-justify">
-            Malaysia's education system offers accessible, high-quality learning from early childhood to higher education, guided by strong national standards and global benchmarks. Both Malaysian and international students benefit from structured academic pathways, modern teaching approaches, and flexible opportunities for lifelong learning. With its focus on innovation and inclusivity, Malaysia continues to grow as one of Asia's leading education hubs.
+            Malaysia's education system offers accessible, high-quality learning
+            from early childhood to higher education, guided by strong national
+            standards and global benchmarks. Both Malaysian and international
+            students benefit from structured academic pathways, modern teaching
+            approaches, and flexible opportunities for lifelong learning. With
+            its focus on innovation and inclusivity, Malaysia continues to grow
+            as one of Asia's leading education hubs.
           </p>
         </div>
 
@@ -191,12 +205,16 @@ const EducationSystem = () => {
                 className={`rounded-xl shadow-md bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col ${isHigherEd ? "sm:col-span-2 lg:col-span-1" : ""}`}
               >
                 {/* Card Header - White title */}
-                <div className={`bg-gradient-to-br ${stage.color} p-4 md:p-5 rounded-t-xl`}>
+                <div
+                  className={`bg-gradient-to-br ${stage.color} p-4 md:p-5 rounded-t-xl`}
+                >
                   <div className="flex items-center gap-2 md:gap-3">
                     <div className="bg-white/20 p-1.5 md:p-2 rounded-lg backdrop-blur-sm">
                       <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
-                    <h2 className="text-base md:text-lg font-bold text-white">{stage.title}</h2>
+                    <h2 className="text-base md:text-lg font-bold text-white">
+                      {stage.title}
+                    </h2>
                   </div>
                 </div>
 
@@ -205,9 +223,16 @@ const EducationSystem = () => {
                   {!isHigherEd ? (
                     <ul className="space-y-1.5 md:space-y-2">
                       {stage.items?.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-slate-700 group text-sm md:text-base">
-                          <span className="text-slate-400 mt-0.5 md:mt-1 group-hover:text-slate-600 transition-colors">•</span>
-                          <span className="group-hover:text-slate-900 transition-colors">{item}</span>
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2 text-slate-700 group text-sm md:text-base"
+                        >
+                          <span className="text-slate-400 mt-0.5 md:mt-1 group-hover:text-slate-600 transition-colors">
+                            •
+                          </span>
+                          <span className="group-hover:text-slate-900 transition-colors">
+                            {item}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -220,9 +245,16 @@ const EducationSystem = () => {
                           </h3>
                           <ul className="space-y-1.5 md:space-y-2">
                             {section.items.map((item, itemIdx) => (
-                              <li key={itemIdx} className="flex items-start gap-2 text-slate-700 group text-sm md:text-base">
-                                <span className="text-slate-400 mt-0.5 md:mt-1 group-hover:text-slate-600 transition-colors">•</span>
-                                <span className="group-hover:text-slate-900 transition-colors">{item}</span>
+                              <li
+                                key={itemIdx}
+                                className="flex items-start gap-2 text-slate-700 group text-sm md:text-base"
+                              >
+                                <span className="text-slate-400 mt-0.5 md:mt-1 group-hover:text-slate-600 transition-colors">
+                                  •
+                                </span>
+                                <span className="group-hover:text-slate-900 transition-colors">
+                                  {item}
+                                </span>
                               </li>
                             ))}
                           </ul>
@@ -253,13 +285,13 @@ const WhyMalaysia = () => {
             Study in Malaysia
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Global Recognition, Affordable Education, International Pathways & Post-Study Opportunities
+            Global Recognition, Affordable Education, International Pathways &
+            Post-Study Opportunities
           </p>
         </div>
 
         {/* MAIN GRID - YE IMPORTANT HAI! */}
         <div className="grid lg:grid-cols-2 gap-10 items-center max-w-7xl mx-auto">
-
           {/* LEFT COLUMN - Images + Video */}
           <div className="space-y-6">
             {/* Image Grid */}
@@ -268,6 +300,9 @@ const WhyMalaysia = () => {
                 <img
                   src="/Malaysian students.webp"
                   alt="International students studying together"
+                  width="400"
+                  height="500"
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
@@ -275,6 +310,9 @@ const WhyMalaysia = () => {
                 <img
                   src="/download (20).webp"
                   alt="Kuala Lumpur Petronas Towers skyline"
+                  width="400"
+                  height="500"
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
@@ -282,6 +320,9 @@ const WhyMalaysia = () => {
                 <img
                   src="/Malaysian.webp"
                   alt="Diverse cultural activities and campus life"
+                  width="800"
+                  height="450"
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
@@ -306,11 +347,15 @@ const WhyMalaysia = () => {
                     />
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
                       <div className="bg-white rounded-full p-5 group-hover:scale-110 transition-all duration-300 shadow-lg">
-                        <Play className="w-12 h-12 text-blue-600" fill="currentColor" />
+                        <Play
+                          className="w-12 h-12 text-blue-600"
+                          fill="currentColor"
+                        />
                       </div>
                       <div className="mt-5 text-center">
-                        <p className="text-white/90 text-sm font-semibold tracking-widest mb-1">WATCH NOW</p>
-
+                        <p className="text-white/90 text-sm font-semibold tracking-widest mb-1">
+                          WATCH NOW
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -332,28 +377,30 @@ const WhyMalaysia = () => {
             {[
               {
                 icon: <GraduationCap className="w-8 h-8 text-white" />,
-                color: 'from-[#003893] to-[#003893]',
-                title: "Globally Recognised Degrees & International Partnerships",
+                color: "from-[#003893] to-[#003893]",
+                title:
+                  "Globally Recognised Degrees & International Partnerships",
                 desc: "Many Malaysian universities have academic collaborations with the UK, Australia, USA, Europe, and New Zealand. Some degrees are fully accredited by global bodies such as ACCA, CIMA, ABET, and AACSB, giving students worldwide acceptance.",
               },
               {
                 icon: <Globe2 className="w-8 h-8 text-white" />,
                 // color: "from-emerald-500 to-emerald-600",
-                color: 'from-[#003893] to-[#003893]',
+                color: "from-[#003893] to-[#003893]",
                 title: "World-Class Education at an Affordable Cost",
                 desc: "Malaysia offers high-quality education aligned with UK, Australian, and international standards — but at 70% lower tuition fees and living expenses. Students get premium quality without the financial burden associated with Western countries.",
               },
               {
                 icon: <GraduationCap className="w-8 h-8 text-white" />,
-                color: 'from-[#003893] to-[#003893]',
+                color: "from-[#003893] to-[#003893]",
                 title: "Pathways to the UK, Australia, and Europe",
                 desc: "Many universities offer credit transfer programmes, allowing students to start their studies in Malaysia and complete them in top universities abroad — reducing total cost by 50–60%.",
               },
               {
                 icon: <Shield className="w-8 h-8 text-white" />,
                 // color: "from-amber-500 to-amber-600",
-                color: 'from-[#003893] to-[#003893]',
-                title: "Post-Study One-Year Visa in Malaysia (Graduate Employment Pass)",
+                color: "from-[#003893] to-[#003893]",
+                title:
+                  "Post-Study One-Year Visa in Malaysia (Graduate Employment Pass)",
                 desc: "Malaysia allows international graduates to stay back for one year after completing their studies to explore job opportunities under the Graduate Pass / Special Pass. This stay-back option helps students gain work experience and transition smoothly into employment.",
               },
             ].map((item, i) => (
@@ -362,7 +409,9 @@ const WhyMalaysia = () => {
                 className="bg-white/80 rounded-3xl p-7 shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-blue-200 group"
               >
                 <div className="flex items-start space-x-5">
-                  <div className={`bg-gradient-to-br ${item.color} rounded-2xl p-4 shadow-md`}>
+                  <div
+                    className={`bg-gradient-to-br ${item.color} rounded-2xl p-4 shadow-md`}
+                  >
                     {item.icon}
                   </div>
                   <div>
@@ -377,7 +426,6 @@ const WhyMalaysia = () => {
               </div>
             ))}
           </div>
-
         </div>
         {/* GRID CLOSE - YE MISS HO GAYA THA! */}
       </section>
@@ -391,7 +439,8 @@ const WhyMalaysia = () => {
               Gateway to World-Class Education in Malaysia
             </h2>
             <p className="text-base md:text-lg text-gray-600">
-              Study in a globally respected education hub offering recognised degrees, multicultural campuses, and future-ready skills.
+              Study in a globally respected education hub offering recognised
+              degrees, multicultural campuses, and future-ready skills.
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-[#003893] to-[#D4AF37] mx-auto mt-3 rounded-full"></div>
           </div>
@@ -408,7 +457,11 @@ const WhyMalaysia = () => {
                   </div>
                 </div>
                 <div className="text-center mb-1">
-                  <Counter value={stat.value} suffix={stat.suffix} prefix={stat.prefix} />
+                  <Counter
+                    value={stat.value}
+                    suffix={stat.suffix}
+                    prefix={stat.prefix}
+                  />
                 </div>
                 <p className="text-xs text-gray-600 text-center leading-snug">
                   {stat.label}

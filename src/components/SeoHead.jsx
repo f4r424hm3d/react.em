@@ -20,6 +20,7 @@ const SeoHead = ({
   pageType: manualPageType,
   data = {},
   image,
+  preloadImage,
   noindex = false,
   overrides = {},
 }) => {
@@ -114,6 +115,24 @@ const SeoHead = ({
       ) : (
         <meta name="robots" content="index, follow" />
       )}
+
+      {/* Preload LCP Image */}
+      {preloadImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={preloadImage}
+          fetchpriority="high"
+        />
+      )}
+
+      {/* Preconnect to API Origin */}
+      <link
+        rel="preconnect"
+        href="https://admin.educationmalaysia.in"
+        crossOrigin="anonymous"
+      />
+      <link rel="dns-prefetch" href="https://admin.educationmalaysia.in" />
 
       {/* Canonical URL */}
       <link rel="canonical" href={canonical} />

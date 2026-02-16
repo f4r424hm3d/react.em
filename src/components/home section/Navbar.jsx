@@ -52,6 +52,8 @@ const Navbar = () => {
             <img
               src="/logo (2).png"
               alt="Malaysia Logo"
+              width="200"
+              height="48"
               className="h-12 sm:h-12 w-auto max-w-[250px] object-contain"
             />
           </Link>
