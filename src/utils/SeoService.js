@@ -52,10 +52,26 @@ class SeoService {
     // Build dynamic title
     let title = "";
     if (courseName) {
-      const formattedCourseName = courseName
+      // Build dynamic title for combined filters
+      let formattedCourseName = courseName
         .split("-")
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(" ");
+
+      // If intake is selected, append it
+      if (filters.intakes && filters.intakes.length > 0) {
+        const intake = filters.intakes[0]; // Assuming single intake for simplicity, or join them
+        formattedCourseName += ` ${intake.charAt(0).toUpperCase() + intake.slice(1)} Intake`;
+      }
+      
+      // If study mode is selected, prepend it
+       if (filters.study_modes && filters.study_modes.length > 0) {
+        const mode = filters.study_modes[0];
+        formattedCourseName = `${mode.charAt(0).toUpperCase() + mode.slice(1)} ${formattedCourseName}`;
+      }
+
+      // Remove double quotes if any remained
+      formattedCourseName = formattedCourseName.replace(/"/g, "");
 
       if (currentPage === 1) {
         title = `${totalCourses} Top ${formattedCourseName} Universities in Malaysia | Courses, Fees & Admission`;
@@ -74,9 +90,14 @@ class SeoService {
     title = this.cleanQuotes(title);
 
     // Build dynamic description
-    const description =
-      seo?.meta_description ||
-      `Explore ${totalCourses} ${courseName ? courseName.replace(/-/g, " ") : ""} universities in Malaysia. Compare fees, rankings, admission requirements and apply today.`;
+    let description = "";
+    if (courseName && totalCourses > 0) {
+      const formattedName = this.ucwords(courseName.replace(/-/g, " "));
+      description = `Found ${totalCourses} Top ${formattedName} Universities & Colleges in Malaysia for 2026. Compare fees, rankings, courses, and admission requirements for ${formattedName} programs.`;
+    } else {
+      description = seo?.meta_description ||
+        `Explore ${totalCourses} ${courseName ? courseName.replace(/-/g, " ") : ""} universities in Malaysia. Compare fees, rankings, admission requirements and apply today.`;
+    }
 
     // Build canonical URL
     const canonicalUrl = this.buildCanonicalUrl(pathname, search, currentPage);
@@ -97,10 +118,56 @@ class SeoService {
     // Generate schema
     const schemas = [this.generateWebPageSchema(title, description, canonicalUrl)];
 
+    // Combine keywords based on active filters
+    let keywordsList = [];
+    
+    // Start with backend keywords if available
+    if (seo?.meta_keyword) {
+      keywordsList.push(seo.meta_keyword);
+    }
+
+    // Add dynamic keywords from filters
+    if (filters) {
+      const addFilterKeywords = (filterValues) => {
+        if (Array.isArray(filterValues) && filterValues.length > 0) {
+          filterValues.forEach(val => {
+            const cleanVal = val.replace(/-/g, " ");
+            keywordsList.push(`${cleanVal} courses in malaysia`);
+            keywordsList.push(`top ${cleanVal} universities`);
+          });
+        }
+      };
+
+      addFilterKeywords(filters.levels);
+      addFilterKeywords(filters.categories);
+      addFilterKeywords(filters.specializations);
+      
+      if (Array.isArray(filters.intakes) && filters.intakes.length > 0) {
+         filters.intakes.forEach(intake => {
+            keywordsList.push(`${intake} intake universities`);
+         });
+      }
+    }
+
+    // Fallback if no filters but we have a courseName
+    if (keywordsList.length === 0 && courseName) {
+       const formattedName = courseName.replace(/-/g, " ");
+       keywordsList.push(`${formattedName} courses in malaysia`);
+    }
+
+    // Convert list to string
+    const uniqueKeywords = [...new Set(keywordsList)];
+    let keywords = uniqueKeywords.join(", ");
+    
+    // Default fallback
+    if (!keywords) {
+       keywords = `study in malaysia, courses in malaysia, universities in malaysia`;
+    }
+
     return {
       title,
       description,
-      keywords: seo?.meta_keyword || `study in malaysia, courses in malaysia, universities in malaysia, ${courseName}`,
+      keywords,
       canonicalUrl,
       ogTitle: title,
       ogDescription: description,

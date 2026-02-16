@@ -156,14 +156,40 @@ const CourseDetail = () => {
       <SeoHead
         pageType="course-detail"
         data={{
+          ...courseDetails, // Pass all course details including potential SEO fields
+          ...(courseDetails.seos || courseDetails.seo || {}), // Ensuring nested SEO object properties are flattened if present
           name: courseDetails.course_name,
           category: courseDetails.level,
-          description: courseDetails.description, // HTML content, SeoHead handles stripping? SEOEngine.buildDescription handles it.
+          description: courseDetails.description,
           slug: `${slug}/${courseSlug}`,
-          // You might want to map other fields if needed, e.g. keywords from courseDetails?
+          image:
+            courseDetails.seos?.og_image_path ||
+            courseDetails.seo?.og_image_path
+              ? `https://admin.educationmalaysia.in/storage/${(courseDetails.seos?.og_image_path || courseDetails.seo?.og_image_path).replace(/^\/+/, "")}`
+              : courseDetails.university_logo
+                ? courseDetails.university_logo
+                : null,
         }}
+        // Only provide title override if NO backend meta_title is present
         overrides={{
-          title: `${courseDetails.course_name?.replace(/^["']|["']$/g, "") || ""} at ${courseDetails.university_name?.replace(/^["']|["']$/g, "") || ""} | Fees & Admission`,
+          title:
+            courseDetails.seos?.meta_title &&
+            courseDetails.seos.meta_title !== "%title%"
+              ? courseDetails.seos.meta_title
+              : courseDetails.seo?.meta_title &&
+                  courseDetails.seo.meta_title !== "%title%"
+                ? courseDetails.seo.meta_title
+                : !courseDetails.meta_title
+                  ? `${courseDetails.course_name?.replace(/^["']|["']$/g, "") || ""} at ${courseDetails.university_name?.replace(/^["']|["']$/g, "") || ""} | Fees & Admission`
+                  : undefined,
+          description:
+            courseDetails.seos?.meta_description &&
+            courseDetails.seos.meta_description !== "%description%"
+              ? courseDetails.seos.meta_description
+              : courseDetails.seo?.meta_description &&
+                  courseDetails.seo.meta_description !== "%description%"
+                ? courseDetails.seo.meta_description
+                : undefined,
         }}
       />
       <div className="max-w-7xl mx-auto">

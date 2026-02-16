@@ -229,6 +229,7 @@ const Specialization = () => {
       <SeoHead
         pageType="service-detail"
         data={{
+          ...seo,
           title: seo?.meta_title || "Specializations - Education Malaysia",
           description:
             seo?.meta_description ||

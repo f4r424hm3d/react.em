@@ -48,9 +48,21 @@ const Services = () => {
       <SeoHead
         pageType="services-listing"
         data={{
+          ...seo,
           name: "Services for International Students",
           description: seo?.meta_description,
           keywords: seo?.meta_keyword,
+        }}
+        // FORCE override if SEO data is available
+        overrides={{
+          title:
+            seo?.meta_title && seo.meta_title !== "%title%"
+              ? seo.meta_title
+              : undefined,
+          description:
+            seo?.meta_description && seo.meta_description !== "%description%"
+              ? seo.meta_description
+              : undefined,
         }}
       />
 

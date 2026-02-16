@@ -417,6 +417,7 @@ const ScholarshipCards = () => {
       <SeoHead
         pageType="scholarships-listing"
         data={{
+          ...seo,
           name: "Study Abroad Scholarships",
           description: seo?.meta_description,
           keywords: seo?.meta_keyword,
