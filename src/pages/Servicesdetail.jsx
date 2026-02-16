@@ -92,6 +92,17 @@ const ServiceDetail = () => {
             ? `https://admin.educationmalaysia.in/storage/${service.thumbnail_path}`
             : null,
         }}
+        // FORCE override if SEO data is available
+        overrides={{
+          title:
+            seo?.meta_title && seo.meta_title !== "%title%"
+              ? seo.meta_title
+              : undefined,
+          description:
+            seo?.meta_description && seo.meta_description !== "%description%"
+              ? seo.meta_description
+              : undefined,
+        }}
       />
 
       {/* ✅ CUSTOM CSS - BLUE LINE REMOVED */}

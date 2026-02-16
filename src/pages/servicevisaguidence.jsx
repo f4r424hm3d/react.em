@@ -495,6 +495,12 @@ export default function MalaysiaVisaPage() {
           keywords:
             "student visa rules, malaysia visa guidelines, emgs guidelines, student pass requirements",
         }}
+        // FORCE override
+        overrides={{
+          title: "Malaysia Student Visa Guidelines | EMGS Rules 2025",
+          description:
+            "Complete guidance on eligibility, required documents, and application rules for Malaysian Student Visa.",
+        }}
       />
 
       {/* ✅ Dynamic Breadcrumb */}

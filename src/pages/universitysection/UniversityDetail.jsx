@@ -30,6 +30,7 @@ import api from "../../api";
 import UniversityCoursesCard from "./UniversityCoursesCard";
 
 import SeoHead from "../../components/SeoHead";
+
 import DynamicBreadcrumb from "../../components/DynamicBreadcrumb";
 
 import { Home, Layers, Loader2 } from "lucide-react";
@@ -224,37 +225,54 @@ const UniversityDetailPage = () => {
   const { slug, section, courseSlug } = useParams(); // ✅ courseSlug add karo
 
   const navigate = useNavigate();
+
   const location = useLocation(); // Add this
 
   // Determine active tab from URL if 'section' param is missing
+
   const getTabFromPath = () => {
     if (courseSlug) return "courses";
+
     if (
       section &&
       [
         "overview",
+
         "courses",
+
         "gallery",
+
         "videos",
+
         "reviews",
+
         "ranking",
       ].includes(section)
     )
       return section;
 
     // Fallback: check last segment of path
+
     const path = location.pathname.replace(/\/$/, ""); // Remove trailing slash
+
     const pathSegments = path.split("/");
+
     const lastSegment = pathSegments[pathSegments.length - 1];
 
     const validTabs = [
       "overview",
+
       "courses",
+
       "gallery",
+
       "videos",
+
       "reviews",
+
       "ranking",
     ];
+
     if (validTabs.includes(lastSegment)) {
       return lastSegment;
     }
@@ -265,6 +283,7 @@ const UniversityDetailPage = () => {
   const [activeTab, setActiveTab] = useState(getTabFromPath());
 
   // ✅ SYNC TAB WITH URL
+
   useEffect(() => {
     setActiveTab(getTabFromPath());
   }, [location.pathname, section, courseSlug]);
@@ -286,6 +305,7 @@ const UniversityDetailPage = () => {
   const [isCounsellingOpen, setIsCounsellingOpen] = useState(false);
 
   const [isApplyOpen, setIsApplyOpen] = useState(false);
+
   const [isFeeOpen, setIsFeeOpen] = useState(false);
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -567,7 +587,29 @@ const UniversityDetailPage = () => {
           throw new Error("University data not found");
         }
 
-        setSeo(response.data.university || {});
+        // Extensive Debugging for SEO
+        console.log("🔥 FULL API RESPONSE 🔥", response);
+        const c1 = response.data?.seo;
+        const c2 = response.data?.data?.seo;
+        const c3 = response.data?.seos;
+        const c4 = response.data?.data?.seos;
+        const c5 = response.data?.university;
+        const c6 = response.data?.data?.university;
+
+        console.log("SEO Candidates:", { c1, c2, c3, c4, c5, c6 });
+
+        // Prefer explicit SEO object, but fall back to university object if SEO is missing/empty
+        let seoData = c1 || c2 || c3 || c4;
+
+        if (!seoData || Object.keys(seoData).length === 0) {
+          console.warn(
+            "⚠️ SEO object empty, falling back to university object",
+          );
+          seoData = c5 || c6;
+        }
+
+        console.log("✅ Final Selected SEO Data:", seoData);
+        setSeo(seoData || {});
 
         setFaculties(response.data.faculties || []);
 
@@ -909,17 +951,29 @@ const UniversityDetailPage = () => {
   // Use the fetched data to render the component
 
   /*
+
   if (isDataLoading) {
+
     return (
+
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+
         <div className="text-center">
+
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
 
+
+
           <p className="text-gray-600">Loading university details...</p>
+
         </div>
+
       </div>
+
     );
+
   }
+
   */
 
   if (!universityData) {
@@ -1045,27 +1099,96 @@ const UniversityDetailPage = () => {
   return (
     <>
       {/* ✅ NEW: Dynamic SEO with SeoHead - Fixes "undefined" canonical issue */}
+
       <SeoHead
         pageType="university-detail"
         data={{
+          ...universityData, // Provide base university data (name, description, logo)
+
+          ...seo, // Override with specific SEO fields (meta_title, meta_description, etc.)
+
+          // Explicit Name ensuring no quotes
+
           name: universityData?.name
             ? universityData.name.replace(/^['"]|['"]$/g, "")
             : "",
+
           slug: slug,
+
+          // Robust Title: check both seo.meta_title AND universityData.meta_title
+
+          meta_title:
+            seo?.meta_title && seo.meta_title !== "%title%"
+              ? seo.meta_title
+              : universityData?.meta_title &&
+                  universityData.meta_title !== "%title%"
+                ? universityData.meta_title
+                : null,
+
+          // Robust Description
+
           description:
-            universityData?.short_description || universityData?.description,
-          keywords: seo?.meta_keyword,
-          image: universityData?.logo_path
-            ? `${API_URL}${universityData.logo_path}`
-            : null,
+            seo?.meta_description && seo.meta_description !== "%description%"
+              ? seo.meta_description
+              : universityData?.meta_description &&
+                  universityData.meta_description !== "%description%"
+                ? universityData.meta_description
+                : universityData?.short_description ||
+                  universityData?.description,
+
+          // Robust Keywords
+
+          keywords: seo?.meta_keyword || universityData?.meta_keyword,
+
+          // Robust Image Logic:
+
+          // 1. seo.og_image_path (if valid)
+
+          // 2. seo.og_image_name (constructed)
+
+          // 3. universityData.og_image_path (if valid)
+
+          // 4. universityData.logo_path (fallback)
+
+          image:
+            seo?.og_image_path && seo.og_image_path.trim() !== ""
+              ? `${API_URL}${seo.og_image_path}`
+              : seo?.og_image_name
+                ? `${API_URL}/uploads/university/seo/${seo.og_image_name}`
+                : universityData?.og_image_path &&
+                    universityData.og_image_path.trim() !== ""
+                  ? `${API_URL}${universityData.og_image_path}`
+                  : universityData?.logo_path
+                    ? `${API_URL}${universityData.logo_path}`
+                    : null,
+        }}
+        // FORCE override if SEO data is available to bypass any internal SeoHead fallback logic
+        overrides={{
+          title:
+            seo?.meta_title && seo.meta_title !== "%title%"
+              ? seo.meta_title
+              : universityData?.meta_title &&
+                  universityData.meta_title !== "%title%"
+                ? universityData.meta_title
+                : undefined,
+
+          description:
+            seo?.meta_description && seo.meta_description !== "%description%"
+              ? seo.meta_description
+              : universityData?.meta_description &&
+                  universityData.meta_description !== "%description%"
+                ? universityData.meta_description
+                : undefined,
         }}
       />
 
       {/* ✅ NEW: Dynamic Breadcrumb - Auto-generated from URL */}
+
       <DynamicBreadcrumb
         pageType="university-detail"
         data={{
           name: universityData?.name,
+
           slug: slug,
         }}
       />
@@ -1077,6 +1200,7 @@ const UniversityDetailPage = () => {
       <div className="sm:hidden bg-gray-50">
         <div className="bg-white p-3">
           {/* Logo, Title, and Details */}
+
           <div className="flex items-start gap-3 mb-4">
             <div className="w-20 h-20 flex-shrink-0 border border-gray-200 rounded-xl p-1">
               <img
@@ -1099,6 +1223,7 @@ const UniversityDetailPage = () => {
               </h1>
               <div className="flex items-center gap-1.5 mt-1">
                 <FaMapMarkerAlt className="text-blue-500 text-xs flex-shrink-0" />
+
                 <span
                   className="text-blue-600 font-medium text-sm "
                   title={`Location: ${universityData?.city}`}
@@ -1109,6 +1234,7 @@ const UniversityDetailPage = () => {
               {/* SETARA Stars */}
               <div className="flex items-center gap-1 text-gray-600 text-sm">
                 <span className="font-medium">SETARA:</span>
+
                 {[...Array(5)].map((_, i) => (
                   <FaStar
                     key={i}
@@ -1124,10 +1250,12 @@ const UniversityDetailPage = () => {
           </div>
 
           {/* Main Image */}
+
           <div
             className="relative mb-4"
             style={{
               border: featuredPhotos?.length > 0 ? "none" : "none", // Removed debug border
+
               minHeight: "200px",
             }}
           >
@@ -1138,6 +1266,7 @@ const UniversityDetailPage = () => {
                 className="w-full h-48 object-cover rounded-lg"
                 onError={(e) => {
                   // console.error("Image failed to load:", e.target.src);
+
                   e.target.src = "/placeholder-university.jpg";
                 }}
               />
@@ -1151,63 +1280,80 @@ const UniversityDetailPage = () => {
           </div>
 
           {/* Info Boxes Grid (Established, Accredited, Hostel, Contact) */}
+
           <div className="grid grid-cols-1 gap-3 mb-4">
             {/* Established Year Card (style matched from desktop but full width or grid) */}
+
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
                 <BsCalendar3 className="text-xl text-blue-600" />
+
                 <h3 className="text-base font-bold leading-tight">
                   {universityData.established || "1970"}
                 </h3>
+
                 <p className="text-gray-600 text-xs">Established Year</p>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
                 <FaGraduationCap className="text-xl text-green-600" />
+
                 <h3 className="text-base font-bold leading-tight">
                   {universityData.Scholarship ? "Yes" : "No"}
                 </h3>
+
                 <p className="text-gray-600 text-xs">Scholarship</p>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
                 <FaEye className="text-xl text-purple-600" />
+
                 <h3 className="text-base font-bold leading-tight">
                   {universityData.clicks}
                 </h3>
+
                 <p className="text-gray-600 text-xs">Clicks</p>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-100 shadow-sm py-2 px-3 flex flex-col items-center text-center">
                 <FaSchool className="text-xl text-orange-600" />
+
                 <h3 className="text-base font-bold leading-tight">
                   {universityData.courses || "N/A"}
                 </h3>
+
                 <p className="text-gray-600 text-xs">Courses</p>
               </div>
             </div>
 
             {/* Accredited By */}
+
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <FaBuilding className="text-blue-600 text-lg" />
+
                 <h3 className="text-sm font-semibold text-gray-900">
                   Accredited By
                 </h3>
               </div>
+
               <ul className="space-y-1 text-sm text-gray-700">
                 {Array.isArray(universityData.accredited_by) ? (
                   universityData.accredited_by
+
                     .slice(0, 3)
+
                     .map((accreditation, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-blue-600 mt-0.5 text-xs">•</span>
+
                         <span className="text-xs">{accreditation}</span>
                       </li>
                     ))
                 ) : (
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600 mt-0.5 text-xs">•</span>
+
                     <span className="text-xs">
                       {universityData.accredited_by || "MQA"}
                     </span>
@@ -1217,26 +1363,33 @@ const UniversityDetailPage = () => {
             </div>
 
             {/* Hostel Facility */}
+
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <FaBed className="text-green-600 text-lg" />
+
                 <h3 className="text-sm font-semibold text-gray-900">
                   Hostel Facility
                 </h3>
               </div>
+
               <ul className="space-y-1 text-sm text-gray-700">
                 {Array.isArray(universityData.hostel_facility) ? (
                   universityData.hostel_facility
+
                     .slice(0, 3)
+
                     .map((facility, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-green-600 mt-0.5 text-xs">•</span>
+
                         <span className="text-xs">{facility}</span>
                       </li>
                     ))
                 ) : (
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-0.5 text-xs">•</span>
+
                     <span className="text-xs">
                       {universityData.hostel_facility || "Available"}
                     </span>
@@ -1246,24 +1399,32 @@ const UniversityDetailPage = () => {
             </div>
 
             {/* Contact Info */}
+
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <FaPhoneAlt className="text-orange-600 text-lg" />
+
                 <h3 className="text-sm font-semibold text-gray-900">
                   Contact Info
                 </h3>
               </div>
+
               <div className="space-y-2 text-sm text-gray-700">
                 <div className="flex items-center gap-2">
                   <FaPhoneAlt className="text-orange-500 text-xs" />
+
                   <span className="text-xs">+60 1121376171</span>
                 </div>
+
                 <div className="flex items-center gap-2">
                   <FaFax className="text-gray-500 text-xs" />
+
                   <span className="text-xs">+91 9818560331</span>
                 </div>
+
                 <div className="flex items-center gap-2">
                   <FaEnvelope className="text-blue-500 text-xs" />
+
                   <span className="text-xs">info@educationmalaysia.in</span>
                 </div>
               </div>
@@ -1271,34 +1432,43 @@ const UniversityDetailPage = () => {
           </div>
 
           {/* Global Rankings Section */}
+
           <div className="bg-white rounded-xl shadow-md p-4 mb-4">
             <h3 className="text-base font-semibold text-gray-900 mb-3">
               Global Rankings
             </h3>
+
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg p-3 text-white shadow text-center">
                 <p className="text-xl font-bold">
                   #{universityData.rank || "397"}
                 </p>
+
                 <p className="text-xs opacity-90">World Rank</p>
               </div>
+
               <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-lg p-3 text-white shadow text-center">
                 <p className="text-xl font-bold">
                   {universityData.qs_rank || "1001-1400"}
                 </p>
+
                 <p className="text-xs opacity-90">QS Rank</p>
               </div>
+
               <div className="bg-gradient-to-r from-purple-400 to-purple-500 rounded-lg p-3 text-white shadow text-center">
                 <p className="text-xl font-bold">
                   {universityData.times_rank || "1501+"}
                 </p>
+
                 <p className="text-xs opacity-90">Times Rank</p>
               </div>
+
               {universityData.qs_asia_rank && (
                 <div className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-lg p-3 text-white shadow text-center">
                   <p className="text-xl font-bold">
                     {universityData.qs_asia_rank}
                   </p>
+
                   <p className="text-xs opacity-90">QS Asia Rank</p>
                 </div>
               )}
@@ -1306,6 +1476,7 @@ const UniversityDetailPage = () => {
           </div>
 
           {/* Action Buttons */}
+
           <div className="bg-white rounded-xl shadow-md p-4 space-y-3">
             <h3 className="text-base font-semibold text-gray-900 mb-2">
               Downloads & Services
@@ -1379,11 +1550,19 @@ const UniversityDetailPage = () => {
                   <div className="flex flex-row items-center justify-start gap-2 text-sm text-gray-600 flex-wrap">
                     {/* <div className="flex items-center gap-1">
 
+
+
                  <span className="text-blue-600 font-medium">       
+
+
 
                          Location: {universityData.city}
 
+
+
                        </span>
+
+
 
                      </div> */}
 
@@ -2023,6 +2202,7 @@ const UniversityDetailPage = () => {
       )}
 
       {/* Brochure Popup (Download Brochure) */}
+
       <PopupForm
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
@@ -2031,6 +2211,7 @@ const UniversityDetailPage = () => {
       />
 
       {/* Fee Structure Popup */}
+
       <PopupForm
         isOpen={isFeeOpen}
         onClose={() => setIsFeeOpen(false)}
@@ -2039,6 +2220,7 @@ const UniversityDetailPage = () => {
       />
 
       {/* Apply Popup */}
+
       <PopupForm
         isOpen={isApplyOpen}
         onClose={() => setIsApplyOpen(false)}
@@ -2047,6 +2229,7 @@ const UniversityDetailPage = () => {
       />
 
       {/* Counselling Popup (Enquire Now) */}
+
       <PopupForm
         isOpen={isCounsellingOpen}
         onClose={() => setIsCounsellingOpen(false)}

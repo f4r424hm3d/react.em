@@ -832,6 +832,7 @@ const SpecializationDetail = () => {
       <SeoHead
         pageType="service-detail"
         data={{
+          ...seo,
           name:
             seo?.meta_title ||
             `${categoryData.name} ${currentLevel.title || ""} Course in Malaysia`,

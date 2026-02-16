@@ -249,7 +249,7 @@ export function buildTitle(pageType, data = {}, page = 1) {
     
     // University detail
     case 'university-detail':
-      title = `${name || formatSlugForDisplay(slug)} | Courses, Fees & Admission 2026`;
+      title = `${name || formatSlugForDisplay(slug)} Malaysia | Courses, Fees, Intake 2026 | Educationmalaysia.in`;
       break;
     
     // Course detail

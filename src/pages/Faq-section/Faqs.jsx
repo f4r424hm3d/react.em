@@ -98,6 +98,7 @@ const Faqs = () => {
       {/* 🔹 Dynamic SEO using SeoHead */}
       <SeoHead
         data={{
+          ...seo,
           title:
             seo?.meta_title ||
             "Frequently Asked Questions - Education Malaysia",

@@ -51,18 +51,60 @@ const SeoHead = ({
     description: data.description, // Keep HTML as-is for now
   };
 
-  let title = overrides.title || seoEngine.buildTitle(pageType, pageData, page);
+  // ✅ BACKEND PRIORITY: If backend provides meta_title, use it directly!
+  // This bypasses the seoEngine.buildTitle logic which might ignore the name
+  let backendTitle = data.meta_title || data.metaTitle;
+  if (backendTitle === "%title%") {
+    backendTitle = null; // Ignore placeholder from backend
+  }
+  let backendDescription = data.meta_description || data.metaDescription;
+  if (
+    backendDescription === "%description%" ||
+    backendDescription === "%title%"
+  ) {
+    backendDescription = null;
+  }
+
+  // Debug log to trace SEO data issues
+  if (pageType === "home" || pageType === "universities-listing") {
+    console.log(`[SeoHead:${pageType}] Data:`, data);
+    console.log(`[SeoHead:${pageType}] Backend Title:`, backendTitle);
+  }
+
+  // Handle backend image (og_image_path)
+  let backendImage = data.og_image_path || data.ogImage || data.image;
+  if (
+    backendImage &&
+    typeof backendImage === "string" &&
+    !backendImage.startsWith("http")
+  ) {
+    // Assuming storage path if not absolute URL
+    backendImage = `https://admin.educationmalaysia.in/storage/${backendImage.replace(/^\/+/, "")}`;
+  }
+
+  // Calculate final title: Override > Backend > Auto-generated
+  let title =
+    overrides.title ||
+    backendTitle ||
+    seoEngine.buildTitle(pageType, pageData, page);
+
+  if (pageType === "home") {
+    console.log(`[SeoHead:${pageType}] Final Title:`, title);
+  }
 
   // Ensure title is clean of surrounding quotes - Force clean even if overridden
   if (seoEngine.cleanQuotes) {
     title = seoEngine.cleanQuotes(title);
   }
 
+  // Calculate final description: Override > Backend > Auto-generated
   const description =
     overrides.description ||
+    backendDescription ||
     seoEngine.buildDescription(pageType, pageData, page);
+
   const canonical = overrides.canonical || seoEngine.buildCanonical(location);
-  const ogImage = image || data.image || seoEngine.DEFAULT_IMAGE;
+  const ogImage = image || backendImage || seoEngine.DEFAULT_IMAGE;
 
   // Generate breadcrumbs
   const breadcrumbs = seoEngine.generateBreadcrumbs(

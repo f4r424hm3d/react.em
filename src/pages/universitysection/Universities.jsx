@@ -725,6 +725,7 @@ const Universities = () => {
       <SeoHead
         pageType="universities-listing"
         data={{
+          ...seo, // Pass backend fields (meta_title, etc.)
           name: pageTitle,
           description: seo?.meta_description,
           keywords: seo?.meta_keyword,

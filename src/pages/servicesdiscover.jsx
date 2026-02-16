@@ -24,6 +24,12 @@ function App() {
           keywords:
             "jobs in malaysia, career opportunities, international student jobs, work permit malaysia",
         }}
+        // FORCE override
+        overrides={{
+          title: "Jobs & Career Opportunities in Malaysia | Work Permit Guide",
+          description:
+            "Your complete guide to working in Malaysia as an international student - during studies, after graduation, and beyond.",
+        }}
       />
 
       {/* ✅ Dynamic Breadcrumb */}

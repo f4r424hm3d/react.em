@@ -1,45 +1,69 @@
 // export default Overview;
+
 import React, { useState, useEffect, useRef } from "react";
+
 import { useParams, Link, useNavigate } from "react-router-dom";
+
 import { FaMapMarkerAlt, FaGraduationCap } from "react-icons/fa";
+
 import api from "../../api";
+
 import { API_URL } from "../../config";
+
 import HelpUniversityCourses from "./HelpUniversityCourses";
+
 import PopularCourses from "./PopularCourses";
+
 import PopupForm from "./PopupForm";
+
 import GetinTouchUiversity from "../../components/GetinTouchUiversity";
+
 import { FaTimes } from "react-icons/fa";
+
 import SeoHead from "../../components/SeoHead";
 
 /* ============================================================
+
     FINAL CLEAN HTML FORMATTER (NO BLANK SPACE + FIXED TABLES)
+
    ============================================================ */
+
 const formatHTML = (html) => {
   if (!html) return "";
 
   const textarea = document.createElement("textarea");
+
   textarea.innerHTML = html;
+
   let decoded = textarea.value;
 
   decoded = decoded.replace(/^<p[^>]*>.*?About.*?<\/p>/i, "");
+
   decoded = decoded.replace(/<span[^>]*>/gi, "");
+
   decoded = decoded.replace(/<\/span>/gi, "");
+
   decoded = decoded.replace(/style="[^"]*"/gi, "");
+
   decoded = decoded.replace(/&nbsp;/gi, " ");
 
   decoded = decoded.replace(
     /<p>\s*<(strong|b)>([^<]{5,})<\/\1>\s*<\/p>/gi,
+
     '<h3 class="text-lg font-bold text-gray-900 mb-3 mt-6">$2</h3>',
   );
 
   decoded = decoded.replace(
     /<(strong|b)>/gi,
+
     '<span class="font-semibold text-gray-900">',
   );
+
   decoded = decoded.replace(/<\/(strong|b)>/gi, "</span>");
 
   decoded = decoded.replace(
     /<p>/gi,
+
     '<p class="text-sm text-gray-700 leading-relaxed mb-4">',
   );
 
@@ -47,18 +71,23 @@ const formatHTML = (html) => {
 
   decoded = decoded.replace(
     /<table[^>]*>/gi,
+
     `<div class="overflow-auto rounded-xl shadow-md border border-gray-200 my-6">
+
       <table class="w-full border-collapse text-sm">`,
   );
+
   decoded = decoded.replace(/<\/table>/gi, "</table></div>");
 
   decoded = decoded.replace(
     /<thead[^>]*>/gi,
+
     `<thead class="bg-blue-600 text-white">`,
   );
 
   decoded = decoded.replace(
     /<tr[^>]*>(\s*<th[\s\S]*?<\/tr>)/i,
+
     `<tr class="bg-blue-600 text-white">$1`,
   );
 
@@ -66,6 +95,7 @@ const formatHTML = (html) => {
 
   decoded = decoded.replace(
     /<th[^>]*>/gi,
+
     `<th class="px-4 py-3 border-b border-gray-200 text-left font-semibold whitespace-nowrap">`,
   );
 
@@ -73,22 +103,28 @@ const formatHTML = (html) => {
 
   decoded = decoded.replace(
     /<td[^>]*>/gi,
+
     `<td class="px-4 py-3 border-b border-gray-100">`,
   );
 
   decoded = decoded.replace(
     /<input[^>]*type=["']checkbox["'][^>]*>/gi,
+
     `<span class="inline-block w-4 h-4 rounded border border-gray-400 mr-2 bg-white"></span>`,
   );
 
   decoded = decoded.replace(
     /<ul>/gi,
+
     '<ul class="list-disc pl-6 space-y-2 text-gray-800 mb-4">',
   );
+
   decoded = decoded.replace(
     /<ol>/gi,
+
     '<ol class="list-decimal pl-6 space-y-2 text-gray-800 mb-4">',
   );
+
   decoded = decoded.replace(/<li>/gi, '<li class="mb-1 text-sm">');
 
   return decoded;
@@ -96,47 +132,72 @@ const formatHTML = (html) => {
 
 const hasValidContent = (description) => {
   if (!description) return false;
+
   const stripped = description
+
     .replace(/<[^>]*>/g, "")
+
     .replace(/&nbsp;/g, " ")
+
     .trim();
+
   return stripped.length >= 15;
 };
 
 // Helper function to create URL-friendly slug from title
+
 const createSlug = (title) => {
   if (!title) return "";
+
   return title
+
     .toLowerCase()
+
     .trim()
+
     .replace(/[^\w\s-]/g, "") // Remove special characters
+
     .replace(/\s+/g, "-") // Replace spaces with hyphens
+
     .replace(/-+/g, "-"); // Replace multiple hyphens with single
 };
 
 /* ============================================================
+
     MAIN OVERVIEW COMPONENT
+
    ============================================================ */
+
 const Overview = ({ universityData }) => {
   const { slug } = useParams();
+
   const navigate = useNavigate();
+
   const [overviewData, setOverviewData] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
+
   const sectionRefs = useRef([]);
+
   const formRef = useRef(null);
 
   // Popup States
+
   const [isApplyOpen, setIsApplyOpen] = useState(false);
+
   const [isCounsellingOpen, setIsCounsellingOpen] = useState(false);
 
   useEffect(() => {
     const fetchUniversityOverview = async () => {
       try {
         const response = await api.get(`/university-overview/${slug}`);
+
         const overviews = response.data?.data?.overviews || [];
+
         setOverviewData(overviews);
       } catch (error) {
         console.error("Error fetching overview:", error);
+
         setOverviewData([]);
       } finally {
         setIsLoading(false);
@@ -147,13 +208,16 @@ const Overview = ({ universityData }) => {
   }, [slug]);
 
   // ✅ DEBUG: Log all sections to see what data is coming
+
   console.log("🔍 ALL OVERVIEW DATA:", overviewData);
 
   const validSections = overviewData.filter((section) => {
     const hasTitle = section?.title?.trim() !== "";
+
     const hasDesc = hasValidContent(section?.description);
 
     // ✅ FIX: NULL CHECK ADD KIYA
+
     const hasValidImage =
       section?.thumbnail_path &&
       section.thumbnail_path.trim() !== "" &&
@@ -161,58 +225,77 @@ const Overview = ({ universityData }) => {
       !section.thumbnail_path.includes("default.jpg");
 
     // ✅ DEBUG: Log each section's validation status
+
     console.log(`📊 Section: "${section?.title}"`, {
       hasTitle,
+
       hasDesc,
+
       hasValidImage,
+
       descriptionLength: section?.description?.length,
+
       thumbnailPath: section?.thumbnail_path,
+
       willShow: hasTitle && (hasDesc || hasValidImage),
     });
 
     // ✅ RELAXED FILTER: Show section if it has a title (less strict)
+
     // This ensures all sections with titles appear, even if description is in HTML tables
+
     return hasTitle;
   });
 
   console.log("✅ Valid sections count:", validSections.length);
 
   // Smooth scroll to section with URL hash update
+
   const scrollToSection = (index, sectionSlug) => {
     const element = sectionRefs.current[index];
+
     if (element) {
       // Update URL hash
+
       window.history.pushState(null, "", `#${sectionSlug}`);
 
       const yOffset = -100;
+
       const y =
         element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
   // Scroll to Get In Touch form
+
   const scrollToForm = () => {
     if (formRef.current) {
       const yOffset = -100;
+
       const y =
         formRef.current.getBoundingClientRect().top +
         window.pageYOffset +
         yOffset;
+
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
   // Navigate to signup
+
   const handleApplyHere = () => {
     navigate("/signup?program_id=3&redirect=courses");
   };
 
   // ✅ FIX: Image rendering helper function with null checks
+
   const renderSectionImage = (section) => {
     if (!section?.thumbnail_path) return null;
 
     // Check for default images
+
     if (
       section.thumbnail_path.includes("default-image.jpg") ||
       section.thumbnail_path.includes("default.jpg")
@@ -223,8 +306,11 @@ const Overview = ({ universityData }) => {
     const imagePath =
       "https://admin.educationmalaysia.in/storage/" +
       section.thumbnail_path
+
         .replace(/^storage\//, "")
+
         .replace(/^public\//, "")
+
         .replace(/^\//, "");
 
     return (
@@ -235,7 +321,9 @@ const Overview = ({ universityData }) => {
           className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-300"
           onError={(e) => {
             console.log("IMAGE FAILED:", section.thumbnail_path);
+
             e.target.style.display = "none";
+
             e.target.parentElement.style.display = "none";
           }}
         />
@@ -248,6 +336,7 @@ const Overview = ({ universityData }) => {
       <div className="flex items-center justify-center p-10">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4 mx-auto"></div>
+
           <p className="text-gray-600">Loading overview...</p>
         </div>
       </div>
@@ -255,6 +344,7 @@ const Overview = ({ universityData }) => {
   }
 
   // ✅ FIX: Agar koi valid section nahi hai
+
   if (validSections.length === 0) {
     return (
       <div className="space-y-1 px-1 md:px-0 py-4 text-black bg-white">
@@ -263,6 +353,7 @@ const Overview = ({ universityData }) => {
             <p className="text-gray-500 text-lg mb-2">
               📄 No overview available
             </p>
+
             <p className="text-gray-400 text-sm">
               Content will be updated soon
             </p>
@@ -270,9 +361,11 @@ const Overview = ({ universityData }) => {
         </div>
 
         {/* Still show forms even if no overview */}
+
         <div ref={formRef}>
           <HelpUniversityCourses />
         </div>
+
         <PopularCourses />
       </div>
     );
@@ -281,30 +374,21 @@ const Overview = ({ universityData }) => {
   return (
     <div className="space-y-1 px-1 md:px-0 py-4 text-black bg-white">
       {/* Dynamic SEO */}
-      <SeoHead
-        pageType="university-detail"
-        data={{
-          name: universityData?.univ_name
-            ? universityData.univ_name.replace(/^['"]|['"]$/g, "")
-            : "",
-          description:
-            universityData?.description ||
-            `Study at ${universityData?.univ_name}, Malaysia`,
-          image: universityData?.university_logo
-            ? `https://admin.educationmalaysia.in/storage/${universityData.university_logo}`
-            : null,
-          slug: slug,
-        }}
-      />
+
+      {/* Dynamic SEO handled by parent UniversityDetail.jsx */}
+
       {/* Table of Contents - Only show if more than 1 section */}
+
       {validSections.length > 1 && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 my-3 sm:my-4 shadow-sm border border-blue-100">
           <h2 className="text-sm sm:text-base font-bold text-blue-900 mb-2 sm:mb-3 border-l-3 border-blue-600 pl-2">
             Table of Contents
           </h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
             {validSections.map((section, index) => {
               const sectionSlug = createSlug(section.title);
+
               return (
                 <div
                   key={index}
@@ -314,6 +398,7 @@ const Overview = ({ universityData }) => {
                   <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold group-hover:bg-blue-700 transition-colors">
                     {index + 1}
                   </span>
+
                   <span className="text-xs sm:text-sm text-gray-700 font-medium group-hover:text-blue-700 transition-colors line-clamp-1">
                     {section.title}
                   </span>
@@ -325,6 +410,7 @@ const Overview = ({ universityData }) => {
       )}
 
       {/* Apply Here and Enquire Now Buttons */}
+
       {validSections.length > 1 && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4 px-4 sm:px-0 mb-8 max-w-md mx-auto">
           <button
@@ -333,6 +419,7 @@ const Overview = ({ universityData }) => {
           >
             APPLY HERE
           </button>
+
           <button
             onClick={() => setIsCounsellingOpen(true)}
             className="w-full px-4 sm:px-6 py-3 bg-white text-blue-600 border-2 border-blue-600 rounded-full font-semibold hover:bg-blue-50 transition-colors duration-200 text-sm sm:text-base"
@@ -343,6 +430,7 @@ const Overview = ({ universityData }) => {
       )}
 
       {/* First Section - Introduction */}
+
       {validSections[0] && (
         <div
           id={createSlug(validSections[0].title)}
@@ -358,6 +446,7 @@ const Overview = ({ universityData }) => {
           {renderSectionImage(validSections[0])}
 
           {/* ✅ FIX: Show description if exists (removed strict validation) */}
+
           {validSections[0].description && (
             <div
               className="space-y-2 text-base leading-relaxed [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline [&_a_span]:!text-blue-600"
@@ -370,9 +459,11 @@ const Overview = ({ universityData }) => {
       )}
 
       {/* Remaining Content Sections (starting from index 1) */}
+
       {validSections.length > 1 &&
         validSections.slice(1).map((section, index) => {
           const sectionSlug = createSlug(section.title);
+
           return (
             <div
               key={index + 1}
@@ -389,6 +480,7 @@ const Overview = ({ universityData }) => {
               {renderSectionImage(section)}
 
               {/* ✅ FIX: Show description if exists (removed strict validation) */}
+
               {section.description && (
                 <div
                   className="space-y-6 text-base leading-relaxed [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline [&_a_span]:!text-blue-600"
@@ -402,14 +494,19 @@ const Overview = ({ universityData }) => {
         })}
 
       {/* Get in Touch Form - with ref for scrolling */}
+
       {/* <div ref={formRef}>
+
         <HelpUniversityCourses />
+
       </div> */}
 
       {/* Popular Courses */}
+
       <PopularCourses />
 
       {/* Apply Popup */}
+
       <PopupForm
         isOpen={isApplyOpen}
         onClose={() => setIsApplyOpen(false)}
@@ -418,6 +515,7 @@ const Overview = ({ universityData }) => {
       />
 
       {/* Counselling Popup (Enquire Now) */}
+
       <PopupForm
         isOpen={isCounsellingOpen}
         onClose={() => setIsCounsellingOpen(false)}

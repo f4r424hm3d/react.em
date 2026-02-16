@@ -121,7 +121,7 @@ const BlogDetail = () => {
         }
 
         setCategories(res.data.categories || []);
-        setSeo(res.data.seo || {});
+        setSeo(res.data.seo || res.data.data?.seo || res.data.blog || {});
         setCourses(res.data.specializations || []);
       } catch (err) {
         setError("Failed to load blog details.");
@@ -142,6 +142,7 @@ const BlogDetail = () => {
       <SeoHead
         pageType="blog-detail"
         data={{
+          ...seo,
           name: seo?.meta_title || blog.headline,
           description: seo?.meta_description || blog.short_description,
           keywords: seo?.meta_keyword,

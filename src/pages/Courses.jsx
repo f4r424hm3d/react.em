@@ -136,10 +136,45 @@ const Courses = () => {
       /^\/[a-z0-9-]+-courses$/.test(basePath)) &&
     isValidPageSlug;
 
-  // If path is not exactly one of the above valid patterns, show 404
-  if (!isValidPath) {
+  // Check for legacy query param '?page=' OR any '?page-5' style queries
+  const searchParams = new URLSearchParams(location.search);
+  const hasPageQueryParam = searchParams.has("page");
+
+  // Also check if any query key itself is like 'page-5' (e.g. ?page-5)
+  const hasInvalidPageQuery = Array.from(searchParams.keys()).some((key) =>
+    key.match(/^page-\d+$/),
+  );
+
+  // If path is not exactly one of the above valid patterns OR has ?page= query OR ?page-5 query, show 404
+  if (!isValidPath || hasPageQueryParam || hasInvalidPageQuery) {
     return <NotFound />;
   }
+
+  // ✅ SEO Calculation reused for both SeoHead and dynamic description
+  const seoData = {
+    ...seo,
+    ...(seo?.seos || {}), // Flatten nested seos if present
+    name: seo?.meta_title || "Courses in Malaysia | Study in Malaysia",
+    description: seo?.meta_description || infoText,
+    keywords:
+      seo?.meta_keyword ||
+      "courses in malaysia, study in malaysia, universities in malaysia",
+    image:
+      seo?.og_image_path && seo.og_image_path.trim() !== ""
+        ? `https://admin.educationmalaysia.in/storage/${seo.og_image_path.replace(/^\/+/, "")}`
+        : null,
+  };
+
+  const seoOverrides = {
+    title:
+      seo?.meta_title && seo.meta_title !== "%title%"
+        ? seo.meta_title
+        : undefined,
+    description:
+      seo?.meta_description && seo.meta_description !== "%description%"
+        ? seo.meta_description
+        : undefined,
+  };
 
   // Add selected filters state
   const [selectedFilters, setSelectedFilters] = useState({
@@ -1169,11 +1204,26 @@ const Courses = () => {
   };
   const toggleShowMore = () => setShowMore(!showMore);
 
-  // ✅ Generate SEO metadata using SeoService
-  const seoData = SeoService.generateCourseListingMeta(
+  // ✅ Calculate active filter name for dynamic SEO title
+  const derivedCourseName = (() => {
+    // Priority check for active filters
+    if (lastSelectedFilter?.value) return lastSelectedFilter.value;
+    if (selectedFilters.levels?.length > 0) return selectedFilters.levels[0];
+    if (selectedFilters.categories?.length > 0)
+      return selectedFilters.categories[0];
+    if (selectedFilters.specializations?.length > 0)
+      return selectedFilters.specializations[0];
+    if (selectedFilters.intakes?.length > 0) return selectedFilters.intakes[0];
+    if (selectedFilters.study_modes?.length > 0)
+      return selectedFilters.study_modes[0];
+    return "";
+  })();
+
+  // ✅ Generate SEO metadata using SeoService with dynamic data
+  const processedSeoData = SeoService.generateCourseListingMeta(
     {
       totalCourses,
-      courseName: lastSelectedFilter?.value,
+      courseName: derivedCourseName,
       filters: selectedFilters,
       currentPage,
       lastPage,
@@ -1184,18 +1234,18 @@ const Courses = () => {
 
   return (
     <>
-      {/* ✅ Enhanced SEO Component with all meta tags */}
+      {/* ✅ Enhanced SEO Component with dynamic metadata */}
       <SeoHead
         pageType="courses-listing"
         overrides={{
-          title: seoData.title,
-          description: seoData.description,
-          canonical: seoData.canonicalUrl,
+          title: processedSeoData.title, // ✅ Uses dynamic title with correct count (e.g. "109 Top...")
+          description: processedSeoData.description,
+          // canonical: processedSeoData.canonicalUrl,
         }}
         data={{
-          keywords: seoData.keywords,
-          image: seoData.ogImage,
-          name: seoData.title,
+          keywords: processedSeoData.keywords,
+          image: processedSeoData.ogImage,
+          name: processedSeoData.title,
         }}
       />
 
@@ -1534,11 +1584,14 @@ const Courses = () => {
                                     item.study_mode ||
                                     item;
 
-                                  // ✅ Normalize value to match selectedFilters format (lowercase with dashes)
-                                  const normalizedValue = String(value)
-                                    .toLowerCase()
-                                    .trim()
-                                    .replace(/\s+/g, "-");
+                                  // ✅ Normalize value to match selectedFilters format
+                                  const normalizedValue =
+                                    key === "intakes" || key === "study_modes"
+                                      ? String(value).trim()
+                                      : String(value)
+                                          .toLowerCase()
+                                          .trim()
+                                          .replace(/\s+/g, "-");
 
                                   // ✅ Check if this filter is selected
                                   const isChecked =
@@ -1693,51 +1746,51 @@ const Courses = () => {
                         let pathDescription = "";
 
                         if (path.includes("pre-university")) {
-                          pathDescription = `Discover a list of ${totalCourses} PRE-UNIVERSITY courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering PRE-UNIVERSITY degree programs. Enroll directly in PRE-UNIVERSITY courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} PRE-UNIVERSITY courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering PRE-UNIVERSITY degree programs. Enroll directly in PRE-UNIVERSITY courses through EducationMalaysia.in.`;
                         } else if (path.includes("diploma")) {
-                          pathDescription = `Discover a list of ${totalCourses} DIPLOMA courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering DIPLOMA degree programs. Enroll directly in DIPLOMA courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} DIPLOMA courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering DIPLOMA degree programs. Enroll directly in DIPLOMA courses through EducationMalaysia.in.`;
                         } else if (path.includes("under-graduate")) {
-                          pathDescription = `Discover a list of ${totalCourses} UNDER-GRADUATE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering UNDER-GRADUATE degree programs. Enroll directly in UNDER-GRADUATE courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} UNDER-GRADUATE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering UNDER-GRADUATE degree programs. Enroll directly in UNDER-GRADUATE courses through EducationMalaysia.in.`;
                         } else if (path.includes("post-graduate-diploma")) {
-                          pathDescription = `Discover a list of ${totalCourses} POST-GRADUATE-DIPLOMA courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering POST-GRADUATE-DIPLOMA degree programs. Enroll directly in POST-GRADUATE-DIPLOMA courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} POST-GRADUATE-DIPLOMA courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering POST-GRADUATE-DIPLOMA degree programs. Enroll directly in POST-GRADUATE-DIPLOMA courses through EducationMalaysia.in.`;
                         } else if (path.includes("post-graduate")) {
-                          pathDescription = `Discover a list of ${totalCourses} POST-GRADUATE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering POST-GRADUATE degree programs. Enroll directly in POST-GRADUATE courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} POST-GRADUATE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering POST-GRADUATE degree programs. Enroll directly in POST-GRADUATE courses through EducationMalaysia.in.`;
                         } else if (path.includes("a-levels")) {
-                          pathDescription = `Discover a list of ${totalCourses} A-LEVELS courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering A-LEVELS degree programs. Enroll directly in A-LEVELS courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} A-LEVELS courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering A-LEVELS degree programs. Enroll directly in A-LEVELS courses through EducationMalaysia.in.`;
                         } else if (path.includes("certificate")) {
-                          pathDescription = `Discover a list of ${totalCourses} CERTIFICATE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering CERTIFICATE degree programs. Enroll directly in CERTIFICATE courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} CERTIFICATE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering CERTIFICATE degree programs. Enroll directly in CERTIFICATE courses through EducationMalaysia.in.`;
                         } else if (path.includes("business-and-management")) {
-                          pathDescription = `Discover a list of ${totalCourses} BUSINESS AND MANAGEMENT courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering BUSINESS AND MANAGEMENT degree programs. Enroll directly in BUSINESS AND MANAGEMENT courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} BUSINESS AND MANAGEMENT courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering BUSINESS AND MANAGEMENT degree programs. Enroll directly in BUSINESS AND MANAGEMENT courses through EducationMalaysia.in.`;
                         } else if (path.includes("creative-arts-and-design")) {
-                          pathDescription = `Discover a list of ${totalCourses} CREATIVE ARTS AND DESIGN courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering CREATIVE ARTS AND DESIGN degree programs. Enroll directly in CREATIVE ARTS AND DESIGN courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} CREATIVE ARTS AND DESIGN courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering CREATIVE ARTS AND DESIGN degree programs. Enroll directly in CREATIVE ARTS AND DESIGN courses through EducationMalaysia.in.`;
                         } else if (path.includes("education-and-training")) {
-                          pathDescription = `Discover a list of ${totalCourses} EDUCATION AND TRAINING courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering EDUCATION AND TRAINING degree programs. Enroll directly in EDUCATION AND TRAINING courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} EDUCATION AND TRAINING courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering EDUCATION AND TRAINING degree programs. Enroll directly in EDUCATION AND TRAINING courses through EducationMalaysia.in.`;
                         } else if (
                           path.includes("engineering-and-technology")
                         ) {
-                          pathDescription = `Discover a list of ${totalCourses} ENGINEERING AND TECHNOLOGY courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering ENGINEERING AND TECHNOLOGY degree programs. Enroll directly in ENGINEERING AND TECHNOLOGY courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} ENGINEERING AND TECHNOLOGY courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering ENGINEERING AND TECHNOLOGY degree programs. Enroll directly in ENGINEERING AND TECHNOLOGY courses through EducationMalaysia.in.`;
                         } else if (path.includes("computer-science")) {
-                          pathDescription = `Discover a list of ${totalCourses} COMPUTER SCIENCE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering COMPUTER SCIENCE degree programs. Enroll directly in COMPUTER SCIENCE courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} COMPUTER SCIENCE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering COMPUTER SCIENCE degree programs. Enroll directly in COMPUTER SCIENCE courses through EducationMalaysia.in.`;
                         } else if (path.includes("medicine-and-health")) {
-                          pathDescription = `Discover a list of ${totalCourses} MEDICINE AND HEALTH courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering MEDICINE AND HEALTH degree programs. Enroll directly in MEDICINE AND HEALTH courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} MEDICINE AND HEALTH courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering MEDICINE AND HEALTH degree programs. Enroll directly in MEDICINE AND HEALTH courses through EducationMalaysia.in.`;
                         } else if (path.includes("full-time")) {
-                          pathDescription = `Discover a list of ${totalCourses} FULL-TIME courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering FULL-TIME degree programs. Enroll directly in FULL-TIME courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} FULL-TIME courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering FULL-TIME degree programs. Enroll directly in FULL-TIME courses through EducationMalaysia.in.`;
                         } else if (path.includes("part-time")) {
-                          pathDescription = `Discover a list of ${totalCourses} PART-TIME courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering PART-TIME degree programs. Enroll directly in PART-TIME courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} PART-TIME courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering PART-TIME degree programs. Enroll directly in PART-TIME courses through EducationMalaysia.in.`;
                         } else if (path.includes("online")) {
-                          pathDescription = `Discover a list of ${totalCourses} ONLINE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering ONLINE degree programs. Enroll directly in ONLINE courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} ONLINE courses offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering ONLINE degree programs. Enroll directly in ONLINE courses through EducationMalaysia.in.`;
                         } else if (path.includes("january")) {
-                          pathDescription = `Discover a list of ${totalCourses} courses with JANUARY intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with JANUARY intake. Enroll directly in courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} courses with JANUARY intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with JANUARY intake. Enroll directly in courses through EducationMalaysia.in.`;
                         } else if (path.includes("february")) {
-                          pathDescription = `Discover a list of ${totalCourses} courses with FEBRUARY intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with FEBRUARY intake. Enroll directly in courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} courses with FEBRUARY intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with FEBRUARY intake. Enroll directly in courses through EducationMalaysia.in.`;
                         } else if (path.includes("march")) {
-                          pathDescription = `Discover a list of ${totalCourses} courses with MARCH intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with MARCH intake. Enroll directly in courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} courses with MARCH intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with MARCH intake. Enroll directly in courses through EducationMalaysia.in.`;
                         } else if (path.includes("april")) {
-                          pathDescription = `Discover a list of ${totalCourses} courses with APRIL intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with APRIL intake. Enroll directly in courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} courses with APRIL intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with APRIL intake. Enroll directly in courses through EducationMalaysia.in.`;
                         } else if (path.includes("may")) {
-                          pathDescription = `Discover a list of ${totalCourses} courses with MAY intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with MAY intake. Enroll directly in courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} courses with MAY intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with MAY intake. Enroll directly in courses through EducationMalaysia.in.`;
                         } else if (path.includes("september")) {
-                          pathDescription = `Discover a list of ${totalCourses} courses with SEPTEMBER intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with SEPTEMBER intake. Enroll directly in courses through EducationMalaysia.in.`;
+                          pathDescription = `Discover Top ${totalCourses} courses with SEPTEMBER intake offered by the Top universities and colleges in Malaysia. Gather valuable information such as entry requirements, fee structures, intake schedules for 2025, study modes, and recommendations for the best universities and colleges offering courses with SEPTEMBER intake. Enroll directly in courses through EducationMalaysia.in.`;
                         } else {
                           pathDescription = infoText;
                         }

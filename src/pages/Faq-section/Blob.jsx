@@ -237,6 +237,7 @@ const NewsCardGrid = () => {
       {/* ✅ NEW: Dynamic SEO - Auto-generates unique meta tags based on URL, category, and pagination */}
       <SeoHead
         data={{
+          ...seo,
           category: category_slug,
           keywords: seo?.meta_keyword,
           image: seo?.og_image_path,

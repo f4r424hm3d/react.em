@@ -265,6 +265,12 @@ export default function App() {
           keywords:
             "student visa, malaysia visa, education malaysia visa, student pass",
         }}
+        // FORCE override
+        overrides={{
+          title: "Malaysian Student Visa Process | Application Guide",
+          description:
+            "Complete guide to obtaining your student pass for studying in Malaysia.",
+        }}
       />
 
       {/* ✅ Dynamic Breadcrumb */}

@@ -62,6 +62,7 @@ const Exam = () => {
       <SeoHead
         pageType="exams-listing"
         data={{
+          ...seo,
           name: "Exams for Study in Malaysia",
           description: seo?.meta_description,
           keywords: seo?.meta_keyword,

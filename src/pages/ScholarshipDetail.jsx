@@ -167,11 +167,14 @@ const ScholarshipDetail = () => {
       <SeoHead
         pageType="scholarship-detail"
         data={{
+          ...scholarshipData, // Pass all scholarship data (includes meta_title, etc.)
+          ...(seo || {}), // Merge SEO object if present
           name: scholarshipData?.title || seo?.meta_title,
-          description: seo?.meta_description,
-          keywords: seo?.meta_keyword,
+          description:
+            seo?.meta_description || scholarshipData?.meta_description,
+          keywords: seo?.meta_keyword || scholarshipData?.meta_keyword,
           slug: slug,
-          image: seo?.og_image_path,
+          image: seo?.og_image_path || scholarshipData?.og_image_path,
         }}
       />
       <section className="bg-gradient-to-br from-blue-50 to-white px-4 py-10 md:px-10 lg:px-10">
