@@ -10,49 +10,29 @@
     <!-- Disabled default vite icon -->
     <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
     <link
-      rel="shortcut icon"
+      rel="icon"
       href="https://www.educationmalaysia.in/storage/front/assets/img/favicon.png"
-      type="image/x-icon"
+      type="image/png"
     />
     <link
       rel="apple-touch-icon"
-      href="https://admin.educationmalaysia.in/storage/front/assets/img/favicon.png"
+      href="https://www.educationmalaysia.in/storage/front/assets/img/favicon.png"
     />
 
-    <!-- FB Meta Tag Starts-->
-    <meta
-      property="og:title"
-      content="Study In Malaysia: Find Universities, Fees, Courses, Visa, Requirements, Scholarships"
-    />
-    <meta
-      property="og:description"
-      content="Study in Malaysia with Education Malaysia. Find top universities, courses, fees, visa requirements, and scholarships for international students."
-    />
-    <meta property="og:url" content="https://www.educationmalaysia.in" />
-    <meta
-      property="og:image"
-      content="https://www.educationmalaysia.in/storage/front/assets/img/favicon.png"
-    />
-    <meta property="og:site_name" content="Education Malaysia" />
-    <!-- FB MEta Tag Ends -->
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="https://admin.educationmalaysia.in" />
+    <link rel="preconnect" href="https://admin.educationmalaysia.in" crossorigin />
+    <!-- Note: Hero image preload would go here if we had a static first banner URL -->
+    <!-- <link rel="preload" as="image" href="/path/to/hero.jpg" fetchpriority="high" /> -->
 
-    <!-- twitter tag -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@educatemalaysia" />
-    <meta
-      name="twitter:title"
-      content="Study In Malaysia: Find Universities, Fees, Courses, Visa, Requirements, Scholarships"
-    />
-    <meta
-      name="twitter:description"
-      content="Study in Malaysia with Education Malaysia. Find top universities, courses, fees, visa requirements, and scholarships for international students."
-    />
-    <meta
-      name="twitter:image"
-      content="https://www.educationmalaysia.in/storage/front/assets/img/favicon.png"
-    />
-
-    <script>
+    <!-- Title and meta tags will be set dynamically by SeoHead component -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Google Tag Manager (deferred to avoid blocking LCP) -->
+    <script defer>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });

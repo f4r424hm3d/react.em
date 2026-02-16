@@ -26,8 +26,8 @@ const Gallery = () => {
             if (!path) return null;
             if (/^https?:\/\//i.test(path)) return path;
             // Ensure we prefix with site root (not the API base)
-            const cleaned = String(path).replace(/^\/+/, '');
-            return `https://www.educationmalaysia.in/storage/${cleaned}`;
+            const cleaned = String(path).replace(/^\/+/, "");
+            return `https://admin.educationmalaysia.in/storage/${cleaned}`;
           };
 
           galleryData = photos

@@ -39,7 +39,6 @@ import UniversityCoursesCard from "./UniversityCoursesCard";
 
 import PopularCourses from "./PopularCourses";
 
-import { Helmet } from "react-helmet";
 import SeoHead from "../../components/SeoHead";
 
 import { VscGitStashApply } from "react-icons/vsc";

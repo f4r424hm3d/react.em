@@ -230,11 +230,18 @@ const BlogDetail = () => {
             </div>
 
             {blog.thumbnail_path && (
-              <img
-                src={`https://www.educationmalaysia.in/storage/${blog.thumbnail_path}`}
-                alt={blog.headline}
-                className="w-full rounded-xl shadow-md"
-              />
+              <div className="aspect-video w-full rounded-xl shadow-md overflow-hidden bg-gray-100">
+                <img
+                  src={`https://admin.educationmalaysia.in/storage/${blog.thumbnail_path}`}
+                  alt={blog.headline}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  width="800"
+                  height="450"
+                />
+              </div>
             )}
 
             {blog.parent_contents?.length > 0 && (
@@ -431,19 +438,29 @@ const BlogDetail = () => {
                   Related Blogs
                 </h3>
                 <div className="space-y-3 md:space-y-4">
-                  {relatedBlogs.map((item) => (
-                    <a
-                      key={item.id}
-                      href={`/blog/${category}/${item.slug}-${item.id}`}
-                      className="flex items-center gap-2 md:gap-3 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition group"
-                    >
-                      {item.thumbnail_path && (
-                        <img
-                          src={`https://www.educationmalaysia.in/storage/${item.thumbnail_path}`}
-                          alt={item.headline}
-                          className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
-                        />
-                      )}
+                  {relatedBlogs.map((item) => {
+                    // Generate slug from headline if not provided by API
+                    const blogSlug =
+                      item.slug ||
+                      item.headline
+                        ?.toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-|-$/g, "") ||
+                      "blog"; // Fallback if slug is empty
+
+                    return (
+                      <Link
+                        key={item.id}
+                        to={`/blog/${category}/${blogSlug}-${item.id}`}
+                        className="flex items-center gap-2 md:gap-3 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition group"
+                      >
+                        {item.thumbnail_path && (
+                          <img
+                            src={`https://admin.educationmalaysia.in/storage/${item.thumbnail_path}`}
+                            alt={item.headline}
+                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0"
+                          />
+                        )}
 
                         <div className="flex-1 min-w-0">
                           <h4 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600">
